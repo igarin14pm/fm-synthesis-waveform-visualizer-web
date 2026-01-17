@@ -1,16 +1,27 @@
-class Phase {
+class MasterPhase {
   constructor() {
     this.value = 0.0;
     this.samplingRate = 60.0;
     this.frequency = 0.5;
   }
-    
+  
   getDeltaPhase() {
     return this.frequency / this.samplingRate;
   }
   
   moveFrameForward() {
     this.value += this.getDeltaPhase();
+    this.value -= Math.floor(this.value);
+  }
+}
+
+class Phase {
+  constructor() {
+    this.value = 0.0;
+  }
+    
+  set(masterPhaseValue) {
+    this.value = masterPhaseValue;
     this.value -= Math.floor(this.value);
   }
 }
@@ -25,8 +36,54 @@ class WaveGenerator {
     return Math.sin(2 * Math.PI * this.phase.value);
   }
   
-  moveFrameForward() {
-    this.phase.moveFrameForward();
+  set(masterPhaseValue) {
+    this.phase.set(masterPhaseValue);
+  }
+}
+
+class PhaseGraph {
+  constructor(element) {
+    this.element = element;
+    this.width = element.width;
+    this.height = element.height;
+    this.phase = 0;
+  }
+  
+  set(phase) {
+    this.phase = phase;
+  }
+  
+  draw() {
+    let circleCenterX = this.width / 3;
+    let circleCenterY = this.height / 2;
+    let circleRadius = this.height / 2;
+    if (this.element.getContext) {
+      let context = this.element.getContext('2d');
+      context.beginPath();
+      context.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2);
+      context.moveTo(circleCenterX, circleCenterY);
+      context.lineTo(
+        circleRadius * Math.cos(2 * Math.PI * this.phase) + circleCenterX, 
+        -1 * circleRadius * Math.sin(2 * Math.PI * this.phase) + circleCenterY
+      );
+      context.lineTo(
+        this.width,
+        -1 * circleRadius * Math.sin(2 * Math.PI * this.phase) + circleCenterY
+      );
+      context.stroke();
+    }
+  }
+  
+  clear() {
+    if (this.element.getContext) {
+      let context = this.element.getContext('2d');
+      context.clearRect(0, 0, this.element.width, this.element.height);
+    }
+  }
+  
+  update() {
+    this.clear();
+    this.draw();
   }
 }
 
@@ -84,23 +141,43 @@ class WaveformGraph {
 }
 
 class Operator {
-  constructor(waveformGraphElement) {
+  constructor(phaseGraphElement, waveformGraphElement) {
     this.waveGenerator = new WaveGenerator();
+    this.phaseGraph = new PhaseGraph(phaseGraphElement);
     this.waveformGraph = new WaveformGraph(waveformGraphElement);
     
+    this.phaseGraph.update();
     this.waveformGraph.update();
   }
   
+  set(masterPhaseValue) {
+    this.waveGenerator.set(masterPhaseValue);
+  }
+  
   moveFrameForward() {
-    this.waveGenerator.moveFrameForward();
+    this.phaseGraph.set(this.waveGenerator.phase.value);
+    this.phaseGraph.update();
+    
     this.waveformGraph.wave.add(this.waveGenerator.getOutput());
     this.waveformGraph.update();
   }
 }
 
-let operator = new Operator(document.getElementById('waveform-graph-test'));
+let synth = {
+  masterPhase: new MasterPhase(),
+  operator: new Operator(
+    document.getElementById('phase-graph-test'),
+    document.getElementById('waveform-graph-test')
+  ),
+  moveFrameForward: function() {
+    this.masterPhase.moveFrameForward();
+    
+    this.operator.set(this.masterPhase.value);
+    this.operator.moveFrameForward();
+  }
+}
 
 let synthFrameCallback = function() {
-  operator.moveFrameForward();
+  synth.moveFrameForward();
 }
 let intervalID = setInterval(synthFrameCallback, 1000 / 60);
