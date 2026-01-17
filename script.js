@@ -204,11 +204,18 @@ let synth = {
     document.getElementById('phase-graph-modulator'),
     document.getElementById('waveform-graph-modulator')
   ),
+  carrierUI: new OperatorUI(
+    document.getElementById('phase-graph-carrier'),
+    document.getElementById('waveform-graph-carrier')
+  ),
   moveFrameForward: function() {
     this.masterPhase.moveFrameForward();
     
     this.modulatorUI.setPhase(this.masterPhase.value);
     this.modulatorUI.moveFrameForward();
+    
+    this.carrierUI.setPhase(this.masterPhase.value);
+    this.carrierUI.moveFrameForward();
   }
 }
 
