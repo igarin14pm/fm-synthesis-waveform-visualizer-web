@@ -1,4 +1,5 @@
-const MODULATOR_INITIAL_VOLUME = 100;
+const OPERATOR_INITIAL_VOLUME = 100;
+const OPERATOR_INITIAL_RATIO = 1;
 
 class MasterPhase {
   constructor() {
@@ -20,11 +21,20 @@ class MasterPhase {
 class Phase {
   constructor() {
     this.value = 0.0;
+    this.ratio = OPERATOR_INITIAL_RATIO;
+  }
+  
+  getValue() {
+    return this.value;
   }
     
-  set(masterPhaseValue) {
-    this.value = masterPhaseValue;
+  setMasterPhase(newValue) {
+    this.value = newValue * this.ratio;
     this.value -= Math.floor(this.value);
+  }
+  
+  setRatio(newValue) {
+    this.ratio = newValue;
   }
 }
 
@@ -40,7 +50,11 @@ class Operator {
   }
   
   setPhase(masterPhaseValue) {
-    this.phase.set(masterPhaseValue);
+    this.phase.setMasterPhase(masterPhaseValue);
+  }
+  
+  setRatio(newValue) {
+    this.phase.setRatio(newValue);
   }
   
   setVolume(newValue) {
@@ -54,7 +68,7 @@ class PhaseGraph {
     this.width = element.width;
     this.height = element.height;
     this.phase = 0;
-    this.volume = MODULATOR_INITIAL_VOLUME;
+    this.volume = OPERATOR_INITIAL_VOLUME;
   }
   
   setPhase(phase) {
@@ -166,13 +180,17 @@ class OperatorUI {
     this.operator.setPhase(masterPhaseValue);
   }
   
+  setRatio(newValue) {
+    this.operator.setRatio(newValue);
+  }
+  
   setVolume(newValue) {
     this.operator.setVolume(newValue);
     this.phaseGraph.setVolume(newValue);
   }
   
   moveFrameForward() {
-    this.phaseGraph.setPhase(this.operator.phase.value);
+    this.phaseGraph.setPhase(this.operator.phase.getValue());
     this.phaseGraph.update();
     
     this.waveformGraph.data.add(this.operator.getOutput());
@@ -209,7 +227,7 @@ let modulatorVolumeControl = {
     });
   },
   setUp: function() {
-    this.input.value = MODULATOR_INITIAL_VOLUME;
+    this.input.value = OPERATOR_INITIAL_VOLUME;
     this.updateValue();
     this.addEventListener();
   }
@@ -224,6 +242,7 @@ let modulatorRatioControl = {
   addEventListener: function() {
     this.input.addEventListener('input', () => {
       this.updateValue();
+      synth.modulatorUI.setRatio(this.input.value);
     })
   },
   setUp: function() {
@@ -242,7 +261,6 @@ function setUp() {
     synth.moveFrameForward();
   }
   let intervalID = setInterval(synthFrameCallback, 1000 / 60);
-
 }
 
 setUp();
