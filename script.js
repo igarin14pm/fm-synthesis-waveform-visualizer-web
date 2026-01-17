@@ -1,3 +1,6 @@
+const OPERATOR_INITIAL_VOLUME = 100;
+const OPERATOR_INITIAL_RATIO = 1;
+
 class MasterPhase {
   constructor() {
     this.value = 0.0;
@@ -18,11 +21,20 @@ class MasterPhase {
 class Phase {
   constructor() {
     this.value = 0.0;
+    this.ratio = OPERATOR_INITIAL_RATIO;
+  }
+  
+  getValue() {
+    return this.value;
   }
     
-  set(masterPhaseValue) {
-    this.value = masterPhaseValue;
+  setMasterPhase(newValue) {
+    this.value = newValue * this.ratio;
     this.value -= Math.floor(this.value);
+  }
+  
+  setRatio(newValue) {
+    this.ratio = newValue;
   }
 }
 
@@ -30,14 +42,23 @@ class Operator {
   constructor() {
     this.value = 0.0;
     this.phase = new Phase();
+    this.volume = 100;
   }
   
   getOutput() {
-    return Math.sin(2 * Math.PI * this.phase.value);
+    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.value);
   }
   
-  set(masterPhaseValue) {
-    this.phase.set(masterPhaseValue);
+  setPhase(masterPhaseValue) {
+    this.phase.setMasterPhase(masterPhaseValue);
+  }
+  
+  setRatio(newValue) {
+    this.phase.setRatio(newValue);
+  }
+  
+  setVolume(newValue) {
+    this.volume = newValue;
   }
 }
 
@@ -47,16 +68,21 @@ class PhaseGraph {
     this.width = element.width;
     this.height = element.height;
     this.phase = 0;
+    this.volume = OPERATOR_INITIAL_VOLUME;
   }
   
-  set(phase) {
+  setPhase(phase) {
     this.phase = phase;
+  }
+  
+  setVolume(newValue) {
+    this.volume = newValue;
   }
   
   draw() {
     let circleCenterX = this.width / 3;
     let circleCenterY = this.height / 2;
-    let circleRadius = this.height / 2;
+    let circleRadius = this.height / 2 * this.volume / 100;
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
       context.beginPath();
@@ -150,12 +176,21 @@ class OperatorUI {
     this.waveformGraph.update();
   }
   
-  set(masterPhaseValue) {
-    this.operator.set(masterPhaseValue);
+  setPhase(masterPhaseValue) {
+    this.operator.setPhase(masterPhaseValue);
+  }
+  
+  setRatio(newValue) {
+    this.operator.setRatio(newValue);
+  }
+  
+  setVolume(newValue) {
+    this.operator.setVolume(newValue);
+    this.phaseGraph.setVolume(newValue);
   }
   
   moveFrameForward() {
-    this.phaseGraph.set(this.operator.phase.value);
+    this.phaseGraph.setPhase(this.operator.phase.getValue());
     this.phaseGraph.update();
     
     this.waveformGraph.data.add(this.operator.getOutput());
@@ -165,19 +200,67 @@ class OperatorUI {
 
 let synth = {
   masterPhase: new MasterPhase(),
-  operatorUI: new OperatorUI(
-    document.getElementById('phase-graph-test'),
-    document.getElementById('waveform-graph-test')
+  modulatorUI: new OperatorUI(
+    document.getElementById('phase-graph-modulator'),
+    document.getElementById('waveform-graph-modulator')
   ),
   moveFrameForward: function() {
     this.masterPhase.moveFrameForward();
     
-    this.operatorUI.set(this.masterPhase.value);
-    this.operatorUI.moveFrameForward();
+    this.modulatorUI.setPhase(this.masterPhase.value);
+    this.modulatorUI.moveFrameForward();
   }
 }
 
-let synthFrameCallback = function() {
-  synth.moveFrameForward();
+// UI
+
+let modulatorVolumeControl = {
+  input: document.getElementById('modulator-volume'),
+  value: document.getElementById('modulator-volume-value'),
+  updateValue: function() {
+    this.value.textContent = this.input.value;
+  },
+  addEventListener: function() {
+    this.input.addEventListener('input', () => {
+      this.updateValue();
+      synth.modulatorUI.setVolume(this.input.value);
+    });
+  },
+  setUp: function() {
+    this.input.value = OPERATOR_INITIAL_VOLUME;
+    this.updateValue();
+    this.addEventListener();
+  }
 }
-let intervalID = setInterval(synthFrameCallback, 1000 / 60);
+
+let modulatorRatioControl = {
+  input: document.getElementById('modulator-ratio'),
+  value: document.getElementById('modulator-ratio-value'),
+  updateValue: function() {
+    this.value.textContent = this.input.value;
+  },
+  addEventListener: function() {
+    this.input.addEventListener('input', () => {
+      this.updateValue();
+      synth.modulatorUI.setRatio(this.input.value);
+    })
+  },
+  setUp: function() {
+    this.updateValue();
+    this.addEventListener();
+  }
+}
+
+function setUp() {
+  // UI
+  modulatorVolumeControl.setUp();  
+  modulatorRatioControl.setUp();
+  
+  // Synth
+  let synthFrameCallback = function() {
+    synth.moveFrameForward();
+  }
+  let intervalID = setInterval(synthFrameCallback, 1000 / 60);
+}
+
+setUp();
