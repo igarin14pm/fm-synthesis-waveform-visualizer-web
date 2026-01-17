@@ -1,3 +1,35 @@
+class Phase {
+  constructor() {
+    this.value = 0.0;
+    this.samplingRate = 60.0;
+    this.frequency = 0.5;
+  }
+    
+  getDeltaPhase() {
+    return this.frequency / this.samplingRate;
+  }
+  
+  moveFrameForward() {
+    this.value += this.getDeltaPhase();
+    this.value -= Math.floor(this.value);
+  }
+}
+
+class WaveGenerator {
+  constructor() {
+    this.value = 0.0;
+    this.phase = new Phase();
+  }
+  
+  getOutput() {
+    return Math.sin(2 * Math.PI * this.phase.value);
+  }
+  
+  moveFrameForward() {
+    this.phase.moveFrameForward();
+  }
+}
+
 class Wave {
   constructor() {
     this.VALUES_LENGTH = 240;
@@ -51,37 +83,24 @@ class WaveformGraph {
   }
 }
 
-class Phase {
-  constructor() {
-    this.value = 0.0;
-    this.samplingRate = 60.0;
-    this.frequency = 0.5;
-  }
-  
-  getDeltaPhase() {
-    return this.frequency / this.samplingRate;
+class Operator {
+  constructor(waveformGraphElement) {
+    this.waveGenerator = new WaveGenerator();
+    this.waveformGraph = new WaveformGraph(waveformGraphElement);
+    
+    this.waveformGraph.update();
   }
   
   moveFrameForward() {
-    this.value += this.getDeltaPhase();
-    this.value -= Math.floor(this.value);
+    this.waveGenerator.moveFrameForward();
+    this.waveformGraph.wave.add(this.waveGenerator.getOutput());
+    this.waveformGraph.update();
   }
 }
 
-class WaveGenerator {
-  constructor() {
-    this.value = 0.0;
-    this.phase = new Phase();
-  }
-  
-  getOutput() {
-    return Math.sin(2 * Math.PI * this.phase.value);
-  }
-  
-  moveFrameForward() {
-    this.phase.moveFrameForward();
-  }
-}
+let operator = new Operator(document.getElementById('waveform-graph-test'));
 
-let waveformGraph = new WaveformGraph(document.getElementById('waveform-graph-test'));
-waveformGraph.update();
+let synthFrameCallback = function() {
+  operator.moveFrameForward();
+}
+let intervalID = setInterval(synthFrameCallback, 1000 / 60);
