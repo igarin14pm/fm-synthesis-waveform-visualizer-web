@@ -26,7 +26,7 @@ class Phase {
   }
 }
 
-class WaveGenerator {
+class Operator {
   constructor() {
     this.value = 0.0;
     this.phase = new Phase();
@@ -142,7 +142,7 @@ class WaveformGraph {
 
 class OperatorUI {
   constructor(phaseGraphElement, waveformGraphElement) {
-    this.waveGenerator = new WaveGenerator();
+    this.operator = new Operator();
     this.phaseGraph = new PhaseGraph(phaseGraphElement);
     this.waveformGraph = new WaveformGraph(waveformGraphElement);
     
@@ -151,14 +151,14 @@ class OperatorUI {
   }
   
   set(masterPhaseValue) {
-    this.waveGenerator.set(masterPhaseValue);
+    this.operator.set(masterPhaseValue);
   }
   
   moveFrameForward() {
-    this.phaseGraph.set(this.waveGenerator.phase.value);
+    this.phaseGraph.set(this.operator.phase.value);
     this.phaseGraph.update();
     
-    this.waveformGraph.wave.add(this.waveGenerator.getOutput());
+    this.waveformGraph.wave.add(this.operator.getOutput());
     this.waveformGraph.update();
   }
 }
