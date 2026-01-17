@@ -1,3 +1,5 @@
+const MODULATOR_INITIAL_VOLUME = 100;
+
 class MasterPhase {
   constructor() {
     this.value = 0.0;
@@ -30,14 +32,19 @@ class Operator {
   constructor() {
     this.value = 0.0;
     this.phase = new Phase();
+    this.volume = 100;
   }
   
   getOutput() {
-    return Math.sin(2 * Math.PI * this.phase.value);
+    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.value);
   }
   
-  set(masterPhaseValue) {
+  setPhase(masterPhaseValue) {
     this.phase.set(masterPhaseValue);
+  }
+  
+  setVolume(newValue) {
+    this.volume = newValue;
   }
 }
 
@@ -47,16 +54,21 @@ class PhaseGraph {
     this.width = element.width;
     this.height = element.height;
     this.phase = 0;
+    this.volume = MODULATOR_INITIAL_VOLUME;
   }
   
-  set(phase) {
+  setPhase(phase) {
     this.phase = phase;
+  }
+  
+  setVolume(newValue) {
+    this.volume = newValue;
   }
   
   draw() {
     let circleCenterX = this.width / 3;
     let circleCenterY = this.height / 2;
-    let circleRadius = this.height / 2;
+    let circleRadius = this.height / 2 * this.volume / 100;
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
       context.beginPath();
@@ -150,12 +162,17 @@ class OperatorUI {
     this.waveformGraph.update();
   }
   
-  set(masterPhaseValue) {
-    this.operator.set(masterPhaseValue);
+  setPhase(masterPhaseValue) {
+    this.operator.setPhase(masterPhaseValue);
+  }
+  
+  setVolume(newValue) {
+    this.operator.setVolume(newValue);
+    this.phaseGraph.setVolume(newValue);
   }
   
   moveFrameForward() {
-    this.phaseGraph.set(this.operator.phase.value);
+    this.phaseGraph.setPhase(this.operator.phase.value);
     this.phaseGraph.update();
     
     this.waveformGraph.data.add(this.operator.getOutput());
@@ -172,7 +189,7 @@ let synth = {
   moveFrameForward: function() {
     this.masterPhase.moveFrameForward();
     
-    this.modulatorUI.set(this.masterPhase.value);
+    this.modulatorUI.setPhase(this.masterPhase.value);
     this.modulatorUI.moveFrameForward();
   }
 }
@@ -187,10 +204,12 @@ let modulatorVolumeControl = {
   },
   addEventListener: function() {
     this.input.addEventListener('input', () => {
-      this.updateValue()
+      this.updateValue();
+      synth.modulatorUI.setVolume(this.input.value);
     });
   },
   setUp: function() {
+    this.input.value = MODULATOR_INITIAL_VOLUME;
     this.updateValue();
     this.addEventListener();
   }
@@ -223,6 +242,7 @@ function setUp() {
     synth.moveFrameForward();
   }
   let intervalID = setInterval(synthFrameCallback, 1000 / 60);
+
 }
 
 setUp();
