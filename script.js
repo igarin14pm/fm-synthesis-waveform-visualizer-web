@@ -87,7 +87,7 @@ class PhaseGraph {
   }
 }
 
-class Wave {
+class WaveformGraphData {
   constructor() {
     this.VALUES_LENGTH = 240;
     
@@ -105,7 +105,7 @@ class Wave {
 class WaveformGraph {
   constructor(element) {
     this.element = element;
-    this.wave = new Wave();
+    this.data = new WaveformGraphData();
     this.width = element.width;
     this.height = element.height;
   }
@@ -114,9 +114,9 @@ class WaveformGraph {
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
       context.beginPath();
-      for (let i = 0; i < this.wave.VALUES_LENGTH; i++) {
-        let x = (i / (this.wave.VALUES_LENGTH - 1)) * this.width;
-        let y = (-(this.wave.values[i]) + 1.0) / 2.0 * this.height;
+      for (let i = 0; i < this.data.VALUES_LENGTH; i++) {
+        let x = (i / (this.data.VALUES_LENGTH - 1)) * this.width;
+        let y = (-(this.data.values[i]) + 1.0) / 2.0 * this.height;
         if (i == 0) {
           context.moveTo(x, y);
         } else {
@@ -158,7 +158,7 @@ class OperatorUI {
     this.phaseGraph.set(this.operator.phase.value);
     this.phaseGraph.update();
     
-    this.waveformGraph.wave.add(this.operator.getOutput());
+    this.waveformGraph.data.add(this.operator.getOutput());
     this.waveformGraph.update();
   }
 }
