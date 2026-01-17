@@ -140,7 +140,7 @@ class WaveformGraph {
   }
 }
 
-class Operator {
+class OperatorUI {
   constructor(phaseGraphElement, waveformGraphElement) {
     this.waveGenerator = new WaveGenerator();
     this.phaseGraph = new PhaseGraph(phaseGraphElement);
@@ -165,15 +165,15 @@ class Operator {
 
 let synth = {
   masterPhase: new MasterPhase(),
-  operator: new Operator(
+  operatorUI: new OperatorUI(
     document.getElementById('phase-graph-test'),
     document.getElementById('waveform-graph-test')
   ),
   moveFrameForward: function() {
     this.masterPhase.moveFrameForward();
     
-    this.operator.set(this.masterPhase.value);
-    this.operator.moveFrameForward();
+    this.operatorUI.set(this.masterPhase.value);
+    this.operatorUI.moveFrameForward();
   }
 }
 
