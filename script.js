@@ -21,16 +21,27 @@ class MasterPhase {
 class Phase {
   constructor() {
     this.value = 0.0;
+    this.oldValue = 0.0;
+    this.modulatorInput = 0.0;
     this.ratio = OPERATOR_INITIAL_RATIO;
   }
   
+  isLooped() {
+    return this.value < this.oldValue;
+  }
+  
   getValue() {
-    return this.value;
+    return this.value + this.modulatorInput / 4;
   }
     
   setMasterPhase(newValue) {
+    this.oldValue = this.value;
     this.value = newValue * this.ratio;
     this.value -= Math.floor(this.value);
+  }
+  
+  setModulatorInput(newValue) {
+    this.modulatorInput = newValue;
   }
   
   setRatio(newValue) {
@@ -46,7 +57,11 @@ class Operator {
   }
   
   getOutput() {
-    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.value);
+    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.getValue());
+  }
+  
+  setInput(newValue) {
+    this.phase.setModulatorInput(newValue);
   }
   
   setPhase(masterPhaseValue) {
@@ -176,6 +191,10 @@ class OperatorUI {
     this.waveformGraph.update();
   }
   
+  setInput(newValue) {
+    this.operator.setInput(newValue);
+  }
+  
   setPhase(masterPhaseValue) {
     this.operator.setPhase(masterPhaseValue);
   }
@@ -204,11 +223,19 @@ let synth = {
     document.getElementById('phase-graph-modulator'),
     document.getElementById('waveform-graph-modulator')
   ),
+  carrierUI: new OperatorUI(
+    document.getElementById('phase-graph-carrier'),
+    document.getElementById('waveform-graph-carrier')
+  ),
   moveFrameForward: function() {
     this.masterPhase.moveFrameForward();
     
     this.modulatorUI.setPhase(this.masterPhase.value);
     this.modulatorUI.moveFrameForward();
+    
+    this.carrierUI.setInput(this.modulatorUI.operator.getOutput());
+    this.carrierUI.setPhase(this.masterPhase.value);
+    this.carrierUI.moveFrameForward();
   }
 }
 
@@ -251,6 +278,23 @@ let modulatorRatioControl = {
   }
 }
 
+let carrierAngularVelocityIndicator = {
+  element: document.getElementById('carrier-angular-velocity-meter'),
+  phase: [null, null], 
+  moveFrameForward: function() {
+    this.phase.pop();
+    this.phase.splice(0, 0, synth.carrierUI.operator.phase.getValue());
+    if (this.phase[0] != null && this.phase[1] != null) {
+      let value = this.phase[0] - this.phase[1];
+      if (synth.carrierUI.operator.phase.isLooped()) {
+        value += 1;
+      }
+      this.element.value = value;
+    }
+  }
+}
+
+
 function setUp() {
   // UI
   modulatorVolumeControl.setUp();  
@@ -259,6 +303,7 @@ function setUp() {
   // Synth
   let synthFrameCallback = function() {
     synth.moveFrameForward();
+    carrierAngularVelocityIndicator.moveFrameForward();
   }
   let intervalID = setInterval(synthFrameCallback, 1000 / 60);
 }
