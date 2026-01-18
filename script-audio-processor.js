@@ -39,14 +39,10 @@ class AudioProcessor extends AudioWorkletProcessor {
     
     for (let i = 0; i < channel.length; i++) { 
       let volumeParameter = parameters['modulatorVolume'];
-      this.fmSynth.modulator.setVolume(
-        volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0]
-      );
+      this.fmSynth.fmSynthParam.modulator.volume = volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0];
         
       let ratioParameter = parameters['modulatorRatio'];
-      this.fmSynth.modulator.setRatio(
-        ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
-      );
+      this.fmSynth.fmSynthParam.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       
       channel[i] = this.fmSynth.getOutput();
       this.fmSynth.moveFrameForward();

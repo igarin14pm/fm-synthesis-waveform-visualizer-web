@@ -92,14 +92,6 @@ export class Operator {
   setPhase(masterPhaseValue) {
     this.phase.setMasterPhase(masterPhaseValue);
   }
-  
-  setRatio(newValue) {
-    this.operatorParam.ratio = newValue;
-  }
-  
-  setVolume(newValue) {
-    this.operatorParam.volume = newValue;
-  }
 }
 
 export class FMSynth {
