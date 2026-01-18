@@ -294,8 +294,19 @@ let carrierAngularVelocityIndicator = {
   }
 }
 
+async function startAudio() {
+  let audioContext = new AudioContext();
+  await audioContext.audioWorklet.addModule('script-audio-processor.js');
+  let audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
+  audioWorkletNode.connect(audioContext.destination);
+}
 
 function setUp() {
+  // Audio
+  document.getElementById('start-audio-button').addEventListener('click', function() {
+    startAudio();
+  });
+  
   // UI
   modulatorVolumeControl.setUp();  
   modulatorRatioControl.setUp();
