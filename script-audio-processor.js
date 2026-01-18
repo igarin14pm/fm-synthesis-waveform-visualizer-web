@@ -1,5 +1,3 @@
-const SAMPLING_RATE = 44100;
-const WAVE_FREQUENCY = 440;
 const OPERATOR_INITIAL_VOLUME = 100;
 const OPERATOR_INITIAL_RATIO = 1;
 
@@ -111,7 +109,9 @@ class AudioProcessor extends AudioWorkletProcessor {
   
   constructor() {
     super();
-    this.fmSynth = new FMSynth(sampleRate, WAVE_FREQUENCY);
+    this.waveFrequency = 440;
+    this.fmSynth = new FMSynth(sampleRate, this.waveFrequency);
+    this.outputVolume = 0.25;
   }
   
   static get parameterDescriptors() {
@@ -150,7 +150,7 @@ class AudioProcessor extends AudioWorkletProcessor {
         ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       );
       
-      channel[i] = this.fmSynth.getOutput();
+      channel[i] = this.fmSynth.getOutput() * this.outputVolume;
       this.fmSynth.moveFrameForward();
     }
     
