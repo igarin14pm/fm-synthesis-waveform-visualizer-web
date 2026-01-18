@@ -1,15 +1,38 @@
-const OPERATOR_INITIAL_VOLUME = 100;
-const OPERATOR_INITIAL_RATIO = 1;
+// Params
+class OperatorParam {
+  constructor(
+    volume,
+    ratio
+  ) {
+    this.volume = volume;
+    this.ratio = ratio;
+  }
+}
 
-class MasterPhase {
-  constructor(samplingRate, waveFrequency) {
+class FMSynthParam {
+  constructor(
+    samplingRate,
+    waveFrequency,
+    modulator,
+    carrier,
+    outputVolume
+  ) {
     this.samplingRate = samplingRate;
     this.waveFrequency = waveFrequency;
+    this.modulator = modulator;
+    this.carrier = carrier;
+    this.outputVolume = outputVolume;
+  }
+}
+
+class MasterPhase {
+  constructor(fmSynthParam) {
+    this.fmSynthParam = fmSynthParam;
     this.value = 0.0;
   }
   
   getDeltaPhase() {
-    return this.waveFrequency / this.samplingRate;
+    return this.fmSynthParam.waveFrequency / this.fmSynthParam.samplingRate;
   }
   
   getValue() {
@@ -23,11 +46,11 @@ class MasterPhase {
 }
 
 class Phase {
-  constructor() {
+  constructor(operatorParam) {
+    this.operatorParam = operatorParam;
     this.value = 0.0;
     this.oldValue = 0.0;
     this.modulatorInput = 0.0;
-    this.ratio = OPERATOR_INITIAL_RATIO;
   }
   
   isLooped() {
@@ -40,28 +63,25 @@ class Phase {
     
   setMasterPhase(newValue) {
     this.oldValue = this.value;
-    this.value = newValue * this.ratio;
+    this.value = newValue * this.operatorParam.ratio;
     this.value -= Math.floor(this.value);
   }
   
   setModulatorInput(newValue) {
     this.modulatorInput = newValue;
   }
-  
-  setRatio(newValue) {
-    this.ratio = newValue;
-  }
+
 }
 
 class Operator {
-  constructor() {
+  constructor(operatorParam) {
+    this.operatorParam = operatorParam;
     this.value = 0.0;
-    this.phase = new Phase();
-    this.volume = 100;
+    this.phase = new Phase(operatorParam);
   }
   
   getOutput() {
-    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.getValue());
+    return (this.operatorParam.volume / 100) * Math.sin(2 * Math.PI * this.phase.getValue());
   }
   
   setInput(newValue) {
@@ -73,26 +93,24 @@ class Operator {
   }
   
   setRatio(newValue) {
-    this.phase.setRatio(newValue);
+    this.operatorParam.ratio = newValue;
   }
   
   setVolume(newValue) {
-    this.volume = newValue;
+    this.operatorParam.volume = newValue;
   }
 }
 
 class FMSynth {
-  constructor(samplingRate, waveFrequency) {
-    this.samplingRate = samplingRate;
-    this.waveFrequency = waveFrequency;
-    
-    this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
-    this.modulator = new Operator();
-    this.carrier = new Operator();
+  constructor(fmSynthParam) {
+    this.fmSynthParam = fmSynthParam;
+    this.masterPhase = new MasterPhase(fmSynthParam);
+    this.modulator = new Operator(fmSynthParam.modulator);
+    this.carrier = new Operator(fmSynthParam.carrier);
   }
   
   getOutput() {
-    return this.carrier.getOutput();
+    return this.carrier.getOutput() * this.fmSynthParam.outputVolume;
   }
   
   moveFrameForward() {
@@ -105,13 +123,18 @@ class FMSynth {
   }
 }
 
-class AudioProcessor extends AudioWorkletProcessor {
-  
+class AudioProcessor extends AudioWorkletProcessor {  
   constructor() {
     super();
-    this.waveFrequency = 440;
-    this.fmSynth = new FMSynth(sampleRate, this.waveFrequency);
-    this.outputVolume = 0.25;
+    
+    let fmSynthParam = new FMSynthParam(
+      sampleRate,
+      440,
+      new OperatorParam(1.0, 1),
+      new OperatorParam(1.0, 1),
+      1
+    );
+    this.fmSynth = new FMSynth(fmSynthParam);
   }
   
   static get parameterDescriptors() {
@@ -134,7 +157,6 @@ class AudioProcessor extends AudioWorkletProcessor {
   }
   
   process(inputs, outputs, parameters) {
-    
     let output = outputs[0];
     let channel = output[0];
     
@@ -144,13 +166,12 @@ class AudioProcessor extends AudioWorkletProcessor {
         volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0]
       );
         
-      
       let ratioParameter = parameters['modulatorRatio'];
       this.fmSynth.modulator.setRatio(
         ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       );
       
-      channel[i] = this.fmSynth.getOutput() * this.outputVolume;
+      channel[i] = this.fmSynth.getOutput();
       this.fmSynth.moveFrameForward();
     }
     
