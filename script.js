@@ -21,16 +21,21 @@ class MasterPhase {
 class Phase {
   constructor() {
     this.value = 0.0;
+    this.modulatorInput = 0.0;
     this.ratio = OPERATOR_INITIAL_RATIO;
   }
   
   getValue() {
-    return this.value;
+    return this.value + this.modulatorInput / 4;
   }
     
   setMasterPhase(newValue) {
     this.value = newValue * this.ratio;
     this.value -= Math.floor(this.value);
+  }
+  
+  setModulatorInput(newValue) {
+    this.modulatorInput = newValue;
   }
   
   setRatio(newValue) {
@@ -46,7 +51,11 @@ class Operator {
   }
   
   getOutput() {
-    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.value);
+    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.getValue());
+  }
+  
+  setInput(newValue) {
+    this.phase.setModulatorInput(newValue);
   }
   
   setPhase(masterPhaseValue) {
@@ -176,6 +185,10 @@ class OperatorUI {
     this.waveformGraph.update();
   }
   
+  setInput(newValue) {
+    this.operator.setInput(newValue);
+  }
+  
   setPhase(masterPhaseValue) {
     this.operator.setPhase(masterPhaseValue);
   }
@@ -214,6 +227,7 @@ let synth = {
     this.modulatorUI.setPhase(this.masterPhase.value);
     this.modulatorUI.moveFrameForward();
     
+    this.carrierUI.setInput(this.modulatorUI.operator.getOutput());
     this.carrierUI.setPhase(this.masterPhase.value);
     this.carrierUI.moveFrameForward();
   }
