@@ -241,16 +241,29 @@ let synth = {
 
 // UI
 
+let synthParam = {
+  modulator: {
+    ratio: 1,
+    volume: 100
+  }
+}
+
 let modulatorVolumeControl = {
   input: document.getElementById('modulator-volume'),
   value: document.getElementById('modulator-volume-value'),
   updateValue: function() {
-    this.value.textContent = this.input.value;
+    this.value.textContent = synthParam.modulator.volume;
   },
   addEventListener: function() {
     this.input.addEventListener('input', () => {
+      synthParam.modulator.volume = this.input.value;
       this.updateValue();
-      synth.modulatorUI.setVolume(this.input.value);
+      synth.modulatorUI.setVolume(synthParam.modulator.volume);
+      
+      if (audioContext != null && audioWorkletNode != null) {
+        const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
+        modulatorVolumeParam.setValueAtTime(synthParam.modulator.volume, audioContext.currentTime);
+      } 
     });
   },
   setUp: function() {
@@ -264,12 +277,18 @@ let modulatorRatioControl = {
   input: document.getElementById('modulator-ratio'),
   value: document.getElementById('modulator-ratio-value'),
   updateValue: function() {
-    this.value.textContent = this.input.value;
+    this.value.textContent = synthParam.modulator.ratio;
   },
   addEventListener: function() {
     this.input.addEventListener('input', () => {
+      synthParam.modulator.ratio = this.input.value;
       this.updateValue();
-      synth.modulatorUI.setRatio(this.input.value);
+      synth.modulatorUI.setRatio(synthParam.modulator.ratio);
+      
+      if (audioContext != null && audioWorkletNode != null) {
+        const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
+        modulatorRatioParam.setValueAtTime(synthParam.modulator.ratio, audioContext.currentTime);
+      }
     })
   },
   setUp: function() {
@@ -294,8 +313,39 @@ let carrierAngularVelocityIndicator = {
   }
 }
 
+let audioContext = null;
+let audioWorkletNode = null;
+
+async function startAudio() {
+  audioContext = new AudioContext();
+  await audioContext.audioWorklet.addModule('script-audio-processor.js');
+  audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
+  
+  const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
+  modulatorVolumeParam.setValueAtTime(synthParam.modulator.volume, audioContext.currentTime);
+  const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
+  modulatorRatioParam.setValueAtTime(synthParam.modulator.ratio, audioContext.currentTime);
+  
+  audioWorkletNode.connect(audioContext.destination);
+}
+
+function stopAudio() {
+  audioContext.close();
+}
 
 function setUp() {
+  // Audio
+  document.getElementById('start-audio-button').addEventListener('click', function() {
+    if (audioContext == null) {
+      startAudio();
+    }
+  });
+  document.getElementById('stop-audio-button').addEventListener('click', function() {
+    stopAudio();
+    audioContext = null;
+    audioWorkletNode = null;
+  });
+  
   // UI
   modulatorVolumeControl.setUp();  
   modulatorRatioControl.setUp();
