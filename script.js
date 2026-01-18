@@ -330,7 +330,11 @@ async function startAudio() {
 }
 
 function stopAudio() {
-  audioContext.close();
+  if (audioContext != null) {
+    audioContext.close();
+  }
+  audioContext = null;
+  audioWorkletNode = null;
 }
 
 function setUp() {
@@ -342,8 +346,6 @@ function setUp() {
   });
   document.getElementById('stop-audio-button').addEventListener('click', function() {
     stopAudio();
-    audioContext = null;
-    audioWorkletNode = null;
   });
   
   // UI
