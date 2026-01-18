@@ -251,6 +251,11 @@ let modulatorVolumeControl = {
     this.input.addEventListener('input', () => {
       this.updateValue();
       synth.modulatorUI.setVolume(this.input.value);
+      
+      if (audioContext != null && audioWorkletNode != null) {
+        const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
+        modulatorVolumeParam.setValueAtTime(this.input.value, audioContext.currentTime);
+      } 
     });
   },
   setUp: function() {
@@ -294,10 +299,14 @@ let carrierAngularVelocityIndicator = {
   }
 }
 
+let audioContext = null;
+let audioWorkletNode = null;
+
 async function startAudio() {
-  let audioContext = new AudioContext();
+  audioContext = new AudioContext();
   await audioContext.audioWorklet.addModule('script-audio-processor.js');
-  let audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
+  audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
+  
   audioWorkletNode.connect(audioContext.destination);
 }
 

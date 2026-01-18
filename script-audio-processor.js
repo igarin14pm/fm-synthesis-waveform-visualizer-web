@@ -114,12 +114,33 @@ class AudioProcessor extends AudioWorkletProcessor {
     this.fmSynth = new FMSynth(sampleRate, WAVE_FREQUENCY);
   }
   
+  static get parameterDescriptors() {
+    return [
+      {
+        name: 'modulatorVolume',
+        defaultValue: 100,
+        minValue: 0,
+        maxValue: 100,
+        automationRate: 'a-rate'
+      },
+      {
+        name: 'modulatorRatio',
+        defaultValue: 1,
+        minValue: 1,
+        maxValue: 10,
+        automationRate: 'a-rate'
+      }
+    ];
+  }
+  
   process(inputs, outputs, parameters) {
     
     let output = outputs[0];
     let channel = output[0];
     
     for (let i = 0; i < channel.length; i++) {
+      this.fmSynth.modulator.setVolume(parameters['modulatorVolume'].length > 1 ? parameters['modulatorVolume'][i] : parameters['modulatorVolume'][0]);
+      
       channel[i] = this.fmSynth.getOutput();
       this.fmSynth.moveFrameForward();
     }
