@@ -115,10 +115,6 @@ class OperatorUI {
     this.operator.setInput(newValue);
   }
   
-  setPhase(newMasterPhaseValue) {
-    this.operator.setPhase(newMasterPhaseValue);
-  }
-  
   moveFrameForward() {
     this.phaseGraph.setPhase(this.operator.phase.getValue());
     this.phaseGraph.update();
@@ -156,10 +152,8 @@ class FMSynthUI {
   moveFrameForward() {
     this.fmSynth.moveFrameForward();
     
-    this.modulatorUI.setPhase(this.fmSynth.masterPhase.getValue());
     this.modulatorUI.moveFrameForward();
     
-    this.carrierUI.setPhase(this.fmSynth.masterPhase.getValue());
     this.carrierUI.moveFrameForward();
   }
 }
