@@ -21,8 +21,13 @@ class MasterPhase {
 class Phase {
   constructor() {
     this.value = 0.0;
+    this.oldValue = 0.0;
     this.modulatorInput = 0.0;
     this.ratio = OPERATOR_INITIAL_RATIO;
+  }
+  
+  isLooped() {
+    return this.value < this.oldValue;
   }
   
   getValue() {
@@ -30,6 +35,7 @@ class Phase {
   }
     
   setMasterPhase(newValue) {
+    this.oldValue = this.value;
     this.value = newValue * this.ratio;
     this.value -= Math.floor(this.value);
   }
@@ -272,6 +278,23 @@ let modulatorRatioControl = {
   }
 }
 
+let carrierAngularVelocityIndicator = {
+  element: document.getElementById('carrier-angular-velocity-meter'),
+  phase: [null, null], 
+  moveFrameForward: function() {
+    this.phase.pop();
+    this.phase.splice(0, 0, synth.carrierUI.operator.phase.getValue());
+    if (this.phase[0] != null && this.phase[1] != null) {
+      let value = this.phase[0] - this.phase[1];
+      if (synth.carrierUI.operator.phase.isLooped()) {
+        value += 1;
+      }
+      this.element.value = value;
+    }
+  }
+}
+
+
 function setUp() {
   // UI
   modulatorVolumeControl.setUp();  
@@ -280,6 +303,7 @@ function setUp() {
   // Synth
   let synthFrameCallback = function() {
     synth.moveFrameForward();
+    carrierAngularVelocityIndicator.moveFrameForward();
   }
   let intervalID = setInterval(synthFrameCallback, 1000 / 60);
 }
