@@ -121,9 +121,13 @@ export class Operator {
     return this.outputSignal;
   }
   
+  process() {
+    return this.operatorParam.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+  }
+  
   moveFrameForward() {
     this.phase.moveFrameForward();
-    this.outputSignal.value = this.operatorParam.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+    this.outputSignal.value = this.process();
   }
 }
 
