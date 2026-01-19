@@ -16,7 +16,7 @@ class PhaseGraph {
   draw() {
     let circleCenterX = this.width / 3;
     let circleCenterY = this.height / 2;
-    let circleRadius = this.height / 2 * this.operatorParam.volume / 100;
+    let circleRadius = this.height / 2 * this.operatorParam.volume;
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
       context.beginPath();
@@ -158,8 +158,8 @@ let fmSynthUI = new FMSynthUI(
   new FMSynthParam(
     WAVEFORM_GRAPH_SAMPLING_RATE,
     WAVEFORM_GRAPH_WAVE_FREQUENCY,
-    new OperatorParam(100, 1),
-    new OperatorParam(100, 1),
+    new OperatorParam(1, 1),
+    new OperatorParam(1, 1),
     1
   ),
   {
@@ -177,8 +177,9 @@ let fmSynthUI = new FMSynthUI(
 let synthUIParam = {
   modulator: {
     ratio: 1,
-    volume: 100
-  }
+    volume: 100,
+    maxVolume: 100
+  },
 }
 
 let modulatorVolumeControl = {
@@ -191,16 +192,16 @@ let modulatorVolumeControl = {
     this.input.addEventListener('input', () => {
       synthUIParam.modulator.volume = this.input.value;
       this.updateValue();
-      fmSynthUI.fmSynthParam.modulator.volume = synthUIParam.modulator.volume;
+      fmSynthUI.fmSynthParam.modulator.volume = synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume;
       
       if (audioContext != null && audioWorkletNode != null) {
         const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-        modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume, audioContext.currentTime);
-      } 
+        modulatorVolumeParam.setValueAtTime(fmSynthUI.fmSynthParam.modulator.volume, audioContext.currentTime);
+      }
     });
   },
   setUp: function() {
-    this.input.value = fmSynthUI.fmSynthParam.modulator.volume;
+    this.input.value = fmSynthUI.fmSynthParam.modulator.volume * synthUIParam.modulator.maxVolume;
     this.updateValue();
     this.addEventListener();
   }
@@ -256,7 +257,7 @@ async function startAudio() {
   audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
   
   const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-  modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume, audioContext.currentTime);
+  modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, audioContext.currentTime);
   const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
   modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, audioContext.currentTime);
   
