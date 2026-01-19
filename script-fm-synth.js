@@ -66,28 +66,31 @@ export class Phase {
     this.masterPhaseSignal = masterPhaseSignal;
     this.operatorParam = operatorParam;
     this.modulatorSignal = modulatorSignal;
-    this.rawOutputSignal = new Signal(0);
+    
+    this.value = 0;
+    // TODO: oldValue (Number) に置き換える
     this.oldRawOutputSignal = new Signal(0);
+    
     this.outputSignal = new Signal(0);
   }
   
   isLooped() {
-    return this.rawOutputSignal.value < this.oldRawOutputSignal.value;
+    return this.value < this.oldRawOutputSignal.value;
   }
   
   getOutput() {
     if (this.modulatorSignal != null) {
-      this.outputSignal.value = this.rawOutputSignal.value + (this.modulatorSignal.value / 4);
+      this.outputSignal.value = this.value + (this.modulatorSignal.value / 4);
     } else {
-      this.outputSignal.value = this.rawOutputSignal.value;
+      this.outputSignal.value = this.value;
     }
     return this.outputSignal;
   }
   
   moveFrameForward() {
-    this.oldRawOutputSignal.value = this.rawOutputSignal.value;
-    this.rawOutputSignal.value = this.masterPhaseSignal.value * this.operatorParam.ratio;
-    this.rawOutputSignal.value -= Math.floor(this.rawOutputSignal.value);
+    this.oldRawOutputSignal.value = this.value;
+    this.value = this.masterPhaseSignal.value * this.operatorParam.ratio;
+    this.value -= Math.floor(this.value);
   }
 
 }
