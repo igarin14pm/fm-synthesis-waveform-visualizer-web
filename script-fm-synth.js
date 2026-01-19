@@ -113,7 +113,7 @@ export class Operator {
   
   moveFrameForward() {
     this.phase.moveFrameForward();
-    this.outputSignal.value = (this.operatorParam.volume / 100) * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+    this.outputSignal.value = this.operatorParam.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
   }
 }
 
