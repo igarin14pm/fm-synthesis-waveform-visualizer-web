@@ -115,7 +115,7 @@ class OperatorUI {
     this.phaseGraph.setPhase(this.operator.phase.getOutput().value);
     this.phaseGraph.update();
     
-    this.waveformGraph.data.add(this.operator.getOutput().getValue());
+    this.waveformGraph.data.add(this.operator.getOutput().value);
     this.waveformGraph.update();
   }
 }
