@@ -13,14 +13,14 @@ export class FMSynthParam {
   constructor(
     samplingRate,
     waveFrequency,
-    modulator,
-    carrier,
+    modulatorParam,
+    carrierParam,
     outputVolume
   ) {
     this.samplingRate = samplingRate;
     this.waveFrequency = waveFrequency;
-    this.modulator = modulator;
-    this.carrier = carrier;
+    this.modulator = modulatorParam;
+    this.carrier = carrierParam;
     this.outputVolume = outputVolume;
   }
 }
