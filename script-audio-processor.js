@@ -50,6 +50,7 @@ class AudioProcessor extends AudioWorkletProcessor {
       this.fmSynth.param.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       
       channel[i] = this.fmSynth.getOutput().getClippedValue();
+      
       this.fmSynth.moveFrameForward();
     }
     
