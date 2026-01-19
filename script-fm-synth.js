@@ -68,10 +68,8 @@ export class Phase {
     this.masterPhaseSignal = masterPhaseSignal;
     this.operatorParam = operatorParam;
     this.modulatorSignal = modulatorSignal;
-    
     this.value = 0;
     this.oldValue = 0;
-    
     this.outputSignal = new Signal(0);
   }
   
@@ -129,7 +127,6 @@ export class FMSynth {
     this.masterPhase = new MasterPhase(this.param);
     this.modulator = new Operator(this.param.modulator, this.masterPhase.getOutput(), null);
     this.carrier = new Operator(this.param.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
-    
     this.outputSignal = new Signal(0);
   }
   
@@ -143,9 +140,7 @@ export class FMSynth {
   
   moveFrameForward() {
     this.masterPhase.moveFrameForward();
-    
     this.modulator.moveFrameForward();
-    
     this.carrier.moveFrameForward();
     
     this.outputSignal.value = this.process();
