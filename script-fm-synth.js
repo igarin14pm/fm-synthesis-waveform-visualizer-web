@@ -78,18 +78,24 @@ export class Phase {
   }
   
   getOutput() {
-    if (this.modulatorSignal != null) {
-      this.outputSignal.value = this.value + (this.modulatorSignal.value / 4);
-    } else {
-      this.outputSignal.value = this.value;
-    }
     return this.outputSignal;
+  }
+  
+  process() {
+    const modulatorCoefficient = 0.25
+    if (this.modulatorSignal != null) {
+      return this.value + (this.modulatorSignal.value * modulatorCoefficient);
+    } else {
+      return this.value;
+    }
   }
   
   moveFrameForward() {
     this.oldValue = this.value;
     this.value = this.masterPhaseSignal.value * this.operatorParam.ratio;
     this.value -= Math.floor(this.value);
+    
+    this.outputSignal.value = this.process();
   }
 
 }
