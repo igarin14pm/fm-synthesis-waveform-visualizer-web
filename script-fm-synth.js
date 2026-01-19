@@ -44,7 +44,7 @@ export class Signal {
 export class MasterPhase {
   constructor(fmSynthParam) {
     this.fmSynthParam = fmSynthParam;
-    this.signal = new Signal(0);
+    this.outputSignal = new Signal(0);
   }
   
   getDeltaPhase() {
@@ -52,12 +52,12 @@ export class MasterPhase {
   }
   
   getOutput() {
-    return this.signal;
+    return this.outputSignal;
   }
   
   moveFrameForward() {
-    this.signal.value += this.getDeltaPhase();
-    this.signal.value -= Math.floor(this.signal.getValue());
+    this.outputSignal.value += this.getDeltaPhase();
+    this.outputSignal.value -= Math.floor(this.outputSignal.getValue());
   }
 }
 
@@ -65,27 +65,29 @@ export class Phase {
   constructor(masterPhaseSignal, operatorParam, modulatorSignal) {
     this.masterPhaseSignal = masterPhaseSignal;
     this.operatorParam = operatorParam;
-    this.value = 0.0;
-    this.oldValue = 0.0;
     this.modulatorSignal = modulatorSignal;
+    this.rawOutputSignal = new Signal(0);
+    this.oldRawOutputSignal = new Signal(0);
+    this.outputSignal = new Signal(0);
   }
   
   isLooped() {
-    return this.value < this.oldValue;
+    return this.rawOutputSignal.value < this.oldRawOutputSignal.value;
   }
   
   getOutput() {
     if (this.modulatorSignal != null) {
-      return this.value + this.modulatorSignal.getValue() / 4;
+      this.outputSignal.value = this.rawOutputSignal.value + (this.modulatorSignal.value / 4);
     } else {
-      return this.value
-    }    
+      this.outputSignal.value = this.rawOutputSignal.value;
+    }
+    return this.outputSignal;
   }
   
   moveFrameForward() {
-    this.oldValue = this.value;
-    this.value = this.masterPhaseSignal.getValue() * this.operatorParam.ratio;
-    this.value -= Math.floor(this.value);
+    this.oldRawOutputSignal.value = this.rawOutputSignal.value;
+    this.rawOutputSignal.value = this.masterPhaseSignal.value * this.operatorParam.ratio;
+    this.rawOutputSignal.value -= Math.floor(this.rawOutputSignal.value);
   }
 
 }
@@ -93,7 +95,7 @@ export class Phase {
 export class Operator {
   constructor(operatorParam, masterPhaseSignal, modulatorSignal) {
     this.operatorParam = operatorParam;
-    this.outputSignal = new Signal(0.0);
+    this.outputSignal = new Signal(0);
     this.phase = new Phase(masterPhaseSignal, operatorParam, modulatorSignal);
   }
   
@@ -103,7 +105,7 @@ export class Operator {
   
   moveFrameForward() {
     this.phase.moveFrameForward();
-    this.outputSignal.setValue((this.operatorParam.volume / 100) * Math.sin(2 * Math.PI * this.phase.getOutput()));
+    this.outputSignal.value = (this.operatorParam.volume / 100) * Math.sin(2 * Math.PI * this.phase.getOutput().value);
   }
 }
 
@@ -111,8 +113,8 @@ export class FMSynth {
   constructor(fmSynthParam) {
     this.fmSynthParam = fmSynthParam;
     this.masterPhase = new MasterPhase(fmSynthParam);
-    this.modulator = new Operator(fmSynthParam.modulator, this.masterPhase.signal, null);
-    this.carrier = new Operator(fmSynthParam.carrier, this.masterPhase.signal, this.modulator.getOutput());
+    this.modulator = new Operator(fmSynthParam.modulator, this.masterPhase.getOutput(), null);
+    this.carrier = new Operator(fmSynthParam.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
   }
   
   getOutput() {
