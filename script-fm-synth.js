@@ -68,14 +68,13 @@ export class Phase {
     this.modulatorSignal = modulatorSignal;
     
     this.value = 0;
-    // TODO: oldValue (Number) に置き換える
-    this.oldRawOutputSignal = new Signal(0);
+    this.oldValue = 0;
     
     this.outputSignal = new Signal(0);
   }
   
   isLooped() {
-    return this.value < this.oldRawOutputSignal.value;
+    return this.value < this.oldValue;
   }
   
   getOutput() {
@@ -88,7 +87,7 @@ export class Phase {
   }
   
   moveFrameForward() {
-    this.oldRawOutputSignal.value = this.value;
+    this.oldValue = this.value;
     this.value = this.masterPhaseSignal.value * this.operatorParam.ratio;
     this.value -= Math.floor(this.value);
   }
