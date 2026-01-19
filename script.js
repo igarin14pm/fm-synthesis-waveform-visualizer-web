@@ -133,13 +133,13 @@ class FMSynthUI {
     this.fmSynth = new FMSynth(this.fmSynthParam);
     this.modulatorUI = new OperatorUI(
       this.fmSynth.modulator,
-      this.fmSynth.fmSynthParam.modulator,
+      this.fmSynth.param.modulator,
       modulatorElements.phaseGraph,
       modulatorElements.waveformGraph
     );
     this.carrierUI = new OperatorUI(
       this.fmSynth.carrier,
-      this.fmSynth.fmSynthParam.carrier,
+      this.fmSynth.param.carrier,
       carrierElements.phaseGraph,
       carrierElements.waveformGraph
     )
