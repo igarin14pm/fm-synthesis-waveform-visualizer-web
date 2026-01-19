@@ -112,7 +112,7 @@ class OperatorUI {
   }
   
   moveFrameForward() {
-    this.phaseGraph.setPhase(this.operator.phase.getOutput());
+    this.phaseGraph.setPhase(this.operator.phase.getOutput().value);
     this.phaseGraph.update();
     
     this.waveformGraph.data.add(this.operator.getOutput().getValue());
@@ -236,7 +236,7 @@ let carrierAngularVelocityIndicator = {
   phase: [null, null], 
   moveFrameForward: function() {
     this.phase.pop();
-    this.phase.splice(0, 0, fmSynthUI.fmSynth.carrier.phase.getOutput());
+    this.phase.splice(0, 0, fmSynthUI.fmSynth.carrier.phase.getOutput().value);
     if (this.phase[0] != null && this.phase[1] != null) {
       let value = this.phase[0] - this.phase[1];
       if (fmSynthUI.fmSynth.carrier.phase.isLooped()) {
