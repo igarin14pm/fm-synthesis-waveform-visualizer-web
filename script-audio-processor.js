@@ -4,12 +4,17 @@ class AudioProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
     
+    const waveFrequency = 440;
+    const carrierVolume = 1;
+    const carrierRatio = 1;
+    const fmSynthVolume = 0.25;
+    
     let fmSynthParam = new FMSynthParam(
       sampleRate,
-      440,
-      new OperatorParam(1.0, 1),
-      new OperatorParam(1.0, 1),
-      1
+      waveFrequency,
+      new OperatorParam(1, 1),
+      new OperatorParam(carrierVolume, carrierRatio),
+      fmSynthVolume
     );
     this.fmSynth = new FMSynth(fmSynthParam);
   }
