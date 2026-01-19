@@ -104,7 +104,7 @@ export class Phase {
 
 export class Operator {
   constructor(operatorParam, masterPhaseSignal, modulatorSignal) {
-    this.operatorParam = operatorParam;
+    this.param = operatorParam;
     this.outputSignal = new Signal(0);
     this.phase = new Phase(masterPhaseSignal, operatorParam, modulatorSignal);
   }
@@ -114,7 +114,7 @@ export class Operator {
   }
   
   process() {
-    return this.operatorParam.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+    return this.param.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
   }
   
   moveFrameForward() {
