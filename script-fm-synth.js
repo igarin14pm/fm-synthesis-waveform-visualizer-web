@@ -40,10 +40,6 @@ export class Signal {
       return this.value;
     }
   }
-  
-  setValue(newValue) {
-    this.value = newValue;
-  }
 }
 
 // Synth
