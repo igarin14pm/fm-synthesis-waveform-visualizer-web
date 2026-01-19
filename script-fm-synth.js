@@ -41,10 +41,6 @@ export class Signal {
     }
   }
   
-  getValue() {
-    return this.value;
-  }
-  
   setValue(newValue) {
     this.value = newValue;
   }
@@ -67,7 +63,7 @@ export class MasterPhase {
   
   moveFrameForward() {
     this.outputSignal.value += this.getDeltaPhase();
-    this.outputSignal.value -= Math.floor(this.outputSignal.getValue());
+    this.outputSignal.value -= Math.floor(this.outputSignal.value);
   }
 }
 
