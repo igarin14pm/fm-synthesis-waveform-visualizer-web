@@ -31,6 +31,16 @@ export class Signal {
     this.value = value
   }
   
+  getClippedValue() {
+    if (this.value > 1) {
+      return 1;
+    } else if (this.value < -1) {
+      return -1;
+    } else {
+      return this.value;
+    }
+  }
+  
   getValue() {
     return this.value;
   }
@@ -123,10 +133,16 @@ export class FMSynth {
     this.masterPhase = new MasterPhase(fmSynthParam);
     this.modulator = new Operator(fmSynthParam.modulator, this.masterPhase.getOutput(), null);
     this.carrier = new Operator(fmSynthParam.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
+    
+    this.outputSignal = new Signal(0);
   }
   
   getOutput() {
-    return this.carrier.getOutput().getValue() * this.fmSynthParam.outputVolume;
+    return this.outputSignal;
+  }
+  
+  process() {
+    return this.carrier.getOutput().value * this.fmSynthParam.outputVolume;
   }
   
   moveFrameForward() {
@@ -135,5 +151,7 @@ export class FMSynth {
     this.modulator.moveFrameForward();
     
     this.carrier.moveFrameForward();
+    
+    this.outputSignal.value = this.process();
   }
 }
