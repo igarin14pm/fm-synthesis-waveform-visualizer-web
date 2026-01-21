@@ -122,6 +122,24 @@ export class Operator {
 }
 
 export class FMSynth {
+  constructor(samplingRate, waveFrequency, outputVolume) {
+    this.samplingRate = samplingRate;
+    this.waveFrequency = waveFrequency;
+    this.outputVolume = outputVolume;
+    
+    this.param = new FMSynthParam(
+      samplingRate,
+      waveFrequency,
+      new OperatorParam(1, 1),
+      new OperatorParam(1, 1),
+      outputVolume
+    );
+    this.masterPhase = new MasterPhase(this.param);
+    this.modulator = new Operator(this.param.modulator, this.masterPhase.getOutput(), null);
+    this.carrier = new Operator(this.param.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
+    this.outputSignal = new Signal(0);
+  }
+  /*
   constructor(fmSynthParam) {
     this.param = fmSynthParam;
     this.masterPhase = new MasterPhase(this.param);
@@ -129,6 +147,7 @@ export class FMSynth {
     this.carrier = new Operator(this.param.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
     this.outputSignal = new Signal(0);
   }
+   */
   
   getOutput() {
     return this.outputSignal;
