@@ -1,4 +1,4 @@
-import { OperatorParam, FMSynthParam, FMSynth } from './script-fm-synth.js'
+import { FMSynth } from './script-fm-synth.js'
 
 class PhaseGraph {
   

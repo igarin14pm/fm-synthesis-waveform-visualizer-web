@@ -1,35 +1,3 @@
-// Param
-
-export class OperatorParam {
-  
-  constructor(
-    volume,
-    ratio
-  ) {
-    this.volume = volume;
-    this.ratio = ratio;
-  }
-  
-}
-
-export class FMSynthParam {
-  
-  constructor(
-    samplingRate,
-    waveFrequency,
-    modulatorParam,
-    carrierParam,
-    outputVolume
-  ) {
-    this.samplingRate = samplingRate;
-    this.waveFrequency = waveFrequency;
-    this.modulator = modulatorParam;
-    this.carrier = carrierParam;
-    this.outputVolume = outputVolume;
-  }
-  
-}
-
 // Signal
 
 export class Signal {

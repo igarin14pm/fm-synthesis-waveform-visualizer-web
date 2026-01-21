@@ -1,4 +1,4 @@
-import { OperatorParam, FMSynthParam, FMSynth } from './script-fm-synth.js';
+import { FMSynth } from './script-fm-synth.js';
 
 class AudioProcessor extends AudioWorkletProcessor {
   
@@ -6,17 +6,8 @@ class AudioProcessor extends AudioWorkletProcessor {
     super();
     
     const waveFrequency = 440;
-    const carrierVolume = 1;
-    const carrierRatio = 1;
     const fmSynthVolume = 0.25;
     
-    let fmSynthParam = new FMSynthParam(
-      sampleRate,
-      waveFrequency,
-      new OperatorParam(1, 1),
-      new OperatorParam(carrierVolume, carrierRatio),
-      fmSynthVolume
-    );
     this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
   }
   
