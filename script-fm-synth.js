@@ -57,7 +57,7 @@ export class Phase {
     return this.value < this.oldValue;
   }
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
@@ -96,7 +96,7 @@ export class Operator {
   }
   
   process() {
-    return this.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+    return this.volume * Math.sin(2 * Math.PI * this.phase.output.value);
   }
   
   moveFrameForward() {
