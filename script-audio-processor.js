@@ -1,22 +1,14 @@
-import { OperatorParam, FMSynthParam, FMSynth } from './script-fm-synth.js';
+import { FMSynth } from './script-fm-synth.js';
 
-class AudioProcessor extends AudioWorkletProcessor {  
+class AudioProcessor extends AudioWorkletProcessor {
+  
   constructor() {
     super();
     
     const waveFrequency = 440;
-    const carrierVolume = 1;
-    const carrierRatio = 1;
     const fmSynthVolume = 0.25;
     
-    let fmSynthParam = new FMSynthParam(
-      sampleRate,
-      waveFrequency,
-      new OperatorParam(1, 1),
-      new OperatorParam(carrierVolume, carrierRatio),
-      fmSynthVolume
-    );
-    this.fmSynth = new FMSynth(fmSynthParam);
+    this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
   }
   
   static get parameterDescriptors() {
@@ -44,10 +36,10 @@ class AudioProcessor extends AudioWorkletProcessor {
     
     for (let i = 0; i < channel.length; i++) { 
       let volumeParameter = parameters['modulatorVolume'];
-      this.fmSynth.param.modulator.volume = volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0];
-        
+      this.fmSynth.modulator.volume = volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0];
+      
       let ratioParameter = parameters['modulatorRatio'];
-      this.fmSynth.param.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
+      this.fmSynth.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       
       channel[i] = this.fmSynth.getOutput().getClippedValue();
       
