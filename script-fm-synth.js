@@ -120,7 +120,7 @@ export class FMSynth {
   
   outputSignal = new Signal(0);
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
