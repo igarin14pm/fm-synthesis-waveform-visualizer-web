@@ -1,5 +1,7 @@
 // Param
+
 export class OperatorParam {
+  
   constructor(
     volume,
     ratio
@@ -7,9 +9,11 @@ export class OperatorParam {
     this.volume = volume;
     this.ratio = ratio;
   }
+  
 }
 
 export class FMSynthParam {
+  
   constructor(
     samplingRate,
     waveFrequency,
@@ -23,10 +27,13 @@ export class FMSynthParam {
     this.carrier = carrierParam;
     this.outputVolume = outputVolume;
   }
+  
 }
 
 // Signal
+
 export class Signal {
+  
   constructor(value) {
     this.value = value
   }
@@ -40,10 +47,13 @@ export class Signal {
       return this.value;
     }
   }
+  
 }
 
 // Synth
+
 export class MasterPhase {
+  
   constructor(fmSynth) {
     this.fmSynth = fmSynth;
   }
@@ -59,17 +69,21 @@ export class MasterPhase {
     this.outputSignal.value += deltaPhase;
     this.outputSignal.value -= Math.floor(this.outputSignal.value);
   }
+  
 }
 
 export class Phase {
-  constructor(masterPhaseSignal, operatorParam, modulatorSignal) {
+  
+  constructor(operator, masterPhaseSignal, modulatorSignal) {
+    this.operator = operator;
     this.masterPhaseSignal = masterPhaseSignal;
-    this.operatorParam = operatorParam;
     this.modulatorSignal = modulatorSignal;
-    this.value = 0;
-    this.oldValue = 0;
-    this.outputSignal = new Signal(0);
   }
+  
+  value = 0;
+  oldValue = 0;
+  
+  outputSignal = new Signal(0);
   
   isLooped() {
     return this.value < this.oldValue;
@@ -90,7 +104,7 @@ export class Phase {
   
   moveFrameForward() {
     this.oldValue = this.value;
-    this.value = this.masterPhaseSignal.value * this.operatorParam.ratio;
+    this.value = this.masterPhaseSignal.value * this.operator.ratio;
     this.value -= Math.floor(this.value);
     
     this.outputSignal.value = this.process();
@@ -99,61 +113,51 @@ export class Phase {
 }
 
 export class Operator {
-  constructor(operatorParam, masterPhaseSignal, modulatorSignal) {
-    this.param = operatorParam;
-    this.outputSignal = new Signal(0);
-    this.phase = new Phase(masterPhaseSignal, operatorParam, modulatorSignal);
+  
+  constructor(fmSynth, modulatorSignal) {
+    this.phase = new Phase(this, fmSynth.masterPhase.getOutput(), modulatorSignal);
   }
+  
+  volume = 1;
+  ratio = 1;
+  
+  outputSignal = new Signal(0);
   
   getOutput() {
     return this.outputSignal;
   }
   
   process() {
-    return this.param.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+    return this.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
   }
   
   moveFrameForward() {
     this.phase.moveFrameForward();
     this.outputSignal.value = this.process();
   }
+  
 }
 
 export class FMSynth {
+  
   constructor(samplingRate, waveFrequency, outputVolume) {
     this.samplingRate = samplingRate;
     this.waveFrequency = waveFrequency;
     this.outputVolume = outputVolume;
     
     this.masterPhase = new MasterPhase(this);
-    
-    this.param = new FMSynthParam(
-      samplingRate,
-      waveFrequency,
-      new OperatorParam(1, 1),
-      new OperatorParam(1, 1),
-      outputVolume
-    );
-    this.modulator = new Operator(this.param.modulator, this.masterPhase.getOutput(), null);
-    this.carrier = new Operator(this.param.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
-    this.outputSignal = new Signal(0);
+    this.modulator = new Operator(this, null);
+    this.carrier = new Operator(this, this.modulator.getOutput());
   }
-  /*
-  constructor(fmSynthParam) {
-    this.param = fmSynthParam;
-    this.masterPhase = new MasterPhase(this.param);
-    this.modulator = new Operator(this.param.modulator, this.masterPhase.getOutput(), null);
-    this.carrier = new Operator(this.param.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
-    this.outputSignal = new Signal(0);
-  }
-   */
+  
+  outputSignal = new Signal(0);
   
   getOutput() {
     return this.outputSignal;
   }
   
   process() {
-    return this.carrier.getOutput().value * this.param.outputVolume;
+    return this.carrier.getOutput().value * this.outputVolume;
   }
   
   moveFrameForward() {
@@ -163,4 +167,5 @@ export class FMSynth {
     
     this.outputSignal.value = this.process();
   }
+  
 }
