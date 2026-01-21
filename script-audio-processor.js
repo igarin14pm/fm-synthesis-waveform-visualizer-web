@@ -41,7 +41,7 @@ class AudioProcessor extends AudioWorkletProcessor {
       let ratioParameter = parameters['modulatorRatio'];
       this.fmSynth.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       
-      channel[i] = this.fmSynth.getOutput().clippedValue;
+      channel[i] = this.fmSynth.output.clippedValue;
       
       this.fmSynth.moveFrameForward();
     }
