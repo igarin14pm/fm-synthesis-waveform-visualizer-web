@@ -44,21 +44,19 @@ export class Signal {
 
 // Synth
 export class MasterPhase {
-  constructor(fmSynthParam) {
-    this.fmSynthParam = fmSynthParam;
-    this.outputSignal = new Signal(0);
+  constructor(fmSynth) {
+    this.fmSynth = fmSynth;
   }
   
-  getDeltaPhase() {
-    return this.fmSynthParam.waveFrequency / this.fmSynthParam.samplingRate;
-  }
+  outputSignal = new Signal(0);
   
   getOutput() {
     return this.outputSignal;
   }
   
   moveFrameForward() {
-    this.outputSignal.value += this.getDeltaPhase();
+    const deltaPhase = this.fmSynth.waveFrequency / this.fmSynth.samplingRate;
+    this.outputSignal.value += deltaPhase;
     this.outputSignal.value -= Math.floor(this.outputSignal.value);
   }
 }
@@ -127,6 +125,8 @@ export class FMSynth {
     this.waveFrequency = waveFrequency;
     this.outputVolume = outputVolume;
     
+    this.masterPhase = new MasterPhase(this);
+    
     this.param = new FMSynthParam(
       samplingRate,
       waveFrequency,
@@ -134,7 +134,6 @@ export class FMSynth {
       new OperatorParam(1, 1),
       outputVolume
     );
-    this.masterPhase = new MasterPhase(this.param);
     this.modulator = new Operator(this.param.modulator, this.masterPhase.getOutput(), null);
     this.carrier = new Operator(this.param.carrier, this.masterPhase.getOutput(), this.modulator.getOutput());
     this.outputSignal = new Signal(0);
