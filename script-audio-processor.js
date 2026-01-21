@@ -1,6 +1,7 @@
 import { OperatorParam, FMSynthParam, FMSynth } from './script-fm-synth.js';
 
 class AudioProcessor extends AudioWorkletProcessor {
+  
   constructor() {
     super();
     
@@ -44,10 +45,10 @@ class AudioProcessor extends AudioWorkletProcessor {
     
     for (let i = 0; i < channel.length; i++) { 
       let volumeParameter = parameters['modulatorVolume'];
-      this.fmSynth.param.modulator.volume = volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0];
+      this.fmSynth.modulator.volume = volumeParameter.length > 1 ? volumeParameter[i] : volumeParameter[0];
       
       let ratioParameter = parameters['modulatorRatio'];
-      this.fmSynth.param.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
+      this.fmSynth.modulator.ratio = ratioParameter.length > 1 ? ratioParameter[i] : ratioParameter[0]
       
       channel[i] = this.fmSynth.getOutput().getClippedValue();
       
