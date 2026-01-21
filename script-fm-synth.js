@@ -6,7 +6,7 @@ export class Signal {
     this.value = value
   }
   
-  getClippedValue() {
+  get clippedValue() {
     if (this.value > 1) {
       return 1;
     } else if (this.value < -1) {
@@ -28,7 +28,7 @@ export class MasterPhase {
   
   outputSignal = new Signal(0);
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
@@ -53,11 +53,11 @@ export class Phase {
   
   outputSignal = new Signal(0);
   
-  isLooped() {
+  get isLooped() {
     return this.value < this.oldValue;
   }
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
@@ -83,7 +83,7 @@ export class Phase {
 export class Operator {
   
   constructor(fmSynth, modulatorSignal) {
-    this.phase = new Phase(this, fmSynth.masterPhase.getOutput(), modulatorSignal);
+    this.phase = new Phase(this, fmSynth.masterPhase.output, modulatorSignal);
   }
   
   volume = 1;
@@ -91,12 +91,12 @@ export class Operator {
   
   outputSignal = new Signal(0);
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
   process() {
-    return this.volume * Math.sin(2 * Math.PI * this.phase.getOutput().value);
+    return this.volume * Math.sin(2 * Math.PI * this.phase.output.value);
   }
   
   moveFrameForward() {
@@ -115,17 +115,17 @@ export class FMSynth {
     
     this.masterPhase = new MasterPhase(this);
     this.modulator = new Operator(this, null);
-    this.carrier = new Operator(this, this.modulator.getOutput());
+    this.carrier = new Operator(this, this.modulator.output);
   }
   
   outputSignal = new Signal(0);
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
   process() {
-    return this.carrier.getOutput().value * this.outputVolume;
+    return this.carrier.output.value * this.outputVolume;
   }
   
   moveFrameForward() {
