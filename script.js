@@ -130,7 +130,7 @@ class FMSynthUI {
     carrierElements
   ) {
     this.fmSynthParam = fmSynthParam;
-    this.fmSynth = new FMSynth(this.fmSynthParam);
+    this.fmSynth = new FMSynth(fmSynthParam.samplingRate, fmSynthParam.waveFrequency, fmSynthParam.outputVolume);
     this.modulatorUI = new OperatorUI(
       this.fmSynth.modulator,
       this.fmSynth.param.modulator,
@@ -192,11 +192,11 @@ let modulatorVolumeControl = {
     this.input.addEventListener('input', () => {
       synthUIParam.modulator.volume = this.input.value;
       this.updateValue();
-      fmSynthUI.fmSynthParam.modulator.volume = synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume;
+      fmSynthUI.fmSynth.param.modulator.volume = synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume;
       
       if (audioContext != null && audioWorkletNode != null) {
         const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-        modulatorVolumeParam.setValueAtTime(fmSynthUI.fmSynthParam.modulator.volume, audioContext.currentTime);
+        modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, audioContext.currentTime);
       }
     });
   },
@@ -217,7 +217,7 @@ let modulatorRatioControl = {
     this.input.addEventListener('input', () => {
       synthUIParam.modulator.ratio = this.input.value;
       this.updateValue();
-      fmSynthUI.fmSynthParam.modulator.ratio = synthUIParam.modulator.ratio;
+      fmSynthUI.fmSynth.param.modulator.ratio = synthUIParam.modulator.ratio;
       
       if (audioContext != null && audioWorkletNode != null) {
         const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
@@ -243,6 +243,7 @@ let carrierAngularVelocityIndicator = {
       if (fmSynthUI.fmSynth.carrier.phase.isLooped()) {
         value += 1;
       }
+      // TODO: エラー直す
       this.element.value = value;
     }
   }
