@@ -6,6 +6,41 @@ const SAMPLING_RATE = 60;
 const WAVE_FREQUENCY = 0.5;
 const OUTPUT_VOLUME = 1;
 
+// Audio
+
+class AudioEngine {
+  
+  audioContext = null;
+  audioWorkletNode = null;
+  
+  get isRunning() {
+    return this.audioContext != null && this.audioWorkletNode != null;
+  }
+  
+  async start() {
+    this.audioContext = new AudioContext();
+    await this.audioContext.audioWorklet.addModule('script-audio-processor.js');
+    this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
+    
+    const modulatorVolumeParam = this.audioWorkletNode.parameters.get('modulatorVolume');
+    modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, this.audioContext.currentTime);
+    
+    const modulatorRatioParam = this.audioWorkletNode.parameters.get('modulatorRatio');
+    modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, this.audioContext.currentTime);
+    
+    this.audioWorkletNode.connect(this.audioContext.destination);
+  }
+  
+  stop() {
+    this.audioContext.close();
+    this.audioContext = null;
+    this.audioWorkletNode = null;
+  }
+  
+}
+
+let audioEngine = new AudioEngine();
+
 // UI Classes
 
 class PhaseGraph {
@@ -217,9 +252,9 @@ let modulatorVolumeControl = {
       this.updateValue();
       fmSynth.modulator.volume = synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume;
       
-      if (audioContext != null && audioWorkletNode != null) {
-        const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-        modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, audioContext.currentTime);
+      if (audioEngine.isRunning) {
+        const modulatorVolumeParam = audioEngine.audioWorkletNode.parameters.get('modulatorVolume');
+        modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, audioEngine.audioContext.currentTime);
       }
     });
   },
@@ -247,9 +282,9 @@ let modulatorRatioControl = {
       this.updateValue();
       fmSynth.modulator.ratio = synthUIParam.modulator.ratio;
       
-      if (audioContext != null && audioWorkletNode != null) {
-        const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
-        modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, audioContext.currentTime);
+      if (audioEngine.isRunning) {
+        const modulatorRatioParam = audioEngine.audioWorkletNode.parameters.get('modulatorRatio');
+        modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, audioEngine.audioContext.currentTime);
       }
     })
   },
@@ -281,46 +316,19 @@ let carrierAngularVelocityIndicator = {
   
 }
 
-let audioContext = null;
-let audioWorkletNode = null;
-
-async function startAudio() {
-  
-  audioContext = new AudioContext();
-  await audioContext.audioWorklet.addModule('script-audio-processor.js');
-  audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
-  
-  const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-  modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, audioContext.currentTime);
-  const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
-  modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, audioContext.currentTime);
-  
-  audioWorkletNode.connect(audioContext.destination);
-  
-}
-
-function stopAudio() {
-  
-  if (audioContext != null) {
-    audioContext.close();
-  }
-  
-  audioContext = null;
-  audioWorkletNode = null;
-  
-}
-
 function setUp() {
   
   // Audio
   
   document.getElementById('start-audio-button').addEventListener('click', function() {
-    if (audioContext == null) {
-      startAudio();
+    if (!audioEngine.isRunning) {
+      audioEngine.start();
     }
   });
   document.getElementById('stop-audio-button').addEventListener('click', function() {
-    stopAudio();
+    if (audioEngine.isRunning) {
+      audioEngine.stop();
+    }
   });
   
   // UI
