@@ -6,7 +6,7 @@ export class Signal {
     this.value = value
   }
   
-  getClippedValue() {
+  get clippedValue() {
     if (this.value > 1) {
       return 1;
     } else if (this.value < -1) {
