@@ -125,12 +125,14 @@ const WAVEFORM_GRAPH_WAVE_FREQUENCY = 0.5;
 
 class FMSynthUI {
   constructor(
-    fmSynthParam,
     modulatorElements,
     carrierElements
   ) {
-    this.fmSynthParam = fmSynthParam;
-    this.fmSynth = new FMSynth(fmSynthParam.samplingRate, fmSynthParam.waveFrequency, fmSynthParam.outputVolume);
+    const samplingRate = 60;
+    const waveFrequency = 0.5;
+    const outputVolume = 1;
+    
+    this.fmSynth = new FMSynth(samplingRate, waveFrequency, outputVolume);
     this.modulatorUI = new OperatorUI(
       this.fmSynth.modulator,
       this.fmSynth.param.modulator,
@@ -155,13 +157,6 @@ class FMSynthUI {
 }
 
 let fmSynthUI = new FMSynthUI(
-  new FMSynthParam(
-    WAVEFORM_GRAPH_SAMPLING_RATE,
-    WAVEFORM_GRAPH_WAVE_FREQUENCY,
-    new OperatorParam(1, 1),
-    new OperatorParam(1, 1),
-    1
-  ),
   {
     phaseGraph: document.getElementById('phase-graph-modulator'),
     waveformGraph: document.getElementById('waveform-graph-modulator')
@@ -201,7 +196,7 @@ let modulatorVolumeControl = {
     });
   },
   setUp: function() {
-    this.input.value = fmSynthUI.fmSynthParam.modulator.volume * synthUIParam.modulator.maxVolume;
+    this.input.value = fmSynthUI.fmSynth.param.modulator.volume * synthUIParam.modulator.maxVolume;
     this.updateValue();
     this.addEventListener();
   }
@@ -226,7 +221,7 @@ let modulatorRatioControl = {
     })
   },
   setUp: function() {
-    this.input.value = fmSynthUI.fmSynthParam.modulator.ratio;
+    this.input.value = fmSynthUI.fmSynth.param.modulator.ratio;
     this.updateValue();
     this.addEventListener();
   }
@@ -243,7 +238,6 @@ let carrierAngularVelocityIndicator = {
       if (fmSynthUI.fmSynth.carrier.phase.isLooped()) {
         value += 1;
       }
-      // TODO: エラー直す
       this.element.value = value;
     }
   }
