@@ -53,7 +53,7 @@ export class Phase {
   
   outputSignal = new Signal(0);
   
-  isLooped() {
+  get isLooped() {
     return this.value < this.oldValue;
   }
   
