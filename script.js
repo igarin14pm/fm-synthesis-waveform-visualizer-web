@@ -5,7 +5,7 @@ class PhaseGraph {
   constructor(element, operator) {
     this.element = element;
     this.operator = operator;
-    this.phaseSignal = this.operator.phase.getOutput();
+    this.phaseSignal = this.operator.phase.output;
   }
   
   get width() {
@@ -263,7 +263,7 @@ let carrierAngularVelocityIndicator = {
   
   moveFrameForward: function() {
     this.phase.pop();
-    this.phase.splice(0, 0, fmSynthUI.fmSynth.carrier.phase.getOutput().value);
+    this.phase.splice(0, 0, fmSynthUI.fmSynth.carrier.phase.output.value);
     if (this.phase[0] != null && this.phase[1] != null) {
       let value = this.phase[0] - this.phase[1];
       if (fmSynthUI.fmSynth.carrier.phase.isLooped) {
