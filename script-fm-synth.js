@@ -91,7 +91,7 @@ export class Operator {
   
   outputSignal = new Signal(0);
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
@@ -115,7 +115,7 @@ export class FMSynth {
     
     this.masterPhase = new MasterPhase(this);
     this.modulator = new Operator(this, null);
-    this.carrier = new Operator(this, this.modulator.getOutput());
+    this.carrier = new Operator(this, this.modulator.output);
   }
   
   outputSignal = new Signal(0);
@@ -125,7 +125,7 @@ export class FMSynth {
   }
   
   process() {
-    return this.carrier.getOutput().value * this.outputVolume;
+    return this.carrier.output.value * this.outputVolume;
   }
   
   moveFrameForward() {

@@ -129,7 +129,7 @@ class OperatorUI {
   moveFrameForward() {
     this.phaseGraph.update();
     
-    this.waveformGraph.data.add(this.operator.getOutput().value);
+    this.waveformGraph.data.add(this.operator.output.value);
     this.waveformGraph.update();
   }
   
