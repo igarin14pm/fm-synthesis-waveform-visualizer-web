@@ -28,7 +28,7 @@ export class MasterPhase {
   
   outputSignal = new Signal(0);
   
-  getOutput() {
+  get output() {
     return this.outputSignal;
   }
   
@@ -83,7 +83,7 @@ export class Phase {
 export class Operator {
   
   constructor(fmSynth, modulatorSignal) {
-    this.phase = new Phase(this, fmSynth.masterPhase.getOutput(), modulatorSignal);
+    this.phase = new Phase(this, fmSynth.masterPhase.output, modulatorSignal);
   }
   
   volume = 1;
