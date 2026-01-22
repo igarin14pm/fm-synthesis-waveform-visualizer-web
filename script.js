@@ -1,6 +1,6 @@
 import { FMSynth } from './script-fm-synth.js'
 
-// Value
+// Value Class
 
 class OperatorValue {
   
@@ -34,13 +34,9 @@ class OperatorValue {
   
 }
 
-// Audio
+// Audio Class
 
 class AudioEngine {
-  
-  constructor(modulatorValue) {
-    this.modulatorValue = modulatorValue;
-  }
     
   audioContext = null;
   audioWorkletNode = null;
@@ -54,7 +50,7 @@ class AudioEngine {
     param.setValueAtTime(value, this.audioContext.currentTime);
   }
   
-  async start() {
+  async start(modulatorValue) {
     this.audioContext = new AudioContext();
     await this.audioContext.audioWorklet.addModule('script-audio-processor.js');
     this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
@@ -246,6 +242,8 @@ class FMSynthUI {
   
 }
 
+// Script
+
 const SAMPLING_RATE = 60;
 const WAVE_FREQUENCY = 0.5;
 const OUTPUT_VOLUME = 1;
@@ -257,7 +255,7 @@ let modulatorValue = new OperatorValue(
   1
 );
 
-let audioEngine = new AudioEngine(modulatorValue);
+let audioEngine = new AudioEngine();
 
 let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
 
@@ -272,8 +270,6 @@ let fmSynthUI = new FMSynthUI(
     waveformGraph: document.getElementById('waveform-graph-carrier')
   }
 );
-
-// UI
 
 let modulatorVolumeControl = {
   
@@ -355,11 +351,9 @@ let carrierAngularVelocityIndicator = {
 
 function setUp() {
   
-  // Audio
-  
   document.getElementById('start-audio-button').addEventListener('click', function() {
     if (!audioEngine.isRunning) {
-      audioEngine.start();
+      audioEngine.start(modulatorValue);
     }
   });
   document.getElementById('stop-audio-button').addEventListener('click', function() {
@@ -368,12 +362,8 @@ function setUp() {
     }
   });
   
-  // UI
-  
   modulatorVolumeControl.setUp();  
   modulatorRatioControl.setUp();
-  
-  // Synth
   
   let synthFrameCallback = function() {
     fmSynthUI.moveFrameForward();
