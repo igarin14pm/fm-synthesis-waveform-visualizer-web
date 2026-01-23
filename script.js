@@ -335,6 +335,27 @@ function moveFrameForward() {
 
 function setUp() {
   
+  function setModulatorVolume() {
+    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+    
+    visualFMSynth.modulator.volume = modulatorValue.volumeValue;
+    if (audioEngine.isRunning) {
+      audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
+    }
+  }
+  
+  function setModulatorRatio() {
+    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+    
+    visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
+    if (audioEngine.isRunning) {
+      audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+    }
+  }
+  
+  setModulatorVolume();
+  setModulatorRatio();
+  
   document.getElementById('start-audio-button').addEventListener('click', function() {
     if (!audioEngine.isRunning) {
       audioEngine.start(modulatorValue);
@@ -347,20 +368,10 @@ function setUp() {
   });
   
   modulatorVolumeInputUI.addEventListener(function() {
-    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
-    
-    visualFMSynth.modulator.volume = modulatorValue.volumeValue;
-    if (audioEngine.isRunning) {
-      audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
-    }
+    setModulatorVolume();
   });
   modulatorRatioInputUI.addEventListener(function() {
-    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
-    
-    visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
-    if (audioEngine.isRunning) {
-      audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
-    }
+    setModulatorRatio();
   })
   
   const oneSecond_ms = 1000;
