@@ -242,6 +242,33 @@ class FMSynthUI {
   
 }
 
+class RangeInputUI {
+  
+  constructor(inputElement, valueLabelElement, initialValue) {
+    this.inputElement = inputElement;
+    this.valueLabelElement = valueLabelElement;
+    
+    this.inputElement.value = initialValue;
+    this.valueLabelElement.textContent = initialValue;
+  }
+  
+  get value() {
+    return this.inputElement.value;
+  }
+  
+  updateLabel() {
+    this.valueLabelElement.textContent = this.inputElement.value;
+  }
+  
+  addEventListener(listener) {
+    this.inputElement.addEventListener('input', () => {
+      listener();
+      this.updateLabel();
+    })
+  }
+  
+}
+
 // Script
 
 const SAMPLING_RATE = 60;
@@ -271,35 +298,11 @@ let fmSynthUI = new FMSynthUI(
   }
 );
 
-let modulatorVolumeControl = {
-  
-  input: document.getElementById('modulator-volume'),
-  value: document.getElementById('modulator-volume-value'),
-  
-  updateValue: function() {
-    this.value.textContent = Math.round(modulatorValue.volumeUIValue);
-  },
-  
-  addEventListener: function() {
-    this.input.addEventListener('input', () => {
-      modulatorValue.volumeUIValue = this.input.value;
-      this.updateValue();
-      
-      visualFMSynth.modulator.volume = modulatorValue.volumeValue;
-      
-      if (audioEngine.isRunning) {
-        audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
-      }
-    });
-  },
-  
-  setUp: function() {
-    this.input.value = Math.round(modulatorValue.volumeUIValue);
-    this.updateValue();
-    this.addEventListener();
-  }
-  
-}
+let modulatorVolumeInputUI = new RangeInputUI(
+  document.getElementById('modulator-volume'),
+  document.getElementById('modulator-volume-value'),
+  modulatorValue.volumeUIValue
+);
 
 let modulatorRatioControl = {
   
@@ -362,7 +365,13 @@ function setUp() {
     }
   });
   
-  modulatorVolumeControl.setUp();  
+  modulatorVolumeInputUI.addEventListener(function() {
+    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+    
+    visualFMSynth.modulator.volume = modulatorValue.volumeValue;
+    audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
+  });
+  
   modulatorRatioControl.setUp();
   
   let synthFrameCallback = function() {
