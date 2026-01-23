@@ -280,7 +280,7 @@ class AngularVelocityMeterUI {
 
 // Script
 
-const SAMPLING_RATE = 60;
+const SAMPLING_RATE = 120;
 const WAVE_FREQUENCY = 0.5;
 const OUTPUT_VOLUME = 1;
 
