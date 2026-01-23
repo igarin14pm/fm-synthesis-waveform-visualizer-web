@@ -327,11 +327,10 @@ let carrierUI = new OperatorUI(
 )
 
 function moveFrameForward() {
-  visualFMSynth.moveFrameForward();
-  
-  modulatorUI.moveFrameForward();
-  carrierAngularVelocityMeter.moveFrameForward();
-  carrierUI.moveFrameForward();
+  let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+  frameUpdateQueue.forEach((object) => {
+    object.moveFrameForward();
+  });
 }
 
 function setUp() {
@@ -364,11 +363,8 @@ function setUp() {
     }
   })
   
-  let synthFrameCallback = function() {
-    moveFrameForward();
-  }
   const oneSecond_ms = 1000;
-  let intervalID = setInterval(synthFrameCallback, oneSecond_ms / SAMPLING_RATE);
+  let intervalID = setInterval(moveFrameForward, oneSecond_ms / SAMPLING_RATE);
   
 }
 
