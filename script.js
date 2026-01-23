@@ -1,15 +1,43 @@
 import { FMSynth } from './script-fm-synth.js'
 
-// Global Values
+// Value Class
 
-const SAMPLING_RATE = 60;
-const WAVE_FREQUENCY = 0.5;
-const OUTPUT_VOLUME = 1;
+class OperatorValue {
+  
+  constructor(
+    volumeParameterName, 
+    volumeValue,
+    ratioParameterName,
+    ratioValue
+  ) {
+    this.volumeParameterName = volumeParameterName;
+    this.volumeValue = volumeValue;
+    this.ratioParameterName = ratioParameterName;
+    this.ratioValue = ratioValue;
+  }
+  
+  get volumeUIValue() {
+    return this.volumeValue * 100;
+  }
+  
+  set volumeUIValue(newValue) {
+    this.volumeValue = newValue / 100;
+  }
+  
+  get ratioUIValue() {
+    return this.ratioValue;
+  }
+  
+  set ratioUIValue(newValue) {
+    this.ratioValue = newValue;
+  }
+  
+}
 
-// Audio
+// Audio Class
 
 class AudioEngine {
-  
+    
   audioContext = null;
   audioWorkletNode = null;
   
@@ -17,17 +45,24 @@ class AudioEngine {
     return this.audioContext != null && this.audioWorkletNode != null;
   }
   
-  async start() {
+  setParameterValue(name, value) {
+    const param = this.audioWorkletNode.parameters.get(name);
+    param.setValueAtTime(value, this.audioContext.currentTime);
+  }
+  
+  async start(modulatorValue) {
     this.audioContext = new AudioContext();
     await this.audioContext.audioWorklet.addModule('script-audio-processor.js');
     this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
     
-    const modulatorVolumeParam = this.audioWorkletNode.parameters.get('modulatorVolume');
-    modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, this.audioContext.currentTime);
-    
-    const modulatorRatioParam = this.audioWorkletNode.parameters.get('modulatorRatio');
-    modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, this.audioContext.currentTime);
-    
+    this.setParameterValue(
+      modulatorValue.volumeParameterName, 
+      modulatorValue.volumeValue
+    );
+    this.setParameterValue(
+      modulatorValue.ratioParameterName,
+      modulatorValue.ratioValue
+    );
     this.audioWorkletNode.connect(this.audioContext.destination);
   }
   
@@ -38,8 +73,6 @@ class AudioEngine {
   }
   
 }
-
-let audioEngine = new AudioEngine();
 
 // UI Classes
 
@@ -209,10 +242,25 @@ class FMSynthUI {
   
 }
 
-let fmSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
+// Script
+
+const SAMPLING_RATE = 60;
+const WAVE_FREQUENCY = 0.5;
+const OUTPUT_VOLUME = 1;
+
+let modulatorValue = new OperatorValue(
+  'modulatorVolume',
+  1,
+  'modulatorRatio',
+  1
+);
+
+let audioEngine = new AudioEngine();
+
+let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
 
 let fmSynthUI = new FMSynthUI(
-  fmSynth,
+  visualFMSynth,
   {
     phaseGraph: document.getElementById('phase-graph-modulator'),
     waveformGraph: document.getElementById('waveform-graph-modulator')
@@ -223,44 +271,30 @@ let fmSynthUI = new FMSynthUI(
   }
 );
 
-// UI
-
-let synthUIParam = {
-  
-  modulator: {
-    
-    ratio: 1,
-    volume: 100,
-    maxVolume: 100
-    
-  },
-  
-}
-
 let modulatorVolumeControl = {
   
   input: document.getElementById('modulator-volume'),
   value: document.getElementById('modulator-volume-value'),
   
   updateValue: function() {
-    this.value.textContent = synthUIParam.modulator.volume;
+    this.value.textContent = Math.round(modulatorValue.volumeUIValue);
   },
   
   addEventListener: function() {
     this.input.addEventListener('input', () => {
-      synthUIParam.modulator.volume = this.input.value;
+      modulatorValue.volumeUIValue = this.input.value;
       this.updateValue();
-      fmSynth.modulator.volume = synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume;
+      
+      visualFMSynth.modulator.volume = modulatorValue.volumeValue;
       
       if (audioEngine.isRunning) {
-        const modulatorVolumeParam = audioEngine.audioWorkletNode.parameters.get('modulatorVolume');
-        modulatorVolumeParam.setValueAtTime(synthUIParam.modulator.volume / synthUIParam.modulator.maxVolume, audioEngine.audioContext.currentTime);
+        audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
       }
     });
   },
   
   setUp: function() {
-    this.input.value = fmSynth.modulator.volume * synthUIParam.modulator.maxVolume;
+    this.input.value = Math.round(modulatorValue.volumeUIValue);
     this.updateValue();
     this.addEventListener();
   }
@@ -273,24 +307,23 @@ let modulatorRatioControl = {
   value: document.getElementById('modulator-ratio-value'),
   
   updateValue: function() {
-    this.value.textContent = synthUIParam.modulator.ratio;
+    this.value.textContent = modulatorValue.ratioUIValue;
   },
   
   addEventListener: function() {
     this.input.addEventListener('input', () => {
-      synthUIParam.modulator.ratio = this.input.value;
+      modulatorValue.ratioUIValue = this.input.value;
       this.updateValue();
-      fmSynth.modulator.ratio = synthUIParam.modulator.ratio;
+      visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
       
       if (audioEngine.isRunning) {
-        const modulatorRatioParam = audioEngine.audioWorkletNode.parameters.get('modulatorRatio');
-        modulatorRatioParam.setValueAtTime(synthUIParam.modulator.ratio, audioEngine.audioContext.currentTime);
+        audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
       }
     })
   },
   
   setUp: function() {
-    this.input.value = fmSynth.modulator.ratio;
+    this.input.value = visualFMSynth.modulator.ratio;
     this.updateValue();
     this.addEventListener();
   }
@@ -304,10 +337,10 @@ let carrierAngularVelocityIndicator = {
   
   moveFrameForward: function() {
     this.phase.pop();
-    this.phase.splice(0, 0, fmSynth.carrier.phase.output.value);
+    this.phase.splice(0, 0, visualFMSynth.carrier.phase.output.value);
     if (this.phase[0] != null && this.phase[1] != null) {
       let value = this.phase[0] - this.phase[1];
-      if (fmSynth.carrier.phase.isLooped) {
+      if (visualFMSynth.carrier.phase.isLooped) {
         value += 1;
       }
       this.element.value = value;
@@ -318,11 +351,9 @@ let carrierAngularVelocityIndicator = {
 
 function setUp() {
   
-  // Audio
-  
   document.getElementById('start-audio-button').addEventListener('click', function() {
     if (!audioEngine.isRunning) {
-      audioEngine.start();
+      audioEngine.start(modulatorValue);
     }
   });
   document.getElementById('stop-audio-button').addEventListener('click', function() {
@@ -331,12 +362,8 @@ function setUp() {
     }
   });
   
-  // UI
-  
   modulatorVolumeControl.setUp();  
   modulatorRatioControl.setUp();
-  
-  // Synth
   
   let synthFrameCallback = function() {
     fmSynthUI.moveFrameForward();
