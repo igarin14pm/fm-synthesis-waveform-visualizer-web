@@ -212,36 +212,6 @@ class OperatorUI {
   
 }
 
-class FMSynthUI {
-  
-  constructor(
-    fmSynth,
-    modulatorElements,
-    carrierElements
-  ) {
-    this.fmSynth = fmSynth;
-    this.modulatorUI = new OperatorUI(
-      this.fmSynth.modulator,
-      modulatorElements.phaseGraph,
-      modulatorElements.waveformGraph
-    );
-    this.carrierUI = new OperatorUI(
-      this.fmSynth.carrier,
-      carrierElements.phaseGraph,
-      carrierElements.waveformGraph
-    );
-  }
-  
-  moveFrameForward() {
-    this.fmSynth.moveFrameForward();
-    
-    this.modulatorUI.moveFrameForward();
-    
-    this.carrierUI.moveFrameForward();
-  }
-  
-}
-
 class RangeInputUI {
   
   constructor(inputElement, valueLabelElement, initialValue) {
@@ -325,18 +295,6 @@ let audioEngine = new AudioEngine();
 
 let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
 
-let fmSynthUI = new FMSynthUI(
-  visualFMSynth,
-  {
-    phaseGraph: document.getElementById('phase-graph-modulator'),
-    waveformGraph: document.getElementById('waveform-graph-modulator')
-  },
-  {
-    phaseGraph: document.getElementById('phase-graph-carrier'),
-    waveformGraph: document.getElementById('waveform-graph-carrier')
-  }
-);
-
 let modulatorVolumeInputUI = new RangeInputUI(
   document.getElementById('modulator-volume'),
   document.getElementById('modulator-volume-value'),
@@ -349,6 +307,12 @@ let modulatorRatioInputUI = new RangeInputUI(
   modulatorValue.ratioUIValue
 );
 
+let modulatorUI = new OperatorUI(
+  visualFMSynth.modulator,
+  document.getElementById('phase-graph-modulator'),
+  document.getElementById('waveform-graph-modulator')
+);
+
 let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   visualFMSynth.carrier.phase,
   document.getElementById('carrier-angular-velocity-meter'),
@@ -356,9 +320,18 @@ let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   0.3
 );
 
+let carrierUI = new OperatorUI(
+  visualFMSynth.carrier,
+  document.getElementById('phase-graph-carrier'),
+  document.getElementById('waveform-graph-carrier')
+)
+
 function moveFrameForward() {
-  fmSynthUI.moveFrameForward();
+  visualFMSynth.moveFrameForward();
+  
+  modulatorUI.moveFrameForward();
   carrierAngularVelocityMeter.moveFrameForward();
+  carrierUI.moveFrameForward();
 }
 
 function setUp() {
