@@ -304,34 +304,11 @@ let modulatorVolumeInputUI = new RangeInputUI(
   modulatorValue.volumeUIValue
 );
 
-let modulatorRatioControl = {
-  
-  input: document.getElementById('modulator-ratio'),
-  value: document.getElementById('modulator-ratio-value'),
-  
-  updateValue: function() {
-    this.value.textContent = modulatorValue.ratioUIValue;
-  },
-  
-  addEventListener: function() {
-    this.input.addEventListener('input', () => {
-      modulatorValue.ratioUIValue = this.input.value;
-      this.updateValue();
-      visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
-      
-      if (audioEngine.isRunning) {
-        audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
-      }
-    })
-  },
-  
-  setUp: function() {
-    this.input.value = visualFMSynth.modulator.ratio;
-    this.updateValue();
-    this.addEventListener();
-  }
-  
-}
+let modulatorRatioInputUI = new RangeInputUI(
+  document.getElementById('modulator-ratio'),
+  document.getElementById('modulator-ratio-value'),
+  modulatorValue.ratioUIValue
+);
 
 let carrierAngularVelocityIndicator = {
   
@@ -371,8 +348,12 @@ function setUp() {
     visualFMSynth.modulator.volume = modulatorValue.volumeValue;
     audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
   });
-  
-  modulatorRatioControl.setUp();
+  modulatorRatioInputUI.addEventListener(function() {
+    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+    
+    visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
+    audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+  })
   
   let synthFrameCallback = function() {
     fmSynthUI.moveFrameForward();
