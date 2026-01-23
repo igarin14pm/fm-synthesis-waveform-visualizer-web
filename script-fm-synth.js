@@ -129,9 +129,10 @@ export class FMSynth {
   }
   
   moveFrameForward() {
-    this.masterPhase.moveFrameForward();
-    this.modulator.moveFrameForward();
-    this.carrier.moveFrameForward();
+    let frameUpdateQueue = [this.masterPhase, this.modulator, this.carrier];
+    frameUpdateQueue.forEach((module) => {
+      module.moveFrameForward();
+    });
     
     this.outputSignal.value = this.process();
   }
