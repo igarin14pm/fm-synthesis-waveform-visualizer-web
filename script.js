@@ -1,115 +1,113 @@
-const OPERATOR_INITIAL_VOLUME = 100;
-const OPERATOR_INITIAL_RATIO = 1;
+import { FMSynth } from './script-fm-synth.js'
 
-class MasterPhase {
-  constructor() {
-    this.value = 0.0;
-    this.samplingRate = 60.0;
-    this.frequency = 0.5;
+// Value Class
+
+class OperatorValue {
+  
+  constructor(
+    volumeParameterName, 
+    volumeValue,
+    ratioParameterName,
+    ratioValue
+  ) {
+    this.volumeParameterName = volumeParameterName;
+    this.volumeValue = volumeValue;
+    this.ratioParameterName = ratioParameterName;
+    this.ratioValue = ratioValue;
   }
   
-  getDeltaPhase() {
-    return this.frequency / this.samplingRate;
+  get volumeUIValue() {
+    return this.volumeValue * 100;
   }
   
-  moveFrameForward() {
-    this.value += this.getDeltaPhase();
-    this.value -= Math.floor(this.value);
+  set volumeUIValue(newValue) {
+    this.volumeValue = newValue / 100;
   }
+  
+  get ratioUIValue() {
+    return this.ratioValue;
+  }
+  
+  set ratioUIValue(newValue) {
+    this.ratioValue = newValue;
+  }
+  
 }
 
-class Phase {
-  constructor() {
-    this.value = 0.0;
-    this.oldValue = 0.0;
-    this.modulatorInput = 0.0;
-    this.ratio = OPERATOR_INITIAL_RATIO;
-  }
-  
-  isLooped() {
-    return this.value < this.oldValue;
-  }
-  
-  getValue() {
-    return this.value + this.modulatorInput / 4;
-  }
+// Audio Class
+
+class AudioEngine {
     
-  setMasterPhase(newValue) {
-    this.oldValue = this.value;
-    this.value = newValue * this.ratio;
-    this.value -= Math.floor(this.value);
+  audioContext = null;
+  audioWorkletNode = null;
+  
+  get isRunning() {
+    return this.audioContext != null && this.audioWorkletNode != null;
   }
   
-  setModulatorInput(newValue) {
-    this.modulatorInput = newValue;
+  setParameterValue(name, value) {
+    const param = this.audioWorkletNode.parameters.get(name);
+    param.setValueAtTime(value, this.audioContext.currentTime);
   }
   
-  setRatio(newValue) {
-    this.ratio = newValue;
+  async start(modulatorValue) {
+    this.audioContext = new AudioContext();
+    await this.audioContext.audioWorklet.addModule('script-audio-processor.js');
+    this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
+    
+    this.setParameterValue(
+      modulatorValue.volumeParameterName, 
+      modulatorValue.volumeValue
+    );
+    this.setParameterValue(
+      modulatorValue.ratioParameterName,
+      modulatorValue.ratioValue
+    );
+    this.audioWorkletNode.connect(this.audioContext.destination);
   }
+  
+  stop() {
+    this.audioContext.close();
+    this.audioContext = null;
+    this.audioWorkletNode = null;
+  }
+  
 }
 
-class Operator {
-  constructor() {
-    this.value = 0.0;
-    this.phase = new Phase();
-    this.volume = 100;
-  }
-  
-  getOutput() {
-    return (this.volume / 100) * Math.sin(2 * Math.PI * this.phase.getValue());
-  }
-  
-  setInput(newValue) {
-    this.phase.setModulatorInput(newValue);
-  }
-  
-  setPhase(masterPhaseValue) {
-    this.phase.setMasterPhase(masterPhaseValue);
-  }
-  
-  setRatio(newValue) {
-    this.phase.setRatio(newValue);
-  }
-  
-  setVolume(newValue) {
-    this.volume = newValue;
-  }
-}
+// UI Classes
 
 class PhaseGraph {
-  constructor(element) {
+  
+  constructor(element, operator) {
     this.element = element;
-    this.width = element.width;
-    this.height = element.height;
-    this.phase = 0;
-    this.volume = OPERATOR_INITIAL_VOLUME;
+    this.operator = operator;
+    this.phaseSignal = this.operator.phase.output;
   }
   
-  setPhase(phase) {
-    this.phase = phase;
+  get width() {
+    return this.element.width;
   }
   
-  setVolume(newValue) {
-    this.volume = newValue;
+  get height() {
+    return this.element.height;
   }
   
   draw() {
     let circleCenterX = this.width / 3;
     let circleCenterY = this.height / 2;
-    let circleRadius = this.height / 2 * this.volume / 100;
+    let circleRadius = this.height / 2 * this.operator.volume;
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
       context.beginPath();
       context.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2);
       context.moveTo(circleCenterX, circleCenterY);
       context.lineTo(
-        circleRadius * Math.cos(2 * Math.PI * this.phase) + circleCenterX, 
-        -1 * circleRadius * Math.sin(2 * Math.PI * this.phase) + circleCenterY
+        circleRadius * Math.cos(2 * Math.PI * this.phaseSignal.value) + circleCenterX, 
+        -1 * circleRadius * Math.sin(2 * Math.PI * this.phaseSignal.value) + circleCenterY
       );
       context.lineTo(
         this.width,
-        -1 * circleRadius * Math.sin(2 * Math.PI * this.phase) + circleCenterY
+        -1 * circleRadius * Math.sin(2 * Math.PI * this.phaseSignal.value) + circleCenterY
       );
       context.stroke();
     }
@@ -118,7 +116,7 @@ class PhaseGraph {
   clear() {
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
-      context.clearRect(0, 0, this.element.width, this.element.height);
+      context.clearRect(0, 0, this.width, this.height);
     }
   }
   
@@ -126,13 +124,16 @@ class PhaseGraph {
     this.clear();
     this.draw();
   }
+  
 }
 
 class WaveformGraphData {
+  
   constructor() {
-    this.VALUES_LENGTH = 240;
+    const numberOfWaves = 4
+    this.valueLength = SAMPLING_RATE * numberOfWaves;
     
-    let values = new Array(this.VALUES_LENGTH);
+    let values = new Array(this.valueLength);
     values.fill(0.0);
     this.values = values;
   }
@@ -141,22 +142,31 @@ class WaveformGraphData {
     this.values.pop();
     this.values.splice(0, 0, value);
   }
+  
 }
 
 class WaveformGraph {
+  
   constructor(element) {
     this.element = element;
-    this.data = new WaveformGraphData();
-    this.width = element.width;
-    this.height = element.height;
+  }
+  
+  data = new WaveformGraphData();
+  
+  get width() {
+    return this.element.width;
+  }
+  
+  get height() {
+    return this.element.height;
   }
   
   draw() {
     if (this.element.getContext) {
       let context = this.element.getContext('2d');
       context.beginPath();
-      for (let i = 0; i < this.data.VALUES_LENGTH; i++) {
-        let x = (i / (this.data.VALUES_LENGTH - 1)) * this.width;
+      for (let i = 0; i < this.data.valueLength; i++) {
+        let x = (i / (this.data.valueLength - 1)) * this.width;
         let y = (-(this.data.values[i]) + 1.0) / 2.0 * this.height;
         if (i == 0) {
           context.moveTo(x, y);
@@ -179,185 +189,194 @@ class WaveformGraph {
     this.clear();
     this.draw();
   }
+  
 }
 
 class OperatorUI {
-  constructor(phaseGraphElement, waveformGraphElement) {
-    this.operator = new Operator();
-    this.phaseGraph = new PhaseGraph(phaseGraphElement);
+  
+  constructor(operator, phaseGraphElement, waveformGraphElement) {
+    this.operator = operator;
+    this.phaseGraph = new PhaseGraph(phaseGraphElement, this.operator);
     this.waveformGraph = new WaveformGraph(waveformGraphElement);
     
     this.phaseGraph.update();
     this.waveformGraph.update();
   }
   
-  setInput(newValue) {
-    this.operator.setInput(newValue);
+  moveFrameForward() {
+    this.phaseGraph.update();
+    
+    this.waveformGraph.data.add(this.operator.output.value);
+    this.waveformGraph.update();
   }
   
-  setPhase(masterPhaseValue) {
-    this.operator.setPhase(masterPhaseValue);
+}
+
+class RangeInputUI {
+  
+  constructor(inputElement, valueLabelElement, initialValue) {
+    this.inputElement = inputElement;
+    this.valueLabelElement = valueLabelElement;
+    
+    this.inputElement.value = initialValue;
+    this.valueLabelElement.textContent = initialValue;
   }
   
-  setRatio(newValue) {
-    this.operator.setRatio(newValue);
+  get value() {
+    return this.inputElement.value;
   }
   
-  setVolume(newValue) {
-    this.operator.setVolume(newValue);
-    this.phaseGraph.setVolume(newValue);
+  updateLabel() {
+    this.valueLabelElement.textContent = this.inputElement.value;
+  }
+  
+  addEventListener(listener) {
+    this.inputElement.addEventListener('input', () => {
+      listener();
+      this.updateLabel();
+    })
+  }
+  
+}
+
+class MeterUI {
+  
+  constructor(meterElement, initialValue, minValue, maxValue) {
+    this.meterElement = meterElement;
+    this.meterElement.value = initialValue;
+    this.meterElement.min = minValue;
+    this.meterElement.max = maxValue;
+  }
+  
+  get value() {
+    return this.meterElement.value;
+  }
+  
+  set value(newValue) {
+    this.meterElement.value = newValue;
+  }
+
+}
+
+class AngularVelocityMeterUI {
+  
+  constructor(phase, meterElement, minValue, maxValue) {
+    this.phase = phase;
+    this.phaseValues = [this.phase.output.value, this.phase.output.value];
+    this.meterUI = new MeterUI(meterElement, this.phase.output.value, minValue, maxValue);
   }
   
   moveFrameForward() {
-    this.phaseGraph.setPhase(this.operator.phase.getValue());
-    this.phaseGraph.update();
-    
-    this.waveformGraph.data.add(this.operator.getOutput());
-    this.waveformGraph.update();
-  }
-}
-
-let synth = {
-  masterPhase: new MasterPhase(),
-  modulatorUI: new OperatorUI(
-    document.getElementById('phase-graph-modulator'),
-    document.getElementById('waveform-graph-modulator')
-  ),
-  carrierUI: new OperatorUI(
-    document.getElementById('phase-graph-carrier'),
-    document.getElementById('waveform-graph-carrier')
-  ),
-  moveFrameForward: function() {
-    this.masterPhase.moveFrameForward();
-    
-    this.modulatorUI.setPhase(this.masterPhase.value);
-    this.modulatorUI.moveFrameForward();
-    
-    this.carrierUI.setInput(this.modulatorUI.operator.getOutput());
-    this.carrierUI.setPhase(this.masterPhase.value);
-    this.carrierUI.moveFrameForward();
-  }
-}
-
-// UI
-
-let synthParam = {
-  modulator: {
-    ratio: 1,
-    volume: 100
-  }
-}
-
-let modulatorVolumeControl = {
-  input: document.getElementById('modulator-volume'),
-  value: document.getElementById('modulator-volume-value'),
-  updateValue: function() {
-    this.value.textContent = synthParam.modulator.volume;
-  },
-  addEventListener: function() {
-    this.input.addEventListener('input', () => {
-      synthParam.modulator.volume = this.input.value;
-      this.updateValue();
-      synth.modulatorUI.setVolume(synthParam.modulator.volume);
-      
-      if (audioContext != null && audioWorkletNode != null) {
-        const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-        modulatorVolumeParam.setValueAtTime(synthParam.modulator.volume, audioContext.currentTime);
-      } 
-    });
-  },
-  setUp: function() {
-    this.input.value = OPERATOR_INITIAL_VOLUME;
-    this.updateValue();
-    this.addEventListener();
-  }
-}
-
-let modulatorRatioControl = {
-  input: document.getElementById('modulator-ratio'),
-  value: document.getElementById('modulator-ratio-value'),
-  updateValue: function() {
-    this.value.textContent = synthParam.modulator.ratio;
-  },
-  addEventListener: function() {
-    this.input.addEventListener('input', () => {
-      synthParam.modulator.ratio = this.input.value;
-      this.updateValue();
-      synth.modulatorUI.setRatio(synthParam.modulator.ratio);
-      
-      if (audioContext != null && audioWorkletNode != null) {
-        const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
-        modulatorRatioParam.setValueAtTime(synthParam.modulator.ratio, audioContext.currentTime);
-      }
-    })
-  },
-  setUp: function() {
-    this.updateValue();
-    this.addEventListener();
-  }
-}
-
-let carrierAngularVelocityIndicator = {
-  element: document.getElementById('carrier-angular-velocity-meter'),
-  phase: [null, null], 
-  moveFrameForward: function() {
-    this.phase.pop();
-    this.phase.splice(0, 0, synth.carrierUI.operator.phase.getValue());
-    if (this.phase[0] != null && this.phase[1] != null) {
-      let value = this.phase[0] - this.phase[1];
-      if (synth.carrierUI.operator.phase.isLooped()) {
-        value += 1;
-      }
-      this.element.value = value;
+    this.phaseValues.pop();
+    this.phaseValues.splice(0, 0, this.phase.output.value);
+    let newValue = this.phaseValues[0] - this.phaseValues[1];
+    if (this.phase.isLooped) {
+      newValue += 1;
     }
+    this.meterUI.value = newValue;
   }
+  
 }
 
-let audioContext = null;
-let audioWorkletNode = null;
+// Script
 
-async function startAudio() {
-  audioContext = new AudioContext();
-  await audioContext.audioWorklet.addModule('script-audio-processor.js');
-  audioWorkletNode = new AudioWorkletNode(audioContext, 'audio-processor');
-  
-  const modulatorVolumeParam = audioWorkletNode.parameters.get('modulatorVolume');
-  modulatorVolumeParam.setValueAtTime(synthParam.modulator.volume, audioContext.currentTime);
-  const modulatorRatioParam = audioWorkletNode.parameters.get('modulatorRatio');
-  modulatorRatioParam.setValueAtTime(synthParam.modulator.ratio, audioContext.currentTime);
-  
-  audioWorkletNode.connect(audioContext.destination);
-}
+const SAMPLING_RATE = 60;
+const WAVE_FREQUENCY = 0.5;
+const OUTPUT_VOLUME = 1;
 
-function stopAudio() {
-  if (audioContext != null) {
-    audioContext.close();
-  }
-  audioContext = null;
-  audioWorkletNode = null;
+let modulatorValue = new OperatorValue(
+  'modulatorVolume',
+  1,
+  'modulatorRatio',
+  1
+);
+
+let audioEngine = new AudioEngine();
+
+let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
+
+let modulatorVolumeInputUI = new RangeInputUI(
+  document.getElementById('modulator-volume'),
+  document.getElementById('modulator-volume-value'),
+  modulatorValue.volumeUIValue
+);
+
+let modulatorRatioInputUI = new RangeInputUI(
+  document.getElementById('modulator-ratio'),
+  document.getElementById('modulator-ratio-value'),
+  modulatorValue.ratioUIValue
+);
+
+let modulatorUI = new OperatorUI(
+  visualFMSynth.modulator,
+  document.getElementById('phase-graph-modulator'),
+  document.getElementById('waveform-graph-modulator')
+);
+
+let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
+  visualFMSynth.carrier.phase,
+  document.getElementById('carrier-angular-velocity-meter'),
+  -0.3,
+  0.3
+);
+
+let carrierUI = new OperatorUI(
+  visualFMSynth.carrier,
+  document.getElementById('phase-graph-carrier'),
+  document.getElementById('waveform-graph-carrier')
+)
+
+function moveFrameForward() {
+  let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+  frameUpdateQueue.forEach((object) => {
+    object.moveFrameForward();
+  });
 }
 
 function setUp() {
-  // Audio
+  
+  function setModulatorVolume() {
+    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+    
+    visualFMSynth.modulator.volume = modulatorValue.volumeValue;
+    if (audioEngine.isRunning) {
+      audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
+    }
+  }
+  
+  function setModulatorRatio() {
+    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+    
+    visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
+    if (audioEngine.isRunning) {
+      audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+    }
+  }
+  
+  setModulatorVolume();
+  setModulatorRatio();
+  
   document.getElementById('start-audio-button').addEventListener('click', function() {
-    if (audioContext == null) {
-      startAudio();
+    if (!audioEngine.isRunning) {
+      audioEngine.start(modulatorValue);
     }
   });
   document.getElementById('stop-audio-button').addEventListener('click', function() {
-    stopAudio();
+    if (audioEngine.isRunning) {
+      audioEngine.stop();
+    }
   });
   
-  // UI
-  modulatorVolumeControl.setUp();  
-  modulatorRatioControl.setUp();
+  modulatorVolumeInputUI.addEventListener(function() {
+    setModulatorVolume();
+  });
+  modulatorRatioInputUI.addEventListener(function() {
+    setModulatorRatio();
+  })
   
-  // Synth
-  let synthFrameCallback = function() {
-    synth.moveFrameForward();
-    carrierAngularVelocityIndicator.moveFrameForward();
-  }
-  let intervalID = setInterval(synthFrameCallback, 1000 / 60);
+  const oneSecond_ms = 1000;
+  let intervalID = setInterval(moveFrameForward, oneSecond_ms / SAMPLING_RATE);
+  
 }
 
 setUp();
