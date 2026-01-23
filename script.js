@@ -378,7 +378,6 @@ function setUp() {
     modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
     
     visualFMSynth.modulator.volume = modulatorValue.volumeValue;
-    // audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
     if (audioEngine.isRunning) {
       audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
     }
@@ -387,7 +386,6 @@ function setUp() {
     modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
     
     visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
-    // audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
     if (audioEngine.isRunning) {
       audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
     }
