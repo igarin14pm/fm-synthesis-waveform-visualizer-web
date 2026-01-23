@@ -269,6 +269,45 @@ class RangeInputUI {
   
 }
 
+class MeterUI {
+  
+  constructor(meterElement, initialValue, minValue, maxValue) {
+    this.meterElement = meterElement;
+    this.meterElement.value = initialValue;
+    this.meterElement.min = minValue;
+    this.meterElement.max = maxValue;
+  }
+  
+  get value() {
+    return this.meterElement.value;
+  }
+  
+  set value(newValue) {
+    this.meterElement.value = newValue;
+  }
+
+}
+
+class AngularVelocityMeterUI {
+  
+  constructor(phase, meterElement, minValue, maxValue) {
+    this.phase = phase;
+    this.phaseValues = [this.phase.output.value, this.phase.output.value];
+    this.meterUI = new MeterUI(meterElement, this.phase.output.value, minValue, maxValue);
+  }
+  
+  moveFrameForward() {
+    this.phaseValues.pop();
+    this.phaseValues.splice(0, 0, this.phase.output.value);
+    let newValue = this.phaseValues[0] - this.phaseValues[1];
+    if (this.phase.isLooped) {
+      newValue += 1;
+    }
+    this.meterUI.value = newValue;
+  }
+  
+}
+
 // Script
 
 const SAMPLING_RATE = 60;
@@ -310,23 +349,16 @@ let modulatorRatioInputUI = new RangeInputUI(
   modulatorValue.ratioUIValue
 );
 
-let carrierAngularVelocityIndicator = {
-  
-  element: document.getElementById('carrier-angular-velocity-meter'),
-  phase: [null, null], 
-  
-  moveFrameForward: function() {
-    this.phase.pop();
-    this.phase.splice(0, 0, visualFMSynth.carrier.phase.output.value);
-    if (this.phase[0] != null && this.phase[1] != null) {
-      let value = this.phase[0] - this.phase[1];
-      if (visualFMSynth.carrier.phase.isLooped) {
-        value += 1;
-      }
-      this.element.value = value;
-    }
-  }
-  
+let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
+  visualFMSynth.carrier.phase,
+  document.getElementById('carrier-angular-velocity-meter'),
+  -0.3,
+  0.3
+);
+
+function moveFrameForward() {
+  fmSynthUI.moveFrameForward();
+  carrierAngularVelocityMeter.moveFrameForward();
 }
 
 function setUp() {
@@ -356,8 +388,7 @@ function setUp() {
   })
   
   let synthFrameCallback = function() {
-    fmSynthUI.moveFrameForward();
-    carrierAngularVelocityIndicator.moveFrameForward();
+    moveFrameForward();
   }
   const oneSecond_ms = 1000;
   let intervalID = setInterval(synthFrameCallback, oneSecond_ms / SAMPLING_RATE);
