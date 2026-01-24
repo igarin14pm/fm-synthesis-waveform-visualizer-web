@@ -118,10 +118,10 @@ export class FMSynth {
     this.carrier = new Operator(this, this.modulator.output);
   }
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   process() {
@@ -134,7 +134,7 @@ export class FMSynth {
       module.moveFrameForward();
     });
     
-    this.outputSignal.value = this.process();
+    this.outputSource.value = this.process();
   }
   
 }
