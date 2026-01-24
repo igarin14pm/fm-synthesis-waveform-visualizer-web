@@ -6,36 +6,40 @@
   </head>
   
   <body>
-    <h1>FM-Synthesis Wave Visualizer</h1>
+    <h1>FM-Synthesis Waveform Visualizer</h1>
+    
+    <h2>Audio</h2>
+    <button id="start-audio-button">Start Audio</button>
+    <button id="stop-audio-button">Stop Audio</button>    
     
     <h2>Modulator</h2>
     
-    <div class="input">
-      <label for="modulator-volume">Volume</label>
-      <input type="range" id="modulator-volume" name="modulator-volume" min="0" max="100" />
-      <label id="modulator-volume-value" for="modulator-volume"></label>
+    <div class="range-input">
+      <label for="modulator-volume-input">Volume</label>
+      <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
+      <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
     </div>
-    <div class="input">
-      <label for="modulator-ratio">Ratio</label>
-      <input type="range" id="modulator-ratio" name="modulator-ratio" value="1" min="1" max="10" />
-      <label id="modulator-ratio-value" for="modulator-ratio"></label>
+    <div class="range-input">
+      <label for="modulator-ratio-input">Ratio</label>
+      <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
+      <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
     </div>
     <div class="graph">
-      <canvas id="phase-graph-modulator" width="300" height="200"></canvas>
-      <canvas id="waveform-graph-modulator" width="800" height="200"></canvas>
+      <canvas id="modulator-phase-graph" width="300" height="200"></canvas>
+      <canvas id="modulator-waveform-graph" width="800" height="200"></canvas>
     </div>
     
     <h2>Carrier</h2>
     
-    <div class="indicator">
+    <div class="meter">
       <label for="carrier-angular-velocity-meter">Angular Velocity</label>
-      <meter id="carrier-angular-velocity-meter" min="-0.3" max="0.3" width="200"></meter>
+      <meter id="carrier-angular-velocity-meter" min="-0.3" max="0.3"></meter>
     </div>
     <div class="graph">
-      <canvas id="phase-graph-carrier" width="300" height="200"></canvas>
-      <canvas id="waveform-graph-carrier" width="800" height="200"></canvas>
+      <canvas id="carrier-phase-graph" width="300" height="200"></canvas>
+      <canvas id="carrier-waveform-graph" width="800" height="200"></canvas>
     </div>
     
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>
