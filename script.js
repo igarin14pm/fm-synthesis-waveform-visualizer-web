@@ -322,7 +322,7 @@ let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
 
 let carrierUI = new OperatorUI(
   visualFMSynth.carrier,
-  document.getElementById('phase-graph-carrier'),
+  document.getElementById('carrier-phase-graph'),
   document.getElementById('waveform-graph-carrier')
 )
 
