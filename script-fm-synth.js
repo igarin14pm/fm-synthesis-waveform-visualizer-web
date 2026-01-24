@@ -26,16 +26,16 @@ export class MasterPhase {
     this.fmSynth = fmSynth;
   }
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   moveFrameForward() {
     const deltaPhase = this.fmSynth.waveFrequency / this.fmSynth.samplingRate;
-    this.outputSignal.value += deltaPhase;
-    this.outputSignal.value -= Math.floor(this.outputSignal.value);
+    this.outputSource.value += deltaPhase;
+    this.outputSource.value -= Math.floor(this.outputSource.value);
   }
   
 }
@@ -51,14 +51,14 @@ export class Phase {
   value = 0;
   oldValue = 0;
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get isLooped() {
     return this.value < this.oldValue;
   }
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   process() {
@@ -75,7 +75,7 @@ export class Phase {
     this.value = this.masterPhaseSignal.value * this.operator.ratio;
     this.value -= Math.floor(this.value);
     
-    this.outputSignal.value = this.process();
+    this.outputSource.value = this.process();
   }
 
 }
@@ -89,10 +89,10 @@ export class Operator {
   volume = 1;
   ratio = 1;
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   process() {
@@ -101,7 +101,7 @@ export class Operator {
   
   moveFrameForward() {
     this.phase.moveFrameForward();
-    this.outputSignal.value = this.process();
+    this.outputSource.value = this.process();
   }
   
 }
@@ -118,10 +118,10 @@ export class FMSynth {
     this.carrier = new Operator(this, this.modulator.output);
   }
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   process() {
@@ -134,7 +134,7 @@ export class FMSynth {
       module.moveFrameForward();
     });
     
-    this.outputSignal.value = this.process();
+    this.outputSource.value = this.process();
   }
   
 }
