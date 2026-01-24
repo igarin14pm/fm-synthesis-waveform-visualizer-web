@@ -309,7 +309,7 @@ let modulatorRatioInputUI = new RangeInputUI(
 
 let modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
-  document.getElementById('phase-graph-modulator'),
+  document.getElementById('modulator-phase-graph'),
   document.getElementById('waveform-graph-modulator')
 );
 
