@@ -26,16 +26,16 @@ export class MasterPhase {
     this.fmSynth = fmSynth;
   }
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   moveFrameForward() {
     const deltaPhase = this.fmSynth.waveFrequency / this.fmSynth.samplingRate;
-    this.outputSignal.value += deltaPhase;
-    this.outputSignal.value -= Math.floor(this.outputSignal.value);
+    this.outputSource.value += deltaPhase;
+    this.outputSource.value -= Math.floor(this.outputSource.value);
   }
   
 }
