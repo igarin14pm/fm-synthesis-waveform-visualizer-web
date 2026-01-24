@@ -297,7 +297,7 @@ let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
 
 let modulatorVolumeInputUI = new RangeInputUI(
   document.getElementById('modulator-volume-input'),
-  document.getElementById('modulator-volume-value'),
+  document.getElementById('modulator-volume-value-label'),
   modulatorValue.volumeUIValue
 );
 
