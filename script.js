@@ -303,7 +303,7 @@ let modulatorVolumeInputUI = new RangeInputUI(
 
 let modulatorRatioInputUI = new RangeInputUI(
   document.getElementById('modulator-ratio-input'),
-  document.getElementById('modulator-ratio-value'),
+  document.getElementById('modulator-ratio-value-label'),
   modulatorValue.ratioUIValue
 );
 
