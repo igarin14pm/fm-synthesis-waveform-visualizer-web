@@ -296,21 +296,21 @@ let audioEngine = new AudioEngine();
 let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
 
 let modulatorVolumeInputUI = new RangeInputUI(
-  document.getElementById('modulator-volume'),
-  document.getElementById('modulator-volume-value'),
+  document.getElementById('modulator-volume-input'),
+  document.getElementById('modulator-volume-value-label'),
   modulatorValue.volumeUIValue
 );
 
 let modulatorRatioInputUI = new RangeInputUI(
-  document.getElementById('modulator-ratio'),
-  document.getElementById('modulator-ratio-value'),
+  document.getElementById('modulator-ratio-input'),
+  document.getElementById('modulator-ratio-value-label'),
   modulatorValue.ratioUIValue
 );
 
 let modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
-  document.getElementById('phase-graph-modulator'),
-  document.getElementById('waveform-graph-modulator')
+  document.getElementById('modulator-phase-graph'),
+  document.getElementById('modulator-waveform-graph')
 );
 
 let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
@@ -322,8 +322,8 @@ let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
 
 let carrierUI = new OperatorUI(
   visualFMSynth.carrier,
-  document.getElementById('phase-graph-carrier'),
-  document.getElementById('waveform-graph-carrier')
+  document.getElementById('carrier-phase-graph'),
+  document.getElementById('carrier-waveform-graph')
 )
 
 function moveFrameForward() {
