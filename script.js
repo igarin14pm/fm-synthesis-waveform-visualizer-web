@@ -241,11 +241,8 @@ class RangeInputUI {
 
 class MeterUI {
   
-  constructor(meterElement, initialValue, minValue, maxValue) {
+  constructor(meterElement) {
     this.meterElement = meterElement;
-    this.meterElement.value = initialValue;
-    this.meterElement.min = minValue;
-    this.meterElement.max = maxValue;
   }
   
   get value() {
@@ -260,10 +257,10 @@ class MeterUI {
 
 class AngularVelocityMeterUI {
   
-  constructor(phase, meterElement, minValue, maxValue) {
+  constructor(phase, meterElement) {
     this.phase = phase;
     this.phaseValues = [this.phase.output.value, this.phase.output.value];
-    this.meterUI = new MeterUI(meterElement, this.phase.output.value, minValue, maxValue);
+    this.meterUI = new MeterUI(meterElement);
   }
   
   moveFrameForward() {
@@ -315,9 +312,7 @@ let modulatorUI = new OperatorUI(
 
 let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   visualFMSynth.carrier.phase,
-  document.getElementById('carrier-angular-velocity-meter'),
-  -0.3,
-  0.3
+  document.getElementById('carrier-angular-velocity-meter')
 );
 
 let carrierUI = new OperatorUI(
