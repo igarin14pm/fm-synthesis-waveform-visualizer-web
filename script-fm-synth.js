@@ -89,10 +89,10 @@ export class Operator {
   volume = 1;
   ratio = 1;
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   process() {
@@ -101,7 +101,7 @@ export class Operator {
   
   moveFrameForward() {
     this.phase.moveFrameForward();
-    this.outputSignal.value = this.process();
+    this.outputSource.value = this.process();
   }
   
 }
