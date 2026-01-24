@@ -51,14 +51,14 @@ export class Phase {
   value = 0;
   oldValue = 0;
   
-  outputSignal = new Signal(0);
+  outputSource = new Signal(0);
   
   get isLooped() {
     return this.value < this.oldValue;
   }
   
   get output() {
-    return this.outputSignal;
+    return this.outputSource;
   }
   
   process() {
@@ -75,7 +75,7 @@ export class Phase {
     this.value = this.masterPhaseSignal.value * this.operator.ratio;
     this.value -= Math.floor(this.value);
     
-    this.outputSignal.value = this.process();
+    this.outputSource.value = this.process();
   }
 
 }
