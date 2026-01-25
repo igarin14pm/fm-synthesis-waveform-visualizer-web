@@ -31,6 +31,9 @@ export class Phase {
             this.modulationSignal = new Signal(0.0);
         }
     }
+    get isLooped() {
+        return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
+    }
     get output() {
         return this.outputSource;
     }

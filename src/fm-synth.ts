@@ -71,6 +71,10 @@ export class Phase implements Inputting, Outputting, Syncable {
     }
   }
 
+  get isLooped(): boolean {
+    return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
+  }
+
   get output(): Signal {
     return this.outputSource;
   }
