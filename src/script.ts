@@ -1,4 +1,4 @@
-import { Syncable, FMSynth } from './fm-synth.js';
+import { Syncable, FMSynth, Operator } from './fm-synth.js';
 
 // Value Class
 
@@ -68,6 +68,60 @@ class FMSynthValue {
 }
 
 // UI Classes
+
+class PhaseGraph {
+
+  element: HTMLCanvasElement;
+  operator: Operator;
+
+  constructor(element: HTMLCanvasElement, operator: Operator) {
+    this.element = element; 
+    this.operator = operator;
+  }
+
+  get width(): number {
+    return this.element.width;
+  }
+
+  get height(): number {
+    return this.element.height;
+  }
+
+  draw(): void {
+    let circleCenterX = this.width / 3;
+    let circleCenterY = this.height / 2;
+    let circleRadius = this.height / 2 * this.operator.volume;
+    if (this.element.getContext) {
+      let phaseValue: number = this.operator.phase.output.value;
+      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+      context?.beginPath();
+      context?.arc(circleCenterX, circleCenterY, circleRadius, 0, 2 * Math.PI);
+      context?.moveTo(circleCenterX, circleCenterY);
+      context?.lineTo(
+        circleRadius * Math.cos(2 * Math.PI * phaseValue) + circleCenterX,
+        -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY
+      );
+      context?.lineTo(
+        this.width,
+        -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY
+      );
+      context?.stroke();
+    }
+  }
+
+  clear(): void {
+    if (this.element.getContext) {
+      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+      context?.clearRect(0, 0, this.width, this.height);
+    }
+  }
+  
+  update(): void {
+    this.clear();
+    this.draw();
+  }
+
+}
 
 class WaveformGraphData {
 
@@ -140,6 +194,34 @@ class WaveformGraph {
 
 }
 
+class OperatorUI implements Syncable {
+
+  operator: Operator;
+  phaseGraph: PhaseGraph;
+  waveformGraph: WaveformGraph;
+  
+  constructor(
+    operator: Operator,
+    phaseGraphElement: HTMLCanvasElement,
+    waveformGraphElement: HTMLCanvasElement,
+    samplingRate: number
+  ) {
+    this.operator = operator;
+    this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
+    this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
+
+    this.phaseGraph.draw();
+    this.waveformGraph.draw();
+  }
+
+  moveFrameForward(): void {
+    this.phaseGraph.update();
+    this.waveformGraph.data.add(this.operator.output.value);
+    this.waveformGraph.update();
+  }
+
+}
+
 // Script
 
 const visualFMSynthValue = new FMSynthValue(
@@ -154,27 +236,31 @@ const visualFMSynthValue = new FMSynthValue(
   )
 );
 
-let visualFMSynth = new FMSynth(
+const visualFMSynth = new FMSynth(
   visualFMSynthValue.samplingRate,
   visualFMSynthValue.waveFrequency,
   visualFMSynthValue.outputVolume
+);
+
+const modulatorUI = new OperatorUI(
+  visualFMSynth.modulator,
+  <HTMLCanvasElement>document.getElementById('modulator-phase-graph'),
+  <HTMLCanvasElement>document.getElementById('modulator-waveform-graph'),
+  visualFMSynthValue.samplingRate
 )
 
-// temporary code
-let carrierWaveformGraph = new WaveformGraph(
+const carrierUI = new OperatorUI(
+  visualFMSynth.carrier,
+  <HTMLCanvasElement>document.getElementById('carrier-phase-graph'),
   <HTMLCanvasElement>document.getElementById('carrier-waveform-graph'),
   visualFMSynthValue.samplingRate
 );
 
 function moveFrameForward() {
-  let frameUpdateQueue: [Syncable] = [visualFMSynth];
+  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierUI];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
   });
-
-  // temporary code
-  carrierWaveformGraph.data.add(visualFMSynth.output.value);
-  carrierWaveformGraph.update();
 }
 
 function setUp() {
