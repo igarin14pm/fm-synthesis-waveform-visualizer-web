@@ -43,7 +43,7 @@ class WaveformGraphData {
         const numberOfWaves = 4;
         this.valueLength = samplingRate * numberOfWaves;
         let values = new Array(this.valueLength);
-        values.fill(0);
+        values.fill(0.0);
         this.values = values;
     }
     add(value) {
