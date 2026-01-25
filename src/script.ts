@@ -79,7 +79,7 @@ class WaveformGraphData {
     this.valueLength = samplingRate * numberOfWaves;
 
     let values = new Array<number>(this.valueLength);
-    values.fill(0);
+    values.fill(0.0);
     this.values = values;
   }
 
@@ -179,7 +179,7 @@ function moveFrameForward() {
 
 function setUp() {
 
-  const oneSecond_ms = 1000;
+  const oneSecond_ms = 1_000;
   let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
 
 }
