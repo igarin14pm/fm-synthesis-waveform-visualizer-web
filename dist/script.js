@@ -141,13 +141,41 @@ class OperatorUI {
         this.waveformGraph.update();
     }
 }
+class MeterUI {
+    constructor(meterElement) {
+        this.meterElement = meterElement;
+    }
+    get value() {
+        return this.meterElement.value;
+    }
+    set value(newValue) {
+        this.meterElement.value = newValue;
+    }
+}
+class AngularVelocityMeterUI {
+    constructor(phase, meterElement) {
+        this.phase = phase;
+        this.phaseValues = [phase.output.value, phase.output.value];
+        this.meterUI = new MeterUI(meterElement);
+    }
+    moveFrameForward() {
+        this.phaseValues.pop();
+        this.phaseValues.splice(0, 0, this.phase.output.value);
+        let newValue = this.phaseValues[0] - this.phaseValues[1];
+        if (this.phase.isLooped) {
+            newValue += 1.0;
+        }
+        this.meterUI.value = newValue;
+    }
+}
 // Script
 const visualFMSynthValue = new FMSynthValue(120, 0.5, 1, new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1));
 const visualFMSynth = new FMSynth(visualFMSynthValue.samplingRate, visualFMSynthValue.waveFrequency, visualFMSynthValue.outputVolume);
 const modulatorUI = new OperatorUI(visualFMSynth.modulator, document.getElementById('modulator-phase-graph'), document.getElementById('modulator-waveform-graph'), visualFMSynthValue.samplingRate);
+const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, document.getElementById('carrier-angular-velocity-meter'));
 const carrierUI = new OperatorUI(visualFMSynth.carrier, document.getElementById('carrier-phase-graph'), document.getElementById('carrier-waveform-graph'), visualFMSynthValue.samplingRate);
 function moveFrameForward() {
-    let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierUI];
+    let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
     frameUpdateQueue.forEach(syncable => {
         syncable.moveFrameForward();
     });

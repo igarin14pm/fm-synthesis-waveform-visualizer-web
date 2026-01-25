@@ -76,6 +76,7 @@ class AudioEngine {
 
 // UI Classes
 
+/*
 class PhaseGraph {
   
   constructor(element, operator) {
@@ -211,6 +212,7 @@ class OperatorUI {
   }
   
 }
+*/
 
 class RangeInputUI {
   
@@ -310,27 +312,25 @@ let modulatorUI = new OperatorUI(
   document.getElementById('modulator-phase-graph'),
   document.getElementById('modulator-waveform-graph')
 );
-*/
 
 let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   visualFMSynth.carrier.phase,
   document.getElementById('carrier-angular-velocity-meter')
 );
 
-/*
 let carrierUI = new OperatorUI(
   visualFMSynth.carrier,
   document.getElementById('carrier-phase-graph'),
   document.getElementById('carrier-waveform-graph')
 )
-*/
 
 function moveFrameForward() {
-  let frameUpdateQueue = [visualFMSynth,/* modulatorUI,*/ carrierAngularVelocityMeter/*, carrierUI*/];
+  let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
   frameUpdateQueue.forEach((object) => {
     object.moveFrameForward();
   });
 }
+*/
 
 function setUp() {
   
@@ -373,8 +373,10 @@ function setUp() {
     setModulatorRatio();
   })
   
+  /*
   const oneSecond_ms = 1000;
   let intervalID = setInterval(moveFrameForward, oneSecond_ms / SAMPLING_RATE);
+  */
   
 }
 
