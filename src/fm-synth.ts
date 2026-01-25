@@ -8,6 +8,16 @@ export class Signal {
     this.value = value;
   }
 
+  get clippedValue(): number {
+    if (this.value > 1.0) {
+      return 1.0;
+    } else if (this.value < -1.0) {
+      return -1.0;
+    } else {
+      return this.value;
+    }
+  }
+
 }
 
 // Interface
