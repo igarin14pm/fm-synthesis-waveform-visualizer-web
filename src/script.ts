@@ -1,4 +1,4 @@
-import { FMSynth } from './fm-synth.js';
+import { Syncable, FMSynth } from './fm-synth.js';
 
 // Value Class
 
@@ -167,6 +167,11 @@ let carrierWaveformGraph = new WaveformGraph(
 );
 
 function moveFrameForward() {
+  let frameUpdateQueue: [Syncable] = [visualFMSynth];
+  frameUpdateQueue.forEach(syncable => {
+    syncable.moveFrameForward();
+  });
+
   // temporary code
   carrierWaveformGraph.data.add(visualFMSynth.output.value);
   carrierWaveformGraph.update();

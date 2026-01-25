@@ -96,6 +96,10 @@ let visualFMSynth = new FMSynth(visualFMSynthValue.samplingRate, visualFMSynthVa
 // temporary code
 let carrierWaveformGraph = new WaveformGraph(document.getElementById('carrier-waveform-graph'), visualFMSynthValue.samplingRate);
 function moveFrameForward() {
+    let frameUpdateQueue = [visualFMSynth];
+    frameUpdateQueue.forEach(syncable => {
+        syncable.moveFrameForward();
+    });
     // temporary code
     carrierWaveformGraph.data.add(visualFMSynth.output.value);
     carrierWaveformGraph.update();
