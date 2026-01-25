@@ -155,6 +155,23 @@ class WaveformGraph {
         this.draw();
     }
 }
+class RangeInputUI {
+    constructor(inputElement, valueLabelElement, initialValue) {
+        this.inputElement = inputElement;
+        this.valueLabelElement = valueLabelElement;
+        this.inputElement.value = initialValue.toString();
+        this.valueLabelElement.textContent = initialValue.toString();
+    }
+    get value() {
+        return parseInt(this.inputElement.value);
+    }
+    addEventListener(listener) {
+        this.inputElement.addEventListener('input', () => {
+            listener();
+            this.valueLabelElement.textContent = this.inputElement.value;
+        });
+    }
+}
 class OperatorUI {
     constructor(operator, phaseGraphElement, waveformGraphElement, samplingRate) {
         this.operator = operator;
@@ -201,6 +218,8 @@ const visualFMSynthValue = new FMSynthValue(120, 0.5, 1);
 const modulatorValue = new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1);
 const audioEngine = new AudioEngine();
 const visualFMSynth = new FMSynth(visualFMSynthValue.samplingRate, visualFMSynthValue.waveFrequency, visualFMSynthValue.outputVolume);
+const modulatorVolumeInputUI = new RangeInputUI(document.getElementById('modulator-volume-input'), document.getElementById('modulator-volume-value-label'), modulatorValue.volumeUIValue);
+const modulatorRatioInputUI = new RangeInputUI(document.getElementById('modulator-ratio-input'), document.getElementById('modulator-ratio-value-label'), modulatorValue.ratioUIValue);
 const modulatorUI = new OperatorUI(visualFMSynth.modulator, document.getElementById('modulator-phase-graph'), document.getElementById('modulator-waveform-graph'), visualFMSynthValue.samplingRate);
 const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, document.getElementById('carrier-angular-velocity-meter'));
 const carrierUI = new OperatorUI(visualFMSynth.carrier, document.getElementById('carrier-phase-graph'), document.getElementById('carrier-waveform-graph'), visualFMSynthValue.samplingRate);
@@ -212,14 +231,14 @@ function moveFrameForward() {
 }
 function setUp() {
     function setModulatorVolume() {
-        // modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+        modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
         visualFMSynth.modulator.volume = modulatorValue.volumeValue;
         if (audioEngine.isRunning) {
             audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
         }
     }
     function setModulatorRatio() {
-        // modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+        modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
         visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
         if (audioEngine.isRunning) {
             audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
@@ -236,6 +255,12 @@ function setUp() {
         if (audioEngine.isRunning) {
             audioEngine.stop();
         }
+    });
+    modulatorVolumeInputUI.addEventListener(function () {
+        setModulatorVolume();
+    });
+    modulatorRatioInputUI.addEventListener(function () {
+        setModulatorRatio();
     });
     const oneSecond_ms = 1000;
     let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
