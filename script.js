@@ -314,15 +314,15 @@ let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   visualFMSynth.carrier.phase,
   document.getElementById('carrier-angular-velocity-meter')
 );
-
+/*
 let carrierUI = new OperatorUI(
   visualFMSynth.carrier,
   document.getElementById('carrier-phase-graph'),
   document.getElementById('carrier-waveform-graph')
 )
-
+*/
 function moveFrameForward() {
-  let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+  let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter/*, carrierUI*/];
   frameUpdateQueue.forEach((object) => {
     object.moveFrameForward();
   });
