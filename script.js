@@ -304,16 +304,19 @@ let modulatorRatioInputUI = new RangeInputUI(
   modulatorValue.ratioUIValue
 );
 
+/*
 let modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
   document.getElementById('modulator-phase-graph'),
   document.getElementById('modulator-waveform-graph')
 );
+*/
 
 let carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   visualFMSynth.carrier.phase,
   document.getElementById('carrier-angular-velocity-meter')
 );
+
 /*
 let carrierUI = new OperatorUI(
   visualFMSynth.carrier,
@@ -321,8 +324,9 @@ let carrierUI = new OperatorUI(
   document.getElementById('carrier-waveform-graph')
 )
 */
+
 function moveFrameForward() {
-  let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter/*, carrierUI*/];
+  let frameUpdateQueue = [visualFMSynth,/* modulatorUI,*/ carrierAngularVelocityMeter/*, carrierUI*/];
   frameUpdateQueue.forEach((object) => {
     object.moveFrameForward();
   });
