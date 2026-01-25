@@ -21,11 +21,10 @@ class OperatorValue {
     }
 }
 class FMSynthValue {
-    constructor(samplingRate, waveFrequency, outputVolume, modulator) {
+    constructor(samplingRate, waveFrequency, outputVolume) {
         this._samplingRate = samplingRate;
         this._waveFrequency = waveFrequency;
         this._outputVolume = outputVolume;
-        this.modulator = modulator;
     }
     get samplingRate() {
         return this._samplingRate;
@@ -35,6 +34,35 @@ class FMSynthValue {
     }
     get outputVolume() {
         return this._outputVolume;
+    }
+}
+// Audio Class
+class AudioEngine {
+    constructor() {
+        this.audioContext = null;
+        this.audioWorkletNode = null;
+    }
+    get isRunning() {
+        return this.audioContext !== null && this.audioWorkletNode !== null;
+    }
+    setParameterValue(name, value) {
+        if (this.isRunning) {
+            const param = this.audioWorkletNode.parameters.get(name);
+            param?.setValueAtTime(value, this.audioContext.currentTime);
+        }
+    }
+    async start(modulatorValue) {
+        this.audioContext = new AudioContext();
+        await this.audioContext.audioWorklet.addModule('./dist/audio-processor.js');
+        this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
+        this.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
+        this.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+        this.audioWorkletNode.connect(this.audioContext.destination);
+    }
+    stop() {
+        this.audioContext?.close();
+        this.audioContext = null;
+        this.audioWorkletNode = null;
     }
 }
 // UI Classes
@@ -169,7 +197,9 @@ class AngularVelocityMeterUI {
     }
 }
 // Script
-const visualFMSynthValue = new FMSynthValue(120, 0.5, 1, new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1));
+const visualFMSynthValue = new FMSynthValue(120, 0.5, 1);
+const modulatorValue = new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1);
+const audioEngine = new AudioEngine();
 const visualFMSynth = new FMSynth(visualFMSynthValue.samplingRate, visualFMSynthValue.waveFrequency, visualFMSynthValue.outputVolume);
 const modulatorUI = new OperatorUI(visualFMSynth.modulator, document.getElementById('modulator-phase-graph'), document.getElementById('modulator-waveform-graph'), visualFMSynthValue.samplingRate);
 const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, document.getElementById('carrier-angular-velocity-meter'));
@@ -181,6 +211,32 @@ function moveFrameForward() {
     });
 }
 function setUp() {
+    function setModulatorVolume() {
+        // modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+        visualFMSynth.modulator.volume = modulatorValue.volumeValue;
+        if (audioEngine.isRunning) {
+            audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
+        }
+    }
+    function setModulatorRatio() {
+        // modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+        visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
+        if (audioEngine.isRunning) {
+            audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+        }
+    }
+    setModulatorVolume();
+    setModulatorRatio();
+    document.getElementById('start-audio-button')?.addEventListener('click', function () {
+        if (!audioEngine.isRunning) {
+            audioEngine.start(modulatorValue);
+        }
+    });
+    document.getElementById('stop-audio-button')?.addEventListener('click', function () {
+        if (audioEngine.isRunning) {
+            audioEngine.stop();
+        }
+    });
     const oneSecond_ms = 1000;
     let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
 }

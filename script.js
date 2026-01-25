@@ -35,7 +35,7 @@ class OperatorValue {
 }
 
 // Audio Class
-
+/*
 class AudioEngine {
     
   audioContext = null;
@@ -73,6 +73,7 @@ class AudioEngine {
   }
   
 }
+  */
 
 // UI Classes
 
@@ -241,6 +242,7 @@ class RangeInputUI {
   
 }
 
+/*
 class MeterUI {
   
   constructor(meterElement) {
@@ -276,6 +278,7 @@ class AngularVelocityMeterUI {
   }
   
 }
+*/
 
 // Script
 
@@ -290,8 +293,8 @@ let modulatorValue = new OperatorValue(
   1
 );
 
-let audioEngine = new AudioEngine();
-
+// let audioEngine = new AudioEngine();
+/*
 let visualFMSynth = new FMSynth(SAMPLING_RATE, WAVE_FREQUENCY, OUTPUT_VOLUME);
 
 let modulatorVolumeInputUI = new RangeInputUI(
@@ -306,7 +309,6 @@ let modulatorRatioInputUI = new RangeInputUI(
   modulatorValue.ratioUIValue
 );
 
-/*
 let modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
   document.getElementById('modulator-phase-graph'),
@@ -333,7 +335,7 @@ function moveFrameForward() {
 */
 
 function setUp() {
-  
+  /*
   function setModulatorVolume() {
     modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
     
@@ -354,7 +356,8 @@ function setUp() {
   
   setModulatorVolume();
   setModulatorRatio();
-  
+  */
+  /*
   document.getElementById('start-audio-button').addEventListener('click', function() {
     if (!audioEngine.isRunning) {
       audioEngine.start(modulatorValue);
@@ -365,14 +368,15 @@ function setUp() {
       audioEngine.stop();
     }
   });
-  
+  */
+  /*
   modulatorVolumeInputUI.addEventListener(function() {
     setModulatorVolume();
   });
   modulatorRatioInputUI.addEventListener(function() {
     setModulatorRatio();
   })
-  
+  */
   /*
   const oneSecond_ms = 1000;
   let intervalID = setInterval(moveFrameForward, oneSecond_ms / SAMPLING_RATE);

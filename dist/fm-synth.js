@@ -3,6 +3,17 @@ export class Signal {
     constructor(value) {
         this.value = value;
     }
+    get clippedValue() {
+        if (this.value > 1.0) {
+            return 1.0;
+        }
+        else if (this.value < -1.0) {
+            return -1.0;
+        }
+        else {
+            return this.value;
+        }
+    }
 }
 // FM Synth Modules
 export class MasterPhase {
