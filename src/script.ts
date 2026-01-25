@@ -233,6 +233,36 @@ class WaveformGraph {
 
 }
 
+class RangeInputUI {
+
+  inputElement: HTMLInputElement;
+  valueLabelElement: HTMLLabelElement;
+
+  constructor(
+    inputElement: HTMLInputElement,
+    valueLabelElement: HTMLLabelElement,
+    initialValue: number
+  ) {
+    this.inputElement = inputElement;
+    this.valueLabelElement = valueLabelElement;
+
+    this.inputElement.value = initialValue.toString();
+    this.valueLabelElement.textContent = initialValue.toString();
+  }
+
+  get value(): number {
+    return parseInt(this.inputElement.value);
+  }
+
+  addEventListener(listener: () => void) {
+    this.inputElement.addEventListener('input', () => {
+      listener();
+      this.valueLabelElement.textContent = this.inputElement.value;
+    })
+  }
+
+}
+
 class OperatorUI implements Syncable {
 
   operator: Operator;
@@ -326,6 +356,18 @@ const visualFMSynth = new FMSynth(
   visualFMSynthValue.outputVolume
 );
 
+const modulatorVolumeInputUI = new RangeInputUI(
+  <HTMLInputElement>document.getElementById('modulator-volume-input'),
+  <HTMLLabelElement>document.getElementById('modulator-volume-value-label'),
+  modulatorValue.volumeUIValue
+)
+
+const modulatorRatioInputUI = new RangeInputUI(
+  <HTMLInputElement>document.getElementById('modulator-ratio-input'),
+  <HTMLLabelElement>document.getElementById('modulator-ratio-value-label'),
+  modulatorValue.ratioUIValue
+)
+
 const modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
   <HTMLCanvasElement>document.getElementById('modulator-phase-graph'),
@@ -354,7 +396,7 @@ function moveFrameForward() {
 
 function setUp() {
   function setModulatorVolume() {
-    // modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
 
     visualFMSynth.modulator.volume = modulatorValue.volumeValue;
     if (audioEngine.isRunning) {
@@ -366,7 +408,7 @@ function setUp() {
   }
 
   function setModulatorRatio() {
-    // modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
 
     visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
     if (audioEngine.isRunning) {
@@ -389,6 +431,13 @@ function setUp() {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }
+  });
+
+  modulatorVolumeInputUI.addEventListener(function() {
+    setModulatorVolume();
+  });
+  modulatorRatioInputUI.addEventListener(function() {
+    setModulatorRatio();
   });
 
   const oneSecond_ms = 1_000;
