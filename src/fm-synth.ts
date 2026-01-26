@@ -62,7 +62,7 @@ export class MasterPhase implements Outputting, Syncable {
 
 }
 
-export class Phase implements Inputting, Outputting, Syncable {
+export class Phase implements Inputting, Processing, Outputting, Syncable {
   
   operator: Operator;
   input: Signal;
@@ -89,7 +89,7 @@ export class Phase implements Inputting, Outputting, Syncable {
     return this.outputSource;
   }
 
-  proess(): number {
+  process(): number {
     const modulatorCoefficient = 0.25;
     return this.valuesWithoutMod[0] + this.modulationSignal.value * modulatorCoefficient;
   }
@@ -99,7 +99,7 @@ export class Phase implements Inputting, Outputting, Syncable {
     this.valuesWithoutMod.pop();
     this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
 
-    this.outputSource.value = this.proess();
+    this.outputSource.value = this.process();
   }
 
 }
