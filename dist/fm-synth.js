@@ -48,7 +48,7 @@ export class Phase {
     get output() {
         return this.outputSource;
     }
-    proess() {
+    process() {
         const modulatorCoefficient = 0.25;
         return this.valuesWithoutMod[0] + this.modulationSignal.value * modulatorCoefficient;
     }
@@ -56,7 +56,7 @@ export class Phase {
         let valueWithoutMod = this.input.value * this.operator.ratio % 1;
         this.valuesWithoutMod.pop();
         this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
-        this.outputSource.value = this.proess();
+        this.outputSource.value = this.process();
     }
 }
 export class Operator {
