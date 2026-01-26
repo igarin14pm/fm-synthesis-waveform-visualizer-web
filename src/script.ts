@@ -356,34 +356,43 @@ const visualFMSynth = new FMSynth(
   visualFMSynthValue.outputVolume
 );
 
+const modulatorVolumeInputElement = <HTMLInputElement>document.getElementById('modulator-volume-input');
+const modulatorVolumeValueLabelElement = <HTMLLabelElement>document.getElementById('modulator-volume-value-label');
 const modulatorVolumeInputUI = new RangeInputUI(
-  <HTMLInputElement>document.getElementById('modulator-volume-input'),
-  <HTMLLabelElement>document.getElementById('modulator-volume-value-label'),
+  modulatorVolumeInputElement,
+  modulatorVolumeValueLabelElement,
   modulatorValue.volumeUIValue
 )
 
+const modulatorRatioInputElement = <HTMLInputElement>document.getElementById('modulator-ratio-input');
+const modulatorRatioValueLabelElement = <HTMLLabelElement>document.getElementById('modulator-ratio-value-label');
 const modulatorRatioInputUI = new RangeInputUI(
-  <HTMLInputElement>document.getElementById('modulator-ratio-input'),
-  <HTMLLabelElement>document.getElementById('modulator-ratio-value-label'),
+  modulatorRatioInputElement,
+  modulatorRatioValueLabelElement,
   modulatorValue.ratioUIValue
 )
 
+const modulatorPhaseGraphElement = <HTMLCanvasElement>document.getElementById('modulator-phase-graph');
+const modulatorWaveformGraphElement = <HTMLCanvasElement>document.getElementById('modulator-waveform-graph');
 const modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
-  <HTMLCanvasElement>document.getElementById('modulator-phase-graph'),
-  <HTMLCanvasElement>document.getElementById('modulator-waveform-graph'),
+  modulatorPhaseGraphElement,
+  modulatorWaveformGraphElement,
   visualFMSynthValue.samplingRate
 )
 
+const carrierAngularVelocityMeterElement = <HTMLMeterElement>document.getElementById('carrier-angular-velocity-meter');
 const carrierAngularVelocityMeter = new AngularVelocityMeterUI(
   visualFMSynth.carrier.phase,
-  <HTMLMeterElement>document.getElementById('carrier-angular-velocity-meter')
+  carrierAngularVelocityMeterElement
 );
 
+const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
+const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
 const carrierUI = new OperatorUI(
   visualFMSynth.carrier,
-  <HTMLCanvasElement>document.getElementById('carrier-phase-graph'),
-  <HTMLCanvasElement>document.getElementById('carrier-waveform-graph'),
+  carrierPhaseGraphElement,
+  carrierWaveformGraphElement,
   visualFMSynthValue.samplingRate
 );
 
@@ -422,12 +431,15 @@ function setUp() {
   setModulatorVolume();
   setModulatorRatio();
 
-  document.getElementById('start-audio-button')?.addEventListener('click', function() {
+  const startAudioButton = <HTMLButtonElement>document.getElementById('start-audio-button');
+  startAudioButton.addEventListener('click', function() {
     if (!audioEngine.isRunning) {
       audioEngine.start(modulatorValue);
     }
   });
-  document.getElementById('stop-audio-button')?.addEventListener('click', function() {
+
+  const stopAudioButton = <HTMLButtonElement>document.getElementById('stop-audio-button');
+  stopAudioButton?.addEventListener('click', function() {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }

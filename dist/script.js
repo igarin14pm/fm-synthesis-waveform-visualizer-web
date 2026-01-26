@@ -218,11 +218,20 @@ const visualFMSynthValue = new FMSynthValue(120, 0.5, 1);
 const modulatorValue = new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1);
 const audioEngine = new AudioEngine();
 const visualFMSynth = new FMSynth(visualFMSynthValue.samplingRate, visualFMSynthValue.waveFrequency, visualFMSynthValue.outputVolume);
-const modulatorVolumeInputUI = new RangeInputUI(document.getElementById('modulator-volume-input'), document.getElementById('modulator-volume-value-label'), modulatorValue.volumeUIValue);
-const modulatorRatioInputUI = new RangeInputUI(document.getElementById('modulator-ratio-input'), document.getElementById('modulator-ratio-value-label'), modulatorValue.ratioUIValue);
-const modulatorUI = new OperatorUI(visualFMSynth.modulator, document.getElementById('modulator-phase-graph'), document.getElementById('modulator-waveform-graph'), visualFMSynthValue.samplingRate);
-const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, document.getElementById('carrier-angular-velocity-meter'));
-const carrierUI = new OperatorUI(visualFMSynth.carrier, document.getElementById('carrier-phase-graph'), document.getElementById('carrier-waveform-graph'), visualFMSynthValue.samplingRate);
+const modulatorVolumeInputElement = document.getElementById('modulator-volume-input');
+const modulatorVolumeValueLabelElement = document.getElementById('modulator-volume-value-label');
+const modulatorVolumeInputUI = new RangeInputUI(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUIValue);
+const modulatorRatioInputElement = document.getElementById('modulator-ratio-input');
+const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label');
+const modulatorRatioInputUI = new RangeInputUI(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUIValue);
+const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph');
+const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph');
+const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorWaveformGraphElement, visualFMSynthValue.samplingRate);
+const carrierAngularVelocityMeterElement = document.getElementById('carrier-angular-velocity-meter');
+const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, carrierAngularVelocityMeterElement);
+const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph');
+const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph');
+const carrierUI = new OperatorUI(visualFMSynth.carrier, carrierPhaseGraphElement, carrierWaveformGraphElement, visualFMSynthValue.samplingRate);
 function moveFrameForward() {
     let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
     frameUpdateQueue.forEach(syncable => {
@@ -246,12 +255,14 @@ function setUp() {
     }
     setModulatorVolume();
     setModulatorRatio();
-    document.getElementById('start-audio-button')?.addEventListener('click', function () {
+    const startAudioButton = document.getElementById('start-audio-button');
+    startAudioButton.addEventListener('click', function () {
         if (!audioEngine.isRunning) {
             audioEngine.start(modulatorValue);
         }
     });
-    document.getElementById('stop-audio-button')?.addEventListener('click', function () {
+    const stopAudioButton = document.getElementById('stop-audio-button');
+    stopAudioButton?.addEventListener('click', function () {
         if (audioEngine.isRunning) {
             audioEngine.stop();
         }
