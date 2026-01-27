@@ -137,6 +137,24 @@ class PhaseGraph extends Graph {
         }
     }
 }
+class OutputGraph extends Graph {
+    constructor(element, operator) {
+        super(element);
+        this.operator = operator;
+    }
+    draw() {
+        const context = this.element.getContext('2d');
+        // 出力を表す線分を描画
+        context.strokeStyle = 'black';
+        context.beginPath();
+        const outputLineStartX = 0;
+        const outputLineEndX = this.width;
+        const outputLineY = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+        context.moveTo(outputLineStartX, outputLineY);
+        context.lineTo(outputLineEndX, outputLineY);
+        context.stroke();
+    }
+}
 class WaveformGraphData {
     constructor(samplingRate) {
         const numberOfWaves = 4;
@@ -191,15 +209,18 @@ class RangeInputUI {
     }
 }
 class OperatorUI {
-    constructor(operator, phaseGraphElement, waveformGraphElement, samplingRate) {
+    constructor(operator, phaseGraphElement, outputGraphElement, waveformGraphElement, samplingRate) {
         this.operator = operator;
         this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
+        this.outputGraph = new OutputGraph(outputGraphElement, operator);
         this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
         this.phaseGraph.draw();
+        this.outputGraph.draw();
         this.waveformGraph.draw();
     }
     moveFrameForward() {
         this.phaseGraph.update();
+        this.outputGraph.update();
         this.waveformGraph.data.add(this.operator.output.value);
         this.waveformGraph.update();
     }
@@ -243,13 +264,15 @@ const modulatorRatioInputElement = document.getElementById('modulator-ratio-inpu
 const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label');
 const modulatorRatioInputUI = new RangeInputUI(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUIValue);
 const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph');
+const modulatorOutputGraphElement = document.getElementById('modulator-output-graph');
 const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph');
-const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorWaveformGraphElement, visualFMSynthValue.samplingRate);
+const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorOutputGraphElement, modulatorWaveformGraphElement, visualFMSynthValue.samplingRate);
 const carrierAngularVelocityMeterElement = document.getElementById('carrier-angular-velocity-meter');
 const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, carrierAngularVelocityMeterElement);
 const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph');
+const carrierOutputGraphElement = document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph');
-const carrierUI = new OperatorUI(visualFMSynth.carrier, carrierPhaseGraphElement, carrierWaveformGraphElement, visualFMSynthValue.samplingRate);
+const carrierUI = new OperatorUI(visualFMSynth.carrier, carrierPhaseGraphElement, carrierOutputGraphElement, carrierWaveformGraphElement, visualFMSynthValue.samplingRate);
 function moveFrameForward() {
     let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
     frameUpdateQueue.forEach(syncable => {
