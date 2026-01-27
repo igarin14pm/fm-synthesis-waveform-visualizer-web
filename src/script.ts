@@ -134,10 +134,10 @@ class PhaseGraph {
       context.strokeStyle = 'black';
       context.beginPath();
       for (let i: number = 0; i < this.sineWaveValueLength; i++) {
-        const sineWaveValue: number = -1 * Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
+        const sineWaveValue: number = Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
 
         const sineWaveX: number = this.width * i / (this.sineWaveValueLength - 1);
-        const sineWaveY: number = this.height * (this.operator.volume * sineWaveValue / 2 + 0.5);
+        const sineWaveY: number = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
 
         if (i == 0) {
           context.moveTo(sineWaveX, sineWaveY);
@@ -153,6 +153,14 @@ class PhaseGraph {
       const phaseLineX: number = this.width * this.operator.phase.output.value;
       context.moveTo(phaseLineX, 0);
       context.lineTo(phaseLineX, this.height);
+      context.stroke();
+
+      // 値の出力を表す線分を描画
+      context.strokeStyle = 'black';
+      context.beginPath();
+      const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+      context.moveTo(phaseLineX, outputLineY);
+      context.lineTo(this.width, outputLineY);
       context.stroke();
     }
   }
