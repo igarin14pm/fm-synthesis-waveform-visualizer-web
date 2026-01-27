@@ -221,25 +221,16 @@ class WaveformGraphData {
 
 }
 
-class WaveformGraph {
+class WaveformGraph extends Graph {
 
-  element: HTMLCanvasElement;
   data: WaveformGraphData;
 
   constructor(element: HTMLCanvasElement, samplingRate: number) {
-    this.element = element; 
+    super(element);
     this.data = new WaveformGraphData(samplingRate);
   }
 
-  get width(): number {
-    return this.element.width;
-  }
-
-  get height(): number {
-    return this.element.height;
-  }
-
-  draw() {
+  override draw(): void {
     if (this.element.getContext) {
       let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
       context.beginPath();
@@ -253,20 +244,7 @@ class WaveformGraph {
         }
       }
       context.stroke();
-
     }
-  }
-
-  clear() {
-    if (this.element.getContext) {
-      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
-      context.clearRect(0, 0, this.width, this.height);
-    }
-  }
-
-  update() {
-    this.clear();
-    this.draw();
   }
 
 }
