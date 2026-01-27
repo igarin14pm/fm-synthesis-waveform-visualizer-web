@@ -66,7 +66,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
   
   operator: Operator;
   input: Signal;
-  modulationSignal: Signal;
+  modulatorSignal: Signal | null;
 
   valuesWithoutMod: number[] = [0.0, 0.0];
   outputSource = new Signal(0.0);
@@ -74,11 +74,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
   constructor(operator: Operator, masterPhaseSignal: Signal, modulatorSignal: Signal | null) {
     this.operator = operator;
     this.input = masterPhaseSignal;
-    if (modulatorSignal !== null) {
-      this.modulationSignal = modulatorSignal;
-    } else {
-      this.modulationSignal = new Signal(0.0);
-    }
+    this.modulatorSignal = modulatorSignal
   }
 
   get isLooped(): boolean {
@@ -89,9 +85,19 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
     return this.outputSource;
   }
 
+  get modulationValue(): number {
+    const modulationCoefficient: number = 0.25;
+    if (this.modulatorSignal != null) {
+      return this.modulatorSignal.value * modulationCoefficient;
+    } else {
+      return 0
+    }
+  }
+
   process(): number {
-    const modulatorCoefficient = 0.25;
-    return this.valuesWithoutMod[0] + this.modulationSignal.value * modulatorCoefficient;
+    let value = this.valuesWithoutMod[0] + this.modulationValue;
+    value -= Math.floor(value);
+    return value;
   }
 
   moveFrameForward(): void {

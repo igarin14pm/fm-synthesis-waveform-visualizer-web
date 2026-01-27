@@ -35,12 +35,7 @@ export class Phase {
         this.outputSource = new Signal(0.0);
         this.operator = operator;
         this.input = masterPhaseSignal;
-        if (modulatorSignal !== null) {
-            this.modulationSignal = modulatorSignal;
-        }
-        else {
-            this.modulationSignal = new Signal(0.0);
-        }
+        this.modulatorSignal = modulatorSignal;
     }
     get isLooped() {
         return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
@@ -48,9 +43,19 @@ export class Phase {
     get output() {
         return this.outputSource;
     }
+    get modulationValue() {
+        const modulationCoefficient = 0.25;
+        if (this.modulatorSignal != null) {
+            return this.modulatorSignal.value * modulationCoefficient;
+        }
+        else {
+            return 0;
+        }
+    }
     process() {
-        const modulatorCoefficient = 0.25;
-        return this.valuesWithoutMod[0] + this.modulationSignal.value * modulatorCoefficient;
+        let value = this.valuesWithoutMod[0] + this.modulationValue;
+        value -= Math.floor(value);
+        return value;
     }
     moveFrameForward() {
         let valueWithoutMod = this.input.value * this.operator.ratio % 1;
