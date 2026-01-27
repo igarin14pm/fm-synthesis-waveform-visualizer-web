@@ -66,6 +66,25 @@ class AudioEngine {
     }
 }
 // UI Classes
+class Graph {
+    get width() {
+        return this.element.width;
+    }
+    get height() {
+        return this.element.height;
+    }
+    constructor(element) {
+        this.element = element;
+    }
+    clear() {
+        let context = this.element.getContext('2d');
+        context.clearRect(0, 0, this.width, this.height);
+    }
+    update() {
+        this.clear();
+        this.draw();
+    }
+}
 class PhaseGraph {
     constructor(element, operator) {
         this.sineWaveValueLength = 120;

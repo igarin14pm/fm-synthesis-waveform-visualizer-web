@@ -108,6 +108,36 @@ class AudioEngine {
 
 // UI Classes
 
+abstract class Graph {
+
+  element: HTMLCanvasElement;
+
+  get width(): number {
+    return this.element.width;
+  }
+
+  get height(): number {
+    return this.element.height;
+  }
+
+  constructor(element: HTMLCanvasElement) {
+    this.element = element
+  }
+
+  abstract draw(): void;
+
+  clear(): void {
+    let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+    context.clearRect(0, 0, this.width, this.height);
+  }
+
+  update(): void {
+    this.clear();
+    this.draw();
+  }
+
+}
+
 class PhaseGraph {
 
   element: HTMLCanvasElement;
