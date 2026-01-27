@@ -150,16 +150,10 @@ class WaveformGraphData {
         this.values.splice(0, 0, value);
     }
 }
-class WaveformGraph {
+class WaveformGraph extends Graph {
     constructor(element, samplingRate) {
-        this.element = element;
+        super(element);
         this.data = new WaveformGraphData(samplingRate);
-    }
-    get width() {
-        return this.element.width;
-    }
-    get height() {
-        return this.element.height;
     }
     draw() {
         if (this.element.getContext) {
@@ -177,16 +171,6 @@ class WaveformGraph {
             }
             context.stroke();
         }
-    }
-    clear() {
-        if (this.element.getContext) {
-            let context = this.element.getContext('2d');
-            context.clearRect(0, 0, this.width, this.height);
-        }
-    }
-    update() {
-        this.clear();
-        this.draw();
     }
 }
 class RangeInputUI {
