@@ -151,17 +151,29 @@ class PhaseGraph {
       context.strokeStyle = 'green';
       context.beginPath();
       const phaseLineX: number = this.width * this.operator.phase.output.value;
-      context.moveTo(phaseLineX, 0);
-      context.lineTo(phaseLineX, this.height);
+      const phaseLineStartY: number = 0;
+      const phaseLineEndY: number = this.height;
+      context.moveTo(phaseLineX, phaseLineStartY);
+      context.lineTo(phaseLineX, phaseLineEndY);
       context.stroke();
 
       // 値の出力を表す線分を描画
       context.strokeStyle = 'black';
       context.beginPath();
+      const outputLineStartX: number = phaseLineX;
+      const outputLineEndX: number = this.width;
       const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
-      context.moveTo(phaseLineX, outputLineY);
-      context.lineTo(this.width, outputLineY);
+      context.moveTo(outputLineStartX, outputLineY);
+      context.lineTo(outputLineEndX, outputLineY);
       context.stroke();
+
+      // 値を表す円を描画
+      context.fillStyle = 'green';
+      const valueCircleX: number = phaseLineX;
+      const valueCircleY: number = outputLineY;
+      const valueCircleRadius: number = 5;
+      context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
+      context.fill();
     }
   }
 

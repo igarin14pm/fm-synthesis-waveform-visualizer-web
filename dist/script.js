@@ -100,16 +100,27 @@ class PhaseGraph {
             context.strokeStyle = 'green';
             context.beginPath();
             const phaseLineX = this.width * this.operator.phase.output.value;
-            context.moveTo(phaseLineX, 0);
-            context.lineTo(phaseLineX, this.height);
+            const phaseLineStartY = 0;
+            const phaseLineEndY = this.height;
+            context.moveTo(phaseLineX, phaseLineStartY);
+            context.lineTo(phaseLineX, phaseLineEndY);
             context.stroke();
             // 値の出力を表す線分を描画
             context.strokeStyle = 'black';
             context.beginPath();
+            const outputLineStartX = phaseLineX;
+            const outputLineEndX = this.width;
             const outputLineY = this.height * (-1 * this.operator.output.value / 2 + 0.5);
-            context.moveTo(phaseLineX, outputLineY);
-            context.lineTo(this.width, outputLineY);
+            context.moveTo(outputLineStartX, outputLineY);
+            context.lineTo(outputLineEndX, outputLineY);
             context.stroke();
+            // 値を表す円を描画
+            context.fillStyle = 'green';
+            const valueCircleX = phaseLineX;
+            const valueCircleY = outputLineY;
+            const valueCircleRadius = 5;
+            context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
+            context.fill();
         }
     }
     clear() {
