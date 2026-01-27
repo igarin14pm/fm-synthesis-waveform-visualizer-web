@@ -203,10 +203,12 @@ class PhaseGraph extends Graph {
 class OutputGraph extends Graph {
 
   operator: Operator;
+  showsModulatingAmount: boolean;
 
-  constructor(element: HTMLCanvasElement, operator: Operator) {
+  constructor(element: HTMLCanvasElement, operator: Operator, showsModulatingAmout: boolean) {
     super(element);
     this.operator = operator;
+    this.showsModulatingAmount = showsModulatingAmout;
   }
 
   override draw(): void {
@@ -221,6 +223,25 @@ class OutputGraph extends Graph {
     context.moveTo(outputLineStartX, outputLineY);
     context.lineTo(outputLineEndX, outputLineY);
     context.stroke();
+
+    // 変調を掛ける量を表す長方形を描画
+    if (this.showsModulatingAmount) {
+      context.fillStyle= 'gray';
+
+      const amountRectX: number = this.width / 3;
+      const amountRectWidth: number = this.width / 3;
+
+      // 枠線を描画
+      const amountRectOutlineY: number = 0;
+      const amountRectOutlineHeight: number = this.height;
+      context.strokeStyle = 'black';
+      context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
+
+      // 塗りつぶしを描画
+      const amountRectFillY: number = this.height / 2;
+      const amountRectFillHeight: number = outputLineY - amountRectFillY;
+      context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
+    }
   }
 
 }
@@ -316,11 +337,12 @@ class OperatorUI implements Syncable {
     phaseGraphElement: HTMLCanvasElement,
     outputGraphElement: HTMLCanvasElement,
     waveformGraphElement: HTMLCanvasElement,
+    showsModulatingAmount: boolean,
     samplingRate: number
   ) {
     this.operator = operator;
     this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
-    this.outputGraph = new OutputGraph(outputGraphElement, operator);
+    this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
     this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
 
     this.phaseGraph.draw();
@@ -426,6 +448,7 @@ const modulatorUI = new OperatorUI(
   modulatorPhaseGraphElement,
   modulatorOutputGraphElement,
   modulatorWaveformGraphElement,
+  true,
   visualFMSynthValue.samplingRate
 )
 
@@ -443,6 +466,7 @@ const carrierUI = new OperatorUI(
   carrierPhaseGraphElement,
   carrierOutputGraphElement,
   carrierWaveformGraphElement,
+  false,
   visualFMSynthValue.samplingRate
 );
 
