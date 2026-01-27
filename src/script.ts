@@ -200,6 +200,52 @@ class PhaseGraph extends Graph {
 
 }
 
+class OutputGraph extends Graph {
+
+  operator: Operator;
+  showsModulatingAmount: boolean;
+
+  constructor(element: HTMLCanvasElement, operator: Operator, showsModulatingAmout: boolean) {
+    super(element);
+    this.operator = operator;
+    this.showsModulatingAmount = showsModulatingAmout;
+  }
+
+  override draw(): void {
+    const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+
+    // 出力を表す線分を描画
+    context.strokeStyle = 'black';
+    context.beginPath();
+    const outputLineStartX: number = 0;
+    const outputLineEndX: number = this.width;
+    const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+    context.moveTo(outputLineStartX, outputLineY);
+    context.lineTo(outputLineEndX, outputLineY);
+    context.stroke();
+
+    // 変調を掛ける量を表す長方形を描画
+    if (this.showsModulatingAmount) {
+      context.fillStyle= 'gray';
+
+      const amountRectX: number = this.width / 3;
+      const amountRectWidth: number = this.width / 3;
+
+      // 枠線を描画
+      const amountRectOutlineY: number = 0;
+      const amountRectOutlineHeight: number = this.height;
+      context.strokeStyle = 'black';
+      context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
+
+      // 塗りつぶしを描画
+      const amountRectFillY: number = this.height / 2;
+      const amountRectFillHeight: number = outputLineY - amountRectFillY;
+      context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
+    }
+  }
+
+}
+
 class WaveformGraphData {
 
   valueLength: number;
@@ -283,24 +329,30 @@ class OperatorUI implements Syncable {
 
   operator: Operator;
   phaseGraph: PhaseGraph;
+  outputGraph: OutputGraph;
   waveformGraph: WaveformGraph;
   
   constructor(
     operator: Operator,
     phaseGraphElement: HTMLCanvasElement,
+    outputGraphElement: HTMLCanvasElement,
     waveformGraphElement: HTMLCanvasElement,
+    showsModulatingAmount: boolean,
     samplingRate: number
   ) {
     this.operator = operator;
     this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
+    this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
     this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
 
     this.phaseGraph.draw();
+    this.outputGraph.draw();
     this.waveformGraph.draw();
   }
 
   moveFrameForward(): void {
     this.phaseGraph.update();
+    this.outputGraph.update();
     this.waveformGraph.data.add(this.operator.output.value);
     this.waveformGraph.update();
   }
@@ -389,11 +441,14 @@ const modulatorRatioInputUI = new RangeInputUI(
 )
 
 const modulatorPhaseGraphElement = <HTMLCanvasElement>document.getElementById('modulator-phase-graph');
+const modulatorOutputGraphElement = <HTMLCanvasElement>document.getElementById('modulator-output-graph');
 const modulatorWaveformGraphElement = <HTMLCanvasElement>document.getElementById('modulator-waveform-graph');
 const modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
   modulatorPhaseGraphElement,
+  modulatorOutputGraphElement,
   modulatorWaveformGraphElement,
+  true,
   visualFMSynthValue.samplingRate
 )
 
@@ -404,11 +459,14 @@ const carrierAngularVelocityMeter = new AngularVelocityMeterUI(
 );
 
 const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
+const carrierOutputGraphElement = <HTMLCanvasElement>document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
 const carrierUI = new OperatorUI(
   visualFMSynth.carrier,
   carrierPhaseGraphElement,
+  carrierOutputGraphElement,
   carrierWaveformGraphElement,
+  false,
   visualFMSynthValue.samplingRate
 );
 
