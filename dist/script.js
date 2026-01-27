@@ -85,27 +85,21 @@ class Graph {
         this.draw();
     }
 }
-class PhaseGraph {
+class PhaseGraph extends Graph {
     constructor(element, operator) {
-        this.sineWaveValueLength = 120;
-        this.element = element;
+        super(element);
         this.operator = operator;
     }
-    get width() {
-        return this.element.width;
-    }
-    get height() {
-        return this.element.height;
-    }
     draw() {
+        const sineWaveValueLength = 120;
         if (this.element.getContext) {
             // サイン波を描画
             const context = this.element.getContext('2d');
             context.strokeStyle = 'black';
             context.beginPath();
-            for (let i = 0; i < this.sineWaveValueLength; i++) {
-                const sineWaveValue = Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
-                const sineWaveX = this.width * i / (this.sineWaveValueLength - 1);
+            for (let i = 0; i < sineWaveValueLength; i++) {
+                const sineWaveValue = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
+                const sineWaveX = this.width * i / (sineWaveValueLength - 1);
                 const sineWaveY = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
                 if (i == 0) {
                     context.moveTo(sineWaveX, sineWaveY);
@@ -141,16 +135,6 @@ class PhaseGraph {
             context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
             context.fill();
         }
-    }
-    clear() {
-        if (this.element.getContext) {
-            let context = this.element.getContext('2d');
-            context.clearRect(0, 0, this.width, this.height);
-        }
-    }
-    update() {
-        this.clear();
-        this.draw();
     }
 }
 class WaveformGraphData {
