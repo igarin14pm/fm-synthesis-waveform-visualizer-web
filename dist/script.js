@@ -68,6 +68,7 @@ class AudioEngine {
 // UI Classes
 class PhaseGraph {
     constructor(element, operator) {
+        this.sineWaveValueLength = 120;
         this.element = element;
         this.operator = operator;
     }
@@ -78,17 +79,21 @@ class PhaseGraph {
         return this.element.height;
     }
     draw() {
-        let circleCenterX = this.width / 3;
-        let circleCenterY = this.height / 2;
-        let circleRadius = this.height / 2 * this.operator.volume;
         if (this.element.getContext) {
-            let phaseValue = this.operator.phase.output.value;
-            let context = this.element.getContext('2d');
+            const context = this.element.getContext('2d');
+            // サイン波を描画
             context?.beginPath();
-            context?.arc(circleCenterX, circleCenterY, circleRadius, 0, 2 * Math.PI);
-            context?.moveTo(circleCenterX, circleCenterY);
-            context?.lineTo(circleRadius * Math.cos(2 * Math.PI * phaseValue) + circleCenterX, -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY);
-            context?.lineTo(this.width, -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY);
+            for (let i = 0; i < this.sineWaveValueLength; i++) {
+                const sineWaveValue = -1 * Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
+                const sineWaveX = this.width * i / (this.sineWaveValueLength - 1);
+                const sineWaveY = this.height * (this.operator.volume * sineWaveValue / 2 + 0.5);
+                if (i == 0) {
+                    context?.moveTo(sineWaveX, sineWaveY);
+                }
+                else {
+                    context?.lineTo(sineWaveX, sineWaveY);
+                }
+            }
             context?.stroke();
         }
     }
