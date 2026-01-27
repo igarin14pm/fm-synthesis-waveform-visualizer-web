@@ -179,8 +179,8 @@ class PhaseGraph {
 
   clear(): void {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.clearRect(0, 0, this.width, this.height);
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.clearRect(0, 0, this.width, this.height);
     }
   }
   
@@ -232,26 +232,26 @@ class WaveformGraph {
 
   draw() {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.beginPath();
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.beginPath();
       for (const [index, value] of this.data.values.entries()) {
         let x = (index / (this.data.valueLength - 1)) * this.width;
         let y = (-(value) + 1) / 2 * this.height;
         if (index === 0) {
-          context?.moveTo(x, y);
+          context.moveTo(x, y);
         } else {
-          context?.lineTo(x, y);
+          context.lineTo(x, y);
         }
       }
-      context?.stroke();
+      context.stroke();
 
     }
   }
 
   clear() {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.clearRect(0, 0, this.width, this.height);
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.clearRect(0, 0, this.width, this.height);
     }
   }
 

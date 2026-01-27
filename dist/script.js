@@ -126,7 +126,7 @@ class PhaseGraph {
     clear() {
         if (this.element.getContext) {
             let context = this.element.getContext('2d');
-            context?.clearRect(0, 0, this.width, this.height);
+            context.clearRect(0, 0, this.width, this.height);
         }
     }
     update() {
@@ -161,24 +161,24 @@ class WaveformGraph {
     draw() {
         if (this.element.getContext) {
             let context = this.element.getContext('2d');
-            context?.beginPath();
+            context.beginPath();
             for (const [index, value] of this.data.values.entries()) {
                 let x = (index / (this.data.valueLength - 1)) * this.width;
                 let y = (-(value) + 1) / 2 * this.height;
                 if (index === 0) {
-                    context?.moveTo(x, y);
+                    context.moveTo(x, y);
                 }
                 else {
-                    context?.lineTo(x, y);
+                    context.lineTo(x, y);
                 }
             }
-            context?.stroke();
+            context.stroke();
         }
     }
     clear() {
         if (this.element.getContext) {
             let context = this.element.getContext('2d');
-            context?.clearRect(0, 0, this.width, this.height);
+            context.clearRect(0, 0, this.width, this.height);
         }
     }
     update() {
