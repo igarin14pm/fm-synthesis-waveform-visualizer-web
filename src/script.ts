@@ -138,35 +138,26 @@ abstract class Graph {
 
 }
 
-class PhaseGraph {
+class PhaseGraph extends Graph {
 
-  element: HTMLCanvasElement;
   operator: Operator;
-  sineWaveValueLength: number = 120;
 
   constructor(element: HTMLCanvasElement, operator: Operator) {
-    this.element = element; 
-    this.operator = operator;
+    super(element);
+    this.operator = operator
   }
 
-  get width(): number {
-    return this.element.width;
-  }
-
-  get height(): number {
-    return this.element.height;
-  }
-
-  draw(): void {
+  override draw(): void {
+    const sineWaveValueLength = 120;
     if (this.element.getContext) {
       // サイン波を描画
       const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
       context.strokeStyle = 'black';
       context.beginPath();
-      for (let i: number = 0; i < this.sineWaveValueLength; i++) {
-        const sineWaveValue: number = Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
+      for (let i: number = 0; i < sineWaveValueLength; i++) {
+        const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
 
-        const sineWaveX: number = this.width * i / (this.sineWaveValueLength - 1);
+        const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
         const sineWaveY: number = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
 
         if (i == 0) {
@@ -205,18 +196,6 @@ class PhaseGraph {
       context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
       context.fill();
     }
-  }
-
-  clear(): void {
-    if (this.element.getContext) {
-      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
-      context.clearRect(0, 0, this.width, this.height);
-    }
-  }
-  
-  update(): void {
-    this.clear();
-    this.draw();
   }
 
 }
