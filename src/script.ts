@@ -129,10 +129,10 @@ class PhaseGraph {
 
   draw(): void {
     if (this.element.getContext) {
-      const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-
       // サイン波を描画
-      context?.beginPath();
+      const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.strokeStyle = 'black';
+      context.beginPath();
       for (let i: number = 0; i < this.sineWaveValueLength; i++) {
         const sineWaveValue: number = -1 * Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
 
@@ -140,12 +140,20 @@ class PhaseGraph {
         const sineWaveY: number = this.height * (this.operator.volume * sineWaveValue / 2 + 0.5);
 
         if (i == 0) {
-          context?.moveTo(sineWaveX, sineWaveY);
+          context.moveTo(sineWaveX, sineWaveY);
         } else {
-          context?.lineTo(sineWaveX, sineWaveY);
+          context.lineTo(sineWaveX, sineWaveY);
         }
       }
-      context?.stroke();
+      context.stroke();
+
+      // 位相を表す線分を描画
+      context.strokeStyle = 'green';
+      context.beginPath();
+      const phaseLineX: number = this.width * this.operator.phase.output.value;
+      context.moveTo(phaseLineX, 0);
+      context.lineTo(phaseLineX, this.height);
+      context.stroke();
     }
   }
 
