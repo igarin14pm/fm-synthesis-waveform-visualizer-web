@@ -112,6 +112,7 @@ class PhaseGraph {
 
   element: HTMLCanvasElement;
   operator: Operator;
+  sineWaveValueLength: number = 120;
 
   constructor(element: HTMLCanvasElement, operator: Operator) {
     this.element = element; 
@@ -127,31 +128,59 @@ class PhaseGraph {
   }
 
   draw(): void {
-    let circleCenterX = this.width / 3;
-    let circleCenterY = this.height / 2;
-    let circleRadius = this.height / 2 * this.operator.volume;
     if (this.element.getContext) {
-      let phaseValue: number = this.operator.phase.output.value;
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.beginPath();
-      context?.arc(circleCenterX, circleCenterY, circleRadius, 0, 2 * Math.PI);
-      context?.moveTo(circleCenterX, circleCenterY);
-      context?.lineTo(
-        circleRadius * Math.cos(2 * Math.PI * phaseValue) + circleCenterX,
-        -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY
-      );
-      context?.lineTo(
-        this.width,
-        -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY
-      );
-      context?.stroke();
+      // サイン波を描画
+      const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.strokeStyle = 'black';
+      context.beginPath();
+      for (let i: number = 0; i < this.sineWaveValueLength; i++) {
+        const sineWaveValue: number = Math.sin(2 * Math.PI * i / (this.sineWaveValueLength - 1));
+
+        const sineWaveX: number = this.width * i / (this.sineWaveValueLength - 1);
+        const sineWaveY: number = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
+
+        if (i == 0) {
+          context.moveTo(sineWaveX, sineWaveY);
+        } else {
+          context.lineTo(sineWaveX, sineWaveY);
+        }
+      }
+      context.stroke();
+
+      // 位相を表す線分を描画
+      context.strokeStyle = 'green';
+      context.beginPath();
+      const phaseLineX: number = this.width * this.operator.phase.output.value;
+      const phaseLineStartY: number = 0;
+      const phaseLineEndY: number = this.height;
+      context.moveTo(phaseLineX, phaseLineStartY);
+      context.lineTo(phaseLineX, phaseLineEndY);
+      context.stroke();
+
+      // 値の出力を表す線分を描画
+      context.strokeStyle = 'black';
+      context.beginPath();
+      const outputLineStartX: number = phaseLineX;
+      const outputLineEndX: number = this.width;
+      const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+      context.moveTo(outputLineStartX, outputLineY);
+      context.lineTo(outputLineEndX, outputLineY);
+      context.stroke();
+
+      // 値を表す円を描画
+      context.fillStyle = 'green';
+      const valueCircleX: number = phaseLineX;
+      const valueCircleY: number = outputLineY;
+      const valueCircleRadius: number = 5;
+      context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
+      context.fill();
     }
   }
 
   clear(): void {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.clearRect(0, 0, this.width, this.height);
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.clearRect(0, 0, this.width, this.height);
     }
   }
   
@@ -203,26 +232,26 @@ class WaveformGraph {
 
   draw() {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.beginPath();
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.beginPath();
       for (const [index, value] of this.data.values.entries()) {
         let x = (index / (this.data.valueLength - 1)) * this.width;
         let y = (-(value) + 1) / 2 * this.height;
         if (index === 0) {
-          context?.moveTo(x, y);
+          context.moveTo(x, y);
         } else {
-          context?.lineTo(x, y);
+          context.lineTo(x, y);
         }
       }
-      context?.stroke();
+      context.stroke();
 
     }
   }
 
   clear() {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.clearRect(0, 0, this.width, this.height);
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.clearRect(0, 0, this.width, this.height);
     }
   }
 
