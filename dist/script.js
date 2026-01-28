@@ -93,8 +93,32 @@ class PhaseGraph extends Graph {
     draw() {
         const sineWaveValueLength = 120;
         if (this.element.getContext) {
-            // サイン波を描画
             const context = this.element.getContext('2d');
+            // モジュレーション量を描画
+            context.fillStyle = 'gray';
+            const phaseWithoutModX = this.element.width * this.operator.phase.valuesWithoutMod[0];
+            const modRectY = 0;
+            const modRectWidth = this.element.width * this.operator.phase.modulationValue;
+            const modRectHeight = this.element.height;
+            if (phaseWithoutModX + modRectWidth > this.element.width) {
+                // 長方形がCanvas要素から右側にはみ出る場合
+                // 右端の長方形を描画
+                context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+                // 左端の長方形を描画
+                context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+            }
+            else if (phaseWithoutModX + modRectWidth < 0) {
+                // 図形がCanvas要素から左側にはみ出る場合
+                // 左端の長方形を描画
+                context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
+                // 右端の長方形を描画
+                context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+            }
+            else {
+                // 長方形がCanvas要素からはみ出ない場合
+                context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
+            }
+            // サイン波を描画
             context.strokeStyle = 'black';
             context.beginPath();
             for (let i = 0; i < sineWaveValueLength; i++) {
@@ -241,33 +265,6 @@ class OperatorUI {
         this.waveformGraph.update();
     }
 }
-class MeterUI {
-    constructor(meterElement) {
-        this.meterElement = meterElement;
-    }
-    get value() {
-        return this.meterElement.value;
-    }
-    set value(newValue) {
-        this.meterElement.value = newValue;
-    }
-}
-class AngularVelocityMeterUI {
-    constructor(phase, meterElement) {
-        this.phase = phase;
-        this.phaseValues = [phase.output.value, phase.output.value];
-        this.meterUI = new MeterUI(meterElement);
-    }
-    moveFrameForward() {
-        this.phaseValues.pop();
-        this.phaseValues.splice(0, 0, this.phase.output.value);
-        let newValue = this.phaseValues[0] - this.phaseValues[1];
-        if (this.phase.isLooped) {
-            newValue += 1.0;
-        }
-        this.meterUI.value = newValue;
-    }
-}
 // Script
 const visualFMSynthValue = new FMSynthValue(120, 0.5, 1);
 const modulatorValue = new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1);
@@ -283,14 +280,12 @@ const modulatorPhaseGraphElement = document.getElementById('modulator-phase-grap
 const modulatorOutputGraphElement = document.getElementById('modulator-output-graph');
 const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph');
 const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorOutputGraphElement, modulatorWaveformGraphElement, true, visualFMSynthValue.samplingRate);
-const carrierAngularVelocityMeterElement = document.getElementById('carrier-angular-velocity-meter');
-const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, carrierAngularVelocityMeterElement);
 const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph');
 const carrierOutputGraphElement = document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph');
 const carrierUI = new OperatorUI(visualFMSynth.carrier, carrierPhaseGraphElement, carrierOutputGraphElement, carrierWaveformGraphElement, false, visualFMSynthValue.samplingRate);
 function moveFrameForward() {
-    let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+    let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierUI];
     frameUpdateQueue.forEach(syncable => {
         syncable.moveFrameForward();
     });
