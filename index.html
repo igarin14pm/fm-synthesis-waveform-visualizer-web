@@ -8,10 +8,6 @@
   <body>
     <h1>FM-Synthesis Waveform Visualizer</h1>
     
-    <h2>Audio</h2>
-    <button id="start-audio-button">Start Audio</button>
-    <button id="stop-audio-button">Stop Audio</button>    
-    
     <h2>Modulator</h2>
     
     <div class="range-input">
@@ -37,6 +33,9 @@
       <canvas id="carrier-output-graph" width="50" height="150"></canvas>
       <canvas id="carrier-waveform-graph" width="516" height="150"></canvas>
     </div>
+    
+    <button id="start-audio-button">音声を再生</button>
+    <button id="stop-audio-button">音声を停止</button>
     
     <script type="module" src="dist/script.js"></script>
   </body>
