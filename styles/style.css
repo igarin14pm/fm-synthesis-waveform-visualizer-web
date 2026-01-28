@@ -1,0 +1,24 @@
+/* Noto Sans JP */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+body {
+  color: #eeeeee;
+  
+  background-color: #251e16;
+}
+
+body * {
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+h1 {
+  font-size: 2.5rem;
+  
+  margin: 3rem 0 1.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+  
+  margin: 2.5rem 0 1.5rem;
+}
