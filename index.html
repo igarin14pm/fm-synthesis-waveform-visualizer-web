@@ -15,6 +15,32 @@
       
       <h2>Modulator</h2>
       
+      <table>
+        <tr>
+          <th>
+            <label for="modulator-volume-input">Volume</label>
+          </th>
+          <td>
+            <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
+          </td>
+          <td>
+            <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <label for="modulator-ratio-input">Ratio</label>
+          </th>
+          <td>
+            <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
+          </td>
+          <td>
+            <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
+          </td>
+        </tr>
+      </table>
+      
+      <!--
       <div class="range-input">
         <label for="modulator-volume-input">Volume</label>
         <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
@@ -25,6 +51,7 @@
         <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
         <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
       </div>
+      -->
       <div class="graph">
         <canvas id="modulator-phase-graph" width="268" height="150"></canvas>
         <canvas id="modulator-output-graph" width="50" height="150"></canvas>
