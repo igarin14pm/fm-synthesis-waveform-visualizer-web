@@ -22,3 +22,13 @@ h2 {
   
   margin: 2.5rem 0 1.5rem;
 }
+
+table {
+  text-align: left;
+  
+  margin: 1rem 0;
+}
+
+td {
+  line-height: 2rem;
+}
