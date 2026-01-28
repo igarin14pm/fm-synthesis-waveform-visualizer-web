@@ -66,41 +66,133 @@ class AudioEngine {
     }
 }
 // UI Classes
-class PhaseGraph {
-    constructor(element, operator) {
-        this.element = element;
-        this.operator = operator;
-    }
+class Graph {
     get width() {
         return this.element.width;
     }
     get height() {
         return this.element.height;
     }
-    draw() {
-        let circleCenterX = this.width / 3;
-        let circleCenterY = this.height / 2;
-        let circleRadius = this.height / 2 * this.operator.volume;
-        if (this.element.getContext) {
-            let phaseValue = this.operator.phase.output.value;
-            let context = this.element.getContext('2d');
-            context?.beginPath();
-            context?.arc(circleCenterX, circleCenterY, circleRadius, 0, 2 * Math.PI);
-            context?.moveTo(circleCenterX, circleCenterY);
-            context?.lineTo(circleRadius * Math.cos(2 * Math.PI * phaseValue) + circleCenterX, -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY);
-            context?.lineTo(this.width, -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY);
-            context?.stroke();
-        }
+    constructor(element) {
+        this.element = element;
     }
     clear() {
-        if (this.element.getContext) {
-            let context = this.element.getContext('2d');
-            context?.clearRect(0, 0, this.width, this.height);
-        }
+        let context = this.element.getContext('2d');
+        context.clearRect(0, 0, this.width, this.height);
     }
     update() {
         this.clear();
         this.draw();
+    }
+}
+class PhaseGraph extends Graph {
+    constructor(element, operator) {
+        super(element);
+        this.operator = operator;
+    }
+    draw() {
+        const sineWaveValueLength = 120;
+        if (this.element.getContext) {
+            const context = this.element.getContext('2d');
+            // モジュレーション量を描画
+            context.fillStyle = 'gray';
+            const phaseWithoutModX = this.element.width * this.operator.phase.valuesWithoutMod[0];
+            const modRectY = 0;
+            const modRectWidth = this.element.width * this.operator.phase.modulationValue;
+            const modRectHeight = this.element.height;
+            if (phaseWithoutModX + modRectWidth > this.element.width) {
+                // 長方形がCanvas要素から右側にはみ出る場合
+                // 右端の長方形を描画
+                context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+                // 左端の長方形を描画
+                context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+            }
+            else if (phaseWithoutModX + modRectWidth < 0) {
+                // 図形がCanvas要素から左側にはみ出る場合
+                // 左端の長方形を描画
+                context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
+                // 右端の長方形を描画
+                context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+            }
+            else {
+                // 長方形がCanvas要素からはみ出ない場合
+                context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
+            }
+            // サイン波を描画
+            context.strokeStyle = 'black';
+            context.beginPath();
+            for (let i = 0; i < sineWaveValueLength; i++) {
+                const sineWaveValue = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
+                const sineWaveX = this.width * i / (sineWaveValueLength - 1);
+                const sineWaveY = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
+                if (i == 0) {
+                    context.moveTo(sineWaveX, sineWaveY);
+                }
+                else {
+                    context.lineTo(sineWaveX, sineWaveY);
+                }
+            }
+            context.stroke();
+            // 位相を表す線分を描画
+            context.strokeStyle = 'green';
+            context.beginPath();
+            const phaseLineX = this.width * this.operator.phase.output.value;
+            const phaseLineStartY = 0;
+            const phaseLineEndY = this.height;
+            context.moveTo(phaseLineX, phaseLineStartY);
+            context.lineTo(phaseLineX, phaseLineEndY);
+            context.stroke();
+            // 値の出力を表す線分を描画
+            context.strokeStyle = 'black';
+            context.beginPath();
+            const outputLineStartX = phaseLineX;
+            const outputLineEndX = this.width;
+            const outputLineY = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+            context.moveTo(outputLineStartX, outputLineY);
+            context.lineTo(outputLineEndX, outputLineY);
+            context.stroke();
+            // 値を表す円を描画
+            context.fillStyle = 'green';
+            const valueCircleX = phaseLineX;
+            const valueCircleY = outputLineY;
+            const valueCircleRadius = 5;
+            context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
+            context.fill();
+        }
+    }
+}
+class OutputGraph extends Graph {
+    constructor(element, operator, showsModulatingAmout) {
+        super(element);
+        this.operator = operator;
+        this.showsModulatingAmount = showsModulatingAmout;
+    }
+    draw() {
+        const context = this.element.getContext('2d');
+        // 出力を表す線分を描画
+        context.strokeStyle = 'black';
+        context.beginPath();
+        const outputLineStartX = 0;
+        const outputLineEndX = this.width;
+        const outputLineY = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+        context.moveTo(outputLineStartX, outputLineY);
+        context.lineTo(outputLineEndX, outputLineY);
+        context.stroke();
+        // 変調を掛ける量を表す長方形を描画
+        if (this.showsModulatingAmount) {
+            context.fillStyle = 'gray';
+            const amountRectX = this.width / 3;
+            const amountRectWidth = this.width / 3;
+            // 枠線を描画
+            const amountRectOutlineY = 0;
+            const amountRectOutlineHeight = this.height;
+            context.strokeStyle = 'black';
+            context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
+            // 塗りつぶしを描画
+            const amountRectFillY = this.height / 2;
+            const amountRectFillHeight = outputLineY - amountRectFillY;
+            context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
+        }
     }
 }
 class WaveformGraphData {
@@ -116,43 +208,27 @@ class WaveformGraphData {
         this.values.splice(0, 0, value);
     }
 }
-class WaveformGraph {
+class WaveformGraph extends Graph {
     constructor(element, samplingRate) {
-        this.element = element;
+        super(element);
         this.data = new WaveformGraphData(samplingRate);
-    }
-    get width() {
-        return this.element.width;
-    }
-    get height() {
-        return this.element.height;
     }
     draw() {
         if (this.element.getContext) {
             let context = this.element.getContext('2d');
-            context?.beginPath();
+            context.beginPath();
             for (const [index, value] of this.data.values.entries()) {
                 let x = (index / (this.data.valueLength - 1)) * this.width;
                 let y = (-(value) + 1) / 2 * this.height;
                 if (index === 0) {
-                    context?.moveTo(x, y);
+                    context.moveTo(x, y);
                 }
                 else {
-                    context?.lineTo(x, y);
+                    context.lineTo(x, y);
                 }
             }
-            context?.stroke();
+            context.stroke();
         }
-    }
-    clear() {
-        if (this.element.getContext) {
-            let context = this.element.getContext('2d');
-            context?.clearRect(0, 0, this.width, this.height);
-        }
-    }
-    update() {
-        this.clear();
-        this.draw();
     }
 }
 class RangeInputUI {
@@ -173,44 +249,20 @@ class RangeInputUI {
     }
 }
 class OperatorUI {
-    constructor(operator, phaseGraphElement, waveformGraphElement, samplingRate) {
+    constructor(operator, phaseGraphElement, outputGraphElement, waveformGraphElement, showsModulatingAmount, samplingRate) {
         this.operator = operator;
         this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
+        this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
         this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
         this.phaseGraph.draw();
+        this.outputGraph.draw();
         this.waveformGraph.draw();
     }
     moveFrameForward() {
         this.phaseGraph.update();
+        this.outputGraph.update();
         this.waveformGraph.data.add(this.operator.output.value);
         this.waveformGraph.update();
-    }
-}
-class MeterUI {
-    constructor(meterElement) {
-        this.meterElement = meterElement;
-    }
-    get value() {
-        return this.meterElement.value;
-    }
-    set value(newValue) {
-        this.meterElement.value = newValue;
-    }
-}
-class AngularVelocityMeterUI {
-    constructor(phase, meterElement) {
-        this.phase = phase;
-        this.phaseValues = [phase.output.value, phase.output.value];
-        this.meterUI = new MeterUI(meterElement);
-    }
-    moveFrameForward() {
-        this.phaseValues.pop();
-        this.phaseValues.splice(0, 0, this.phase.output.value);
-        let newValue = this.phaseValues[0] - this.phaseValues[1];
-        if (this.phase.isLooped) {
-            newValue += 1.0;
-        }
-        this.meterUI.value = newValue;
     }
 }
 // Script
@@ -225,15 +277,15 @@ const modulatorRatioInputElement = document.getElementById('modulator-ratio-inpu
 const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label');
 const modulatorRatioInputUI = new RangeInputUI(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUIValue);
 const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph');
+const modulatorOutputGraphElement = document.getElementById('modulator-output-graph');
 const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph');
-const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorWaveformGraphElement, visualFMSynthValue.samplingRate);
-const carrierAngularVelocityMeterElement = document.getElementById('carrier-angular-velocity-meter');
-const carrierAngularVelocityMeter = new AngularVelocityMeterUI(visualFMSynth.carrier.phase, carrierAngularVelocityMeterElement);
+const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorOutputGraphElement, modulatorWaveformGraphElement, true, visualFMSynthValue.samplingRate);
 const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph');
+const carrierOutputGraphElement = document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph');
-const carrierUI = new OperatorUI(visualFMSynth.carrier, carrierPhaseGraphElement, carrierWaveformGraphElement, visualFMSynthValue.samplingRate);
+const carrierUI = new OperatorUI(visualFMSynth.carrier, carrierPhaseGraphElement, carrierOutputGraphElement, carrierWaveformGraphElement, false, visualFMSynthValue.samplingRate);
 function moveFrameForward() {
-    let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+    let frameUpdateQueue = [visualFMSynth, modulatorUI, carrierUI];
     frameUpdateQueue.forEach(syncable => {
         syncable.moveFrameForward();
     });

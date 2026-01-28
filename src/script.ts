@@ -108,15 +108,9 @@ class AudioEngine {
 
 // UI Classes
 
-class PhaseGraph {
+abstract class Graph {
 
   element: HTMLCanvasElement;
-  operator: Operator;
-
-  constructor(element: HTMLCanvasElement, operator: Operator) {
-    this.element = element; 
-    this.operator = operator;
-  }
 
   get width(): number {
     return this.element.width;
@@ -126,38 +120,159 @@ class PhaseGraph {
     return this.element.height;
   }
 
-  draw(): void {
-    let circleCenterX = this.width / 3;
-    let circleCenterY = this.height / 2;
-    let circleRadius = this.height / 2 * this.operator.volume;
-    if (this.element.getContext) {
-      let phaseValue: number = this.operator.phase.output.value;
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.beginPath();
-      context?.arc(circleCenterX, circleCenterY, circleRadius, 0, 2 * Math.PI);
-      context?.moveTo(circleCenterX, circleCenterY);
-      context?.lineTo(
-        circleRadius * Math.cos(2 * Math.PI * phaseValue) + circleCenterX,
-        -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY
-      );
-      context?.lineTo(
-        this.width,
-        -1 * circleRadius * Math.sin(2 * Math.PI * phaseValue) + circleCenterY
-      );
-      context?.stroke();
-    }
+  constructor(element: HTMLCanvasElement) {
+    this.element = element
   }
 
+  abstract draw(): void;
+
   clear(): void {
-    if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.clearRect(0, 0, this.width, this.height);
-    }
+    let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+    context.clearRect(0, 0, this.width, this.height);
   }
-  
+
   update(): void {
     this.clear();
     this.draw();
+  }
+
+}
+
+class PhaseGraph extends Graph {
+
+  operator: Operator;
+
+  constructor(element: HTMLCanvasElement, operator: Operator) {
+    super(element);
+    this.operator = operator
+  }
+
+  override draw(): void {
+    const sineWaveValueLength = 120;
+    if (this.element.getContext) {
+
+      const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+
+      // モジュレーション量を描画
+      context.fillStyle = 'gray';
+      const phaseWithoutModX: number = this.element.width * this.operator.phase.valuesWithoutMod[0];
+      const modRectY: number = 0;
+      const modRectWidth: number = this.element.width * this.operator.phase.modulationValue;
+      const modRectHeight: number = this.element.height;
+      if (phaseWithoutModX + modRectWidth > this.element.width) {
+        // 長方形がCanvas要素から右側にはみ出る場合
+
+        // 右端の長方形を描画
+        context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+
+        // 左端の長方形を描画
+        context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+        
+      } else if (phaseWithoutModX + modRectWidth < 0) {
+        // 図形がCanvas要素から左側にはみ出る場合
+
+        // 左端の長方形を描画
+        context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
+
+        // 右端の長方形を描画
+        context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+
+      } else {
+        // 長方形がCanvas要素からはみ出ない場合
+        context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
+      }
+
+      // サイン波を描画
+      context.strokeStyle = 'black';
+      context.beginPath();
+      for (let i: number = 0; i < sineWaveValueLength; i++) {
+        const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
+
+        const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
+        const sineWaveY: number = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
+
+        if (i == 0) {
+          context.moveTo(sineWaveX, sineWaveY);
+        } else {
+          context.lineTo(sineWaveX, sineWaveY);
+        }
+      }
+      context.stroke();
+
+      // 位相を表す線分を描画
+      context.strokeStyle = 'green';
+      context.beginPath();
+      const phaseLineX: number = this.width * this.operator.phase.output.value;
+      const phaseLineStartY: number = 0;
+      const phaseLineEndY: number = this.height;
+      context.moveTo(phaseLineX, phaseLineStartY);
+      context.lineTo(phaseLineX, phaseLineEndY);
+      context.stroke();
+
+      // 値の出力を表す線分を描画
+      context.strokeStyle = 'black';
+      context.beginPath();
+      const outputLineStartX: number = phaseLineX;
+      const outputLineEndX: number = this.width;
+      const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+      context.moveTo(outputLineStartX, outputLineY);
+      context.lineTo(outputLineEndX, outputLineY);
+      context.stroke();
+
+      // 値を表す円を描画
+      context.fillStyle = 'green';
+      const valueCircleX: number = phaseLineX;
+      const valueCircleY: number = outputLineY;
+      const valueCircleRadius: number = 5;
+      context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
+      context.fill();
+    }
+  }
+
+}
+
+class OutputGraph extends Graph {
+
+  operator: Operator;
+  showsModulatingAmount: boolean;
+
+  constructor(element: HTMLCanvasElement, operator: Operator, showsModulatingAmout: boolean) {
+    super(element);
+    this.operator = operator;
+    this.showsModulatingAmount = showsModulatingAmout;
+  }
+
+  override draw(): void {
+    const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+
+    // 出力を表す線分を描画
+    context.strokeStyle = 'black';
+    context.beginPath();
+    const outputLineStartX: number = 0;
+    const outputLineEndX: number = this.width;
+    const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+    context.moveTo(outputLineStartX, outputLineY);
+    context.lineTo(outputLineEndX, outputLineY);
+    context.stroke();
+
+    // 変調を掛ける量を表す長方形を描画
+    if (this.showsModulatingAmount) {
+      context.fillStyle= 'gray';
+
+      const amountRectX: number = this.width / 3;
+      const amountRectWidth: number = this.width / 3;
+
+      // 枠線を描画
+      const amountRectOutlineY: number = 0;
+      const amountRectOutlineHeight: number = this.height;
+      context.strokeStyle = 'black';
+      context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
+
+      // 塗りつぶしを描画
+      const amountRectFillY: number = this.height / 2;
+      const amountRectFillHeight: number = outputLineY - amountRectFillY;
+      context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
+    }
   }
 
 }
@@ -183,52 +298,30 @@ class WaveformGraphData {
 
 }
 
-class WaveformGraph {
+class WaveformGraph extends Graph {
 
-  element: HTMLCanvasElement;
   data: WaveformGraphData;
 
   constructor(element: HTMLCanvasElement, samplingRate: number) {
-    this.element = element; 
+    super(element);
     this.data = new WaveformGraphData(samplingRate);
   }
 
-  get width(): number {
-    return this.element.width;
-  }
-
-  get height(): number {
-    return this.element.height;
-  }
-
-  draw() {
+  override draw(): void {
     if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.beginPath();
+      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+      context.beginPath();
       for (const [index, value] of this.data.values.entries()) {
         let x = (index / (this.data.valueLength - 1)) * this.width;
         let y = (-(value) + 1) / 2 * this.height;
         if (index === 0) {
-          context?.moveTo(x, y);
+          context.moveTo(x, y);
         } else {
-          context?.lineTo(x, y);
+          context.lineTo(x, y);
         }
       }
-      context?.stroke();
-
+      context.stroke();
     }
-  }
-
-  clear() {
-    if (this.element.getContext) {
-      let context: CanvasRenderingContext2D | null = this.element.getContext('2d');
-      context?.clearRect(0, 0, this.width, this.height);
-    }
-  }
-
-  update() {
-    this.clear();
-    this.draw();
   }
 
 }
@@ -267,68 +360,32 @@ class OperatorUI implements Syncable {
 
   operator: Operator;
   phaseGraph: PhaseGraph;
+  outputGraph: OutputGraph;
   waveformGraph: WaveformGraph;
   
   constructor(
     operator: Operator,
     phaseGraphElement: HTMLCanvasElement,
+    outputGraphElement: HTMLCanvasElement,
     waveformGraphElement: HTMLCanvasElement,
+    showsModulatingAmount: boolean,
     samplingRate: number
   ) {
     this.operator = operator;
     this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
+    this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
     this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
 
     this.phaseGraph.draw();
+    this.outputGraph.draw();
     this.waveformGraph.draw();
   }
 
   moveFrameForward(): void {
     this.phaseGraph.update();
+    this.outputGraph.update();
     this.waveformGraph.data.add(this.operator.output.value);
     this.waveformGraph.update();
-  }
-
-}
-
-class MeterUI {
-
-  meterElement: HTMLMeterElement;
-
-  constructor(meterElement: HTMLMeterElement) {
-    this.meterElement = meterElement;
-  }
-
-  get value(): number {
-    return this.meterElement.value;
-  }
-
-  set value(newValue: number) {
-    this.meterElement.value = newValue;
-  }
-
-}
-
-class AngularVelocityMeterUI implements Syncable {
-
-  phase: Phase;
-  phaseValues: number[];
-  meterUI: MeterUI;
-
-  constructor(phase: Phase, meterElement: HTMLMeterElement) {
-    this.phase = phase;
-    this.phaseValues = [phase.output.value, phase.output.value];
-    this.meterUI = new MeterUI(meterElement);
-  }
-
-  moveFrameForward(): void {
-    this.phaseValues.pop();
-    this.phaseValues.splice(0, 0, this.phase.output.value);
-    let newValue = this.phaseValues[0] - this.phaseValues[1];
-    if (this.phase.isLooped) {
-      newValue += 1.0;
-    }
-    this.meterUI.value = newValue;
   }
 
 }
@@ -373,31 +430,31 @@ const modulatorRatioInputUI = new RangeInputUI(
 )
 
 const modulatorPhaseGraphElement = <HTMLCanvasElement>document.getElementById('modulator-phase-graph');
+const modulatorOutputGraphElement = <HTMLCanvasElement>document.getElementById('modulator-output-graph');
 const modulatorWaveformGraphElement = <HTMLCanvasElement>document.getElementById('modulator-waveform-graph');
 const modulatorUI = new OperatorUI(
   visualFMSynth.modulator,
   modulatorPhaseGraphElement,
+  modulatorOutputGraphElement,
   modulatorWaveformGraphElement,
+  true,
   visualFMSynthValue.samplingRate
 )
 
-const carrierAngularVelocityMeterElement = <HTMLMeterElement>document.getElementById('carrier-angular-velocity-meter');
-const carrierAngularVelocityMeter = new AngularVelocityMeterUI(
-  visualFMSynth.carrier.phase,
-  carrierAngularVelocityMeterElement
-);
-
 const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
+const carrierOutputGraphElement = <HTMLCanvasElement>document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
 const carrierUI = new OperatorUI(
   visualFMSynth.carrier,
   carrierPhaseGraphElement,
+  carrierOutputGraphElement,
   carrierWaveformGraphElement,
+  false,
   visualFMSynthValue.samplingRate
 );
 
 function moveFrameForward() {
-  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierUI];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
   });
@@ -454,7 +511,6 @@ function setUp() {
 
   const oneSecond_ms = 1_000;
   let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
-
 }
 
 setUp();
