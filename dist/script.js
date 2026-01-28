@@ -222,6 +222,7 @@ class WaveformGraph extends Graph {
     }
     draw() {
         let context = this.element.getContext('2d');
+        // 波形を描画
         context.strokeStyle = '#eeeeee';
         context.lineWidth = 1;
         context.beginPath();
@@ -235,6 +236,15 @@ class WaveformGraph extends Graph {
                 context.lineTo(x, y);
             }
         }
+        context.stroke();
+        // 左端のボーダーの線分を描画
+        const borderLineX = 1;
+        const borderLineStartY = 0;
+        const borderLineEndY = this.height;
+        context.strokeStyle = '#888888';
+        context.lineWidth = 1;
+        context.moveTo(borderLineX, borderLineStartY);
+        context.lineTo(borderLineX, borderLineEndY);
         context.stroke();
     }
 }
