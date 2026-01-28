@@ -60,6 +60,8 @@ button {
   
   margin: 16px 0;
   padding: 16px;
+  
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .green-button {
@@ -67,7 +69,17 @@ button {
   border-color: #00cdb9;
 }
 
+.green-button:hover {
+  background-color: #00ffe588;
+  border-color: #00fde4;
+}
+
 .red-button {
   background-color: #f95f5d88;
   border-color: #f95f5d;
+}
+
+.red-button:hover {
+  background-color: #fa878588;
+  border-color: #fa817f;
 }
