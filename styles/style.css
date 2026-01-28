@@ -32,3 +32,27 @@ table {
 td {
   line-height: 2rem;
 }
+
+button {
+  border-radius: 8px;
+  border-width: 2px;
+  
+  color: #eeeeee;
+  
+  display: block;
+  
+  font-weight: 600;
+  
+  margin: 16px 0;
+  padding: 16px;
+}
+
+.green-button {
+  background-color: #00cdb988;
+  border-color: #00cdb9;
+}
+
+.red-button {
+  background-color: #f95f5d88;
+  border-color: #f95f5d;
+}
