@@ -111,6 +111,7 @@ class AudioEngine {
 abstract class Graph {
 
   element: HTMLCanvasElement;
+  verticalPadding: number = 10;
 
   get width(): number {
     return this.element.width;
@@ -122,6 +123,10 @@ abstract class Graph {
 
   constructor(element: HTMLCanvasElement) {
     this.element = element
+  }
+
+  convertToCoordinateY(value: number): number {
+    return (this.height - this.verticalPadding * 2) * (-1 * value + 1) / 2 + this.verticalPadding;
   }
 
   abstract draw(): void;
@@ -153,18 +158,18 @@ class PhaseGraph extends Graph {
 
     // モジュレーション量を描画
     context.fillStyle = 'gray';
-    const phaseWithoutModX: number = this.element.width * this.operator.phase.valuesWithoutMod[0];
+    const phaseWithoutModX: number = this.width * this.operator.phase.valuesWithoutMod[0];
     const modRectY: number = 0;
-    const modRectWidth: number = this.element.width * this.operator.phase.modulationValue;
-    const modRectHeight: number = this.element.height;
-    if (phaseWithoutModX + modRectWidth > this.element.width) {
+    const modRectWidth: number = this.width * this.operator.phase.modulationValue;
+    const modRectHeight: number = this.height;
+    if (phaseWithoutModX + modRectWidth > this.width) {
       // 長方形がCanvas要素から右側にはみ出る場合
 
       // 右端の長方形を描画
-      context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+      context.fillRect(phaseWithoutModX, modRectY, this.width - phaseWithoutModX, this.height);
 
       // 左端の長方形を描画
-      context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+      context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.width, modRectHeight);
       
     } else if (phaseWithoutModX + modRectWidth < 0) {
       // 図形がCanvas要素から左側にはみ出る場合
@@ -173,7 +178,7 @@ class PhaseGraph extends Graph {
       context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
 
       // 右端の長方形を描画
-      context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+      context.fillRect(this.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
 
     } else {
       // 長方形がCanvas要素からはみ出ない場合
@@ -187,7 +192,7 @@ class PhaseGraph extends Graph {
       const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
 
       const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
-      const sineWaveY: number = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
+      const sineWaveY: number = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
 
       if (i == 0) {
         context.moveTo(sineWaveX, sineWaveY);
@@ -212,7 +217,7 @@ class PhaseGraph extends Graph {
     context.beginPath();
     const outputLineStartX: number = phaseLineX;
     const outputLineEndX: number = this.width;
-    const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+    const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
     context.moveTo(outputLineStartX, outputLineY);
     context.lineTo(outputLineEndX, outputLineY);
     context.stroke();
@@ -247,7 +252,7 @@ class OutputGraph extends Graph {
     context.beginPath();
     const outputLineStartX: number = 0;
     const outputLineEndX: number = this.width;
-    const outputLineY: number = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+    const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
     context.moveTo(outputLineStartX, outputLineY);
     context.lineTo(outputLineEndX, outputLineY);
     context.stroke();
@@ -260,8 +265,8 @@ class OutputGraph extends Graph {
       const amountRectWidth: number = this.width / 3;
 
       // 枠線を描画
-      const amountRectOutlineY: number = 0;
-      const amountRectOutlineHeight: number = this.height;
+      const amountRectOutlineY: number = this.verticalPadding;
+      const amountRectOutlineHeight: number = this.height - this.verticalPadding * 2;
       context.strokeStyle = 'black';
       context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
 
@@ -308,8 +313,8 @@ class WaveformGraph extends Graph {
     let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
     context.beginPath();
     for (const [index, value] of this.data.values.entries()) {
-      let x = (index / (this.data.valueLength - 1)) * this.width;
-      let y = (-(value) + 1) / 2 * this.height;
+      const x = (index / (this.data.valueLength - 1)) * this.width;
+      const y = this.convertToCoordinateY(value);
       if (index === 0) {
         context.moveTo(x, y);
       } else {
