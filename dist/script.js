@@ -123,7 +123,7 @@ class PhaseGraph extends Graph {
         }
         // サイン波を描画
         context.strokeStyle = '#eeeeee';
-        context.lineWidth = 1;
+        context.lineWidth = 2;
         context.beginPath();
         for (let i = 0; i < sineWaveValueLength; i++) {
             const sineWaveValue = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
@@ -161,7 +161,7 @@ class PhaseGraph extends Graph {
         context.fillStyle = '#00cdb9';
         const valueCircleX = phaseLineX;
         const valueCircleY = outputLineY;
-        const valueCircleRadius = 5;
+        const valueCircleRadius = 7.5;
         context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
         context.fill();
     }
@@ -224,7 +224,7 @@ class WaveformGraph extends Graph {
         let context = this.element.getContext('2d');
         // 波形を描画
         context.strokeStyle = '#eeeeee';
-        context.lineWidth = 1;
+        context.lineWidth = 2;
         context.beginPath();
         for (const [index, value] of this.data.values.entries()) {
             const x = (index / (this.data.valueLength - 1)) * this.width;
