@@ -11,6 +11,13 @@ body * {
   font-family: "Noto Sans JP", sans-serif;
 }
 
+main {
+  width: 824px;
+  
+  padding: 0 100px;
+  margin: 0 auto;
+}
+
 h1 {
   font-size: 2.5rem;
   
@@ -31,6 +38,14 @@ table {
 
 td {
   line-height: 2rem;
+}
+
+.graph {
+  display: flex;
+}
+
+.graph * {
+  display: block;
 }
 
 button {
