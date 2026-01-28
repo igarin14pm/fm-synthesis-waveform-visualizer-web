@@ -305,20 +305,18 @@ class WaveformGraph extends Graph {
   }
 
   override draw(): void {
-    if (this.element.getContext) {
-      let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
-      context.beginPath();
-      for (const [index, value] of this.data.values.entries()) {
-        let x = (index / (this.data.valueLength - 1)) * this.width;
-        let y = (-(value) + 1) / 2 * this.height;
-        if (index === 0) {
-          context.moveTo(x, y);
-        } else {
-          context.lineTo(x, y);
-        }
+    let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+    context.beginPath();
+    for (const [index, value] of this.data.values.entries()) {
+      let x = (index / (this.data.valueLength - 1)) * this.width;
+      let y = (-(value) + 1) / 2 * this.height;
+      if (index === 0) {
+        context.moveTo(x, y);
+      } else {
+        context.lineTo(x, y);
       }
-      context.stroke();
     }
+    context.stroke();
   }
 
 }
