@@ -150,8 +150,39 @@ class PhaseGraph extends Graph {
   override draw(): void {
     const sineWaveValueLength = 120;
     if (this.element.getContext) {
-      // サイン波を描画
+
       const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+
+      // モジュレーション量を描画
+      context.fillStyle = 'gray';
+      const phaseWithoutModX: number = this.element.width * this.operator.phase.valuesWithoutMod[0];
+      const modRectY: number = 0;
+      const modRectWidth: number = this.element.width * this.operator.phase.modulationValue;
+      const modRectHeight: number = this.element.height;
+      if (phaseWithoutModX + modRectWidth > this.element.width) {
+        // 長方形がCanvas要素から右側にはみ出る場合
+
+        // 右端の長方形を描画
+        context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+
+        // 左端の長方形を描画
+        context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+        
+      } else if (phaseWithoutModX + modRectWidth < 0) {
+        // 図形がCanvas要素から左側にはみ出る場合
+
+        // 左端の長方形を描画
+        context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
+
+        // 右端の長方形を描画
+        context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+
+      } else {
+        // 長方形がCanvas要素からはみ出ない場合
+        context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
+      }
+
+      // サイン波を描画
       context.strokeStyle = 'black';
       context.beginPath();
       for (let i: number = 0; i < sineWaveValueLength; i++) {
@@ -359,48 +390,6 @@ class OperatorUI implements Syncable {
 
 }
 
-class MeterUI {
-
-  meterElement: HTMLMeterElement;
-
-  constructor(meterElement: HTMLMeterElement) {
-    this.meterElement = meterElement;
-  }
-
-  get value(): number {
-    return this.meterElement.value;
-  }
-
-  set value(newValue: number) {
-    this.meterElement.value = newValue;
-  }
-
-}
-
-class AngularVelocityMeterUI implements Syncable {
-
-  phase: Phase;
-  phaseValues: number[];
-  meterUI: MeterUI;
-
-  constructor(phase: Phase, meterElement: HTMLMeterElement) {
-    this.phase = phase;
-    this.phaseValues = [phase.output.value, phase.output.value];
-    this.meterUI = new MeterUI(meterElement);
-  }
-
-  moveFrameForward(): void {
-    this.phaseValues.pop();
-    this.phaseValues.splice(0, 0, this.phase.output.value);
-    let newValue = this.phaseValues[0] - this.phaseValues[1];
-    if (this.phase.isLooped) {
-      newValue += 1.0;
-    }
-    this.meterUI.value = newValue;
-  }
-
-}
-
 // Script
 
 const visualFMSynthValue = new FMSynthValue(
@@ -452,12 +441,6 @@ const modulatorUI = new OperatorUI(
   visualFMSynthValue.samplingRate
 )
 
-const carrierAngularVelocityMeterElement = <HTMLMeterElement>document.getElementById('carrier-angular-velocity-meter');
-const carrierAngularVelocityMeter = new AngularVelocityMeterUI(
-  visualFMSynth.carrier.phase,
-  carrierAngularVelocityMeterElement
-);
-
 const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
 const carrierOutputGraphElement = <HTMLCanvasElement>document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
@@ -471,7 +454,7 @@ const carrierUI = new OperatorUI(
 );
 
 function moveFrameForward() {
-  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierUI];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
   });
@@ -528,7 +511,6 @@ function setUp() {
 
   const oneSecond_ms = 1_000;
   let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
-
 }
 
 setUp();
