@@ -98,7 +98,7 @@ class PhaseGraph extends Graph {
         const sineWaveValueLength = 120;
         const context = this.element.getContext('2d');
         // モジュレーション量を描画
-        context.fillStyle = 'gray';
+        context.fillStyle = '#00cdb944';
         const phaseWithoutModX = this.width * this.operator.phase.valuesWithoutMod[0];
         const modRectY = 0;
         const modRectWidth = this.width * this.operator.phase.modulationValue;
@@ -122,7 +122,8 @@ class PhaseGraph extends Graph {
             context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
         }
         // サイン波を描画
-        context.strokeStyle = 'black';
+        context.strokeStyle = '#eeeeee';
+        context.lineWidth = 1;
         context.beginPath();
         for (let i = 0; i < sineWaveValueLength; i++) {
             const sineWaveValue = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
@@ -137,7 +138,8 @@ class PhaseGraph extends Graph {
         }
         context.stroke();
         // 位相を表す線分を描画
-        context.strokeStyle = 'green';
+        context.strokeStyle = '#00cdb9';
+        context.lineWidth = 4;
         context.beginPath();
         const phaseLineX = this.width * this.operator.phase.output.value;
         const phaseLineStartY = 0;
@@ -146,7 +148,8 @@ class PhaseGraph extends Graph {
         context.lineTo(phaseLineX, phaseLineEndY);
         context.stroke();
         // 値の出力を表す線分を描画
-        context.strokeStyle = 'black';
+        context.strokeStyle = '#888888';
+        context.lineWidth = 1;
         context.beginPath();
         const outputLineStartX = phaseLineX;
         const outputLineEndX = this.width;
@@ -155,7 +158,7 @@ class PhaseGraph extends Graph {
         context.lineTo(outputLineEndX, outputLineY);
         context.stroke();
         // 値を表す円を描画
-        context.fillStyle = 'green';
+        context.fillStyle = '#00cdb9';
         const valueCircleX = phaseLineX;
         const valueCircleY = outputLineY;
         const valueCircleRadius = 5;
@@ -171,30 +174,32 @@ class OutputGraph extends Graph {
     }
     draw() {
         const context = this.element.getContext('2d');
-        // 出力を表す線分を描画
-        context.strokeStyle = 'black';
-        context.beginPath();
         const outputLineStartX = 0;
         const outputLineEndX = this.width;
         const outputLineY = this.convertToCoordinateY(this.operator.output.value);
-        context.moveTo(outputLineStartX, outputLineY);
-        context.lineTo(outputLineEndX, outputLineY);
-        context.stroke();
         // 変調を掛ける量を表す長方形を描画
         if (this.showsModulatingAmount) {
-            context.fillStyle = 'gray';
             const amountRectX = this.width / 3;
             const amountRectWidth = this.width / 3;
             // 枠線を描画
             const amountRectOutlineY = this.verticalPadding;
             const amountRectOutlineHeight = this.height - this.verticalPadding * 2;
-            context.strokeStyle = 'black';
+            context.strokeStyle = '#eeeeee';
+            context.lineWidth = 1;
             context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
             // 塗りつぶしを描画
             const amountRectFillY = this.height / 2;
             const amountRectFillHeight = outputLineY - amountRectFillY;
+            context.fillStyle = '#00cdb944';
             context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
         }
+        // 出力を表す線分を描画
+        context.strokeStyle = '#888888';
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(outputLineStartX, outputLineY);
+        context.lineTo(outputLineEndX, outputLineY);
+        context.stroke();
     }
 }
 class WaveformGraphData {
@@ -217,6 +222,8 @@ class WaveformGraph extends Graph {
     }
     draw() {
         let context = this.element.getContext('2d');
+        context.strokeStyle = '#eeeeee';
+        context.lineWidth = 1;
         context.beginPath();
         for (const [index, value] of this.data.values.entries()) {
             const x = (index / (this.data.valueLength - 1)) * this.width;
