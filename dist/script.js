@@ -93,8 +93,32 @@ class PhaseGraph extends Graph {
     draw() {
         const sineWaveValueLength = 120;
         if (this.element.getContext) {
-            // サイン波を描画
             const context = this.element.getContext('2d');
+            // モジュレーション量を描画
+            context.fillStyle = 'gray';
+            const phaseWithoutModX = this.element.width * this.operator.phase.valuesWithoutMod[0];
+            const modRectY = 0;
+            const modRectWidth = this.element.width * this.operator.phase.modulationValue;
+            const modRectHeight = this.element.height;
+            if (phaseWithoutModX + modRectWidth > this.element.width) {
+                // 長方形がCanvas要素から右側にはみ出る場合
+                // 右端の長方形を描画
+                context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+                // 左端の長方形を描画
+                context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+            }
+            else if (phaseWithoutModX + modRectWidth < 0) {
+                // 図形がCanvas要素から左側にはみ出る場合
+                // 左端の長方形を描画
+                context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
+                // 右端の長方形を描画
+                context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+            }
+            else {
+                // 長方形がCanvas要素からはみ出ない場合
+                context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
+            }
+            // サイン波を描画
             context.strokeStyle = 'black';
             context.beginPath();
             for (let i = 0; i < sineWaveValueLength; i++) {
