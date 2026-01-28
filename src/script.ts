@@ -390,48 +390,6 @@ class OperatorUI implements Syncable {
 
 }
 
-class MeterUI {
-
-  meterElement: HTMLMeterElement;
-
-  constructor(meterElement: HTMLMeterElement) {
-    this.meterElement = meterElement;
-  }
-
-  get value(): number {
-    return this.meterElement.value;
-  }
-
-  set value(newValue: number) {
-    this.meterElement.value = newValue;
-  }
-
-}
-
-class AngularVelocityMeterUI implements Syncable {
-
-  phase: Phase;
-  phaseValues: number[];
-  meterUI: MeterUI;
-
-  constructor(phase: Phase, meterElement: HTMLMeterElement) {
-    this.phase = phase;
-    this.phaseValues = [phase.output.value, phase.output.value];
-    this.meterUI = new MeterUI(meterElement);
-  }
-
-  moveFrameForward(): void {
-    this.phaseValues.pop();
-    this.phaseValues.splice(0, 0, this.phase.output.value);
-    let newValue = this.phaseValues[0] - this.phaseValues[1];
-    if (this.phase.isLooped) {
-      newValue += 1.0;
-    }
-    this.meterUI.value = newValue;
-  }
-
-}
-
 // Script
 
 const visualFMSynthValue = new FMSynthValue(
@@ -483,12 +441,6 @@ const modulatorUI = new OperatorUI(
   visualFMSynthValue.samplingRate
 )
 
-const carrierAngularVelocityMeterElement = <HTMLMeterElement>document.getElementById('carrier-angular-velocity-meter');
-const carrierAngularVelocityMeter = new AngularVelocityMeterUI(
-  visualFMSynth.carrier.phase,
-  carrierAngularVelocityMeterElement
-);
-
 const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
 const carrierOutputGraphElement = <HTMLCanvasElement>document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
@@ -502,7 +454,7 @@ const carrierUI = new OperatorUI(
 );
 
 function moveFrameForward() {
-  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierAngularVelocityMeter, carrierUI];
+  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierUI];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
   });
