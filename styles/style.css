@@ -36,6 +36,14 @@ h2 {
   margin: 2.5rem 0 1.5rem;
 }
 
+a {
+  color: #00cdb9;
+}
+
+a:visited {
+  color: #aeeae4;
+}
+
 table {
   text-align: left;
   
