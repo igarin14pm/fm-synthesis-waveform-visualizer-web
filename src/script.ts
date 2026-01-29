@@ -1,4 +1,4 @@
-import { Syncable, Phase, Operator, FMSynth } from './fm-synth.js';
+import { Syncable, Operator, FMSynth } from './fm-synth.js';
 
 // Value Class
 
@@ -189,7 +189,7 @@ class PhaseGraph extends Graph {
 
     // サイン波を描画
     context.strokeStyle = '#eeeeee';
-    context.lineWidth = 3;
+    context.lineWidth = 4;
     context.beginPath();
     for (let i: number = 0; i < sineWaveValueLength; i++) {
       const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
@@ -207,7 +207,7 @@ class PhaseGraph extends Graph {
 
     // 位相を表す線分を描画
     context.strokeStyle = '#00cdb9';
-    context.lineWidth = 5;
+    context.lineWidth = 8;
     context.beginPath();
     const phaseLineX: number = this.width * this.operator.phase.output.value;
     const phaseLineStartY: number = 0;
@@ -218,7 +218,7 @@ class PhaseGraph extends Graph {
 
     // 値の出力を表す線分を描画
     context.strokeStyle = '#888888';
-    context.lineWidth = 2;
+    context.lineWidth = 4;
     context.beginPath();
     const outputLineStartX: number = phaseLineX;
     const outputLineEndX: number = this.width;
@@ -231,7 +231,7 @@ class PhaseGraph extends Graph {
     context.fillStyle = '#00cdb9';
     const valueCircleX: number = phaseLineX;
     const valueCircleY: number = outputLineY;
-    const valueCircleRadius: number = 7.5;
+    const valueCircleRadius: number = 12.5;
     context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
     context.fill();
   }
@@ -266,7 +266,7 @@ class OutputGraph extends Graph {
       const amountRectOutlineY: number = this.verticalPadding;
       const amountRectOutlineHeight: number = this.height - this.verticalPadding * 2;
       context.strokeStyle = '#eeeeee';
-      context.lineWidth = 2;
+      context.lineWidth = 4;
       context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
 
       // 塗りつぶしを描画
@@ -278,7 +278,7 @@ class OutputGraph extends Graph {
 
     // 出力を表す線分を描画
     context.strokeStyle = '#888888';
-    context.lineWidth = 2;
+    context.lineWidth = 4;
     context.beginPath();
     context.moveTo(outputLineStartX, outputLineY);
     context.lineTo(outputLineEndX, outputLineY);
@@ -323,7 +323,7 @@ class WaveformGraph extends Graph {
 
     // 波形を描画
     context.strokeStyle = '#eeeeee';
-    context.lineWidth = 3;
+    context.lineWidth = 4;
     context.beginPath();
     for (const [index, value] of this.data.values.entries()) {
       const x = (index / (this.data.valueLength - 1)) * this.width;
@@ -341,7 +341,8 @@ class WaveformGraph extends Graph {
     const borderLineStartY: number = 0;
     const borderLineEndY: number = this.height;
     context.strokeStyle = '#888888';
-    context.lineWidth = 2;
+    context.lineWidth = 4;
+    context.beginPath()
     context.moveTo(borderLineX, borderLineStartY);
     context.lineTo(borderLineX, borderLineEndY);
     context.stroke();
