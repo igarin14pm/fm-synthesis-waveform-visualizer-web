@@ -112,3 +112,9 @@ button {
   /* JavaScriptで制御 */
   display: none;
 }
+
+footer {
+  width: 824px;
+  padding: 0 100px;
+  margin: 50px auto;
+}
