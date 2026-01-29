@@ -82,7 +82,7 @@ class AudioEngine {
     }
   }
 
-  async start(modulatorValue: OperatorValue) {
+  async start(modulatorValue: OperatorValue, callback: () => void) {
     this.audioContext = new AudioContext();
     await this.audioContext.audioWorklet.addModule('./dist/audio-processor.js');
     this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
@@ -96,7 +96,9 @@ class AudioEngine {
       modulatorValue.ratioValue
     );
     
-    this.audioWorkletNode.connect(this.audioContext.destination);    
+    this.audioWorkletNode.connect(this.audioContext.destination);
+
+    callback();
   }
 
   stop() {
@@ -510,17 +512,23 @@ function setUp() {
   setModulatorRatio();
 
   const startAudioButton = <HTMLButtonElement>document.getElementById('start-audio-button');
+  const stopAudioButton = <HTMLButtonElement>document.getElementById('stop-audio-button');
+
   startAudioButton.addEventListener('click', function() {
     if (!audioEngine.isRunning) {
-      audioEngine.start(modulatorValue);
+      audioEngine.start(modulatorValue, () => {
+        startAudioButton.style.display = 'none';
+        stopAudioButton.style.display = 'block';
+      });
     }
   });
 
-  const stopAudioButton = <HTMLButtonElement>document.getElementById('stop-audio-button');
   stopAudioButton?.addEventListener('click', function() {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }
+    startAudioButton.style.display = 'block';
+    stopAudioButton.style.display = 'none';
   });
 
   modulatorVolumeInputUI.addEventListener(function() {
