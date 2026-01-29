@@ -54,8 +54,6 @@ button {
   
   color: #eeeeee;
   
-  display: block;
-  
   font-weight: 600;
   
   margin: 16px 0;
@@ -82,4 +80,14 @@ button {
 .red-button:hover {
   background-color: #fa878588;
   border-color: #fa817f;
+}
+
+#start-audio-button {
+  /* JavaScriptで制御 */
+  display: block;
+}
+
+#stop-audio-button {
+  /* JavaScriptで制御 */
+  display: none;
 }
