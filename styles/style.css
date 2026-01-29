@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Igarin
+ * This software is released under the MIT License.
+ * https://opensource.org
+ */
+
 /* Noto Sans JP */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
 
@@ -105,4 +111,10 @@ button {
 #stop-audio-button {
   /* JavaScriptで制御 */
   display: none;
+}
+
+footer {
+  width: 824px;
+  padding: 0 100px;
+  margin: 50px auto;
 }
