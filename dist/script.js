@@ -351,4 +351,6 @@ function setUp() {
     const oneSecond_ms = 1000;
     let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
 }
-setUp();
+window.addEventListener('load', () => {
+    setUp();
+});
