@@ -53,7 +53,7 @@ class AudioEngine {
     }
     async start(modulatorValue, callback) {
         this.audioContext = new AudioContext();
-        await this.audioContext.audioWorklet.addModule('./dist/audio-processor.js');
+        await this.audioContext.audioWorklet.addModule('./scripts/dist/audio-processor.js');
         this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
         this.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
         this.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
