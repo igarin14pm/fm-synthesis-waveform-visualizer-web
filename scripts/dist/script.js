@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Igarin
+ * This software is released under the MIT License.
+ * https://opensource.org
+ */
 import { FMSynth } from './fm-synth.js';
 // Value Class
 class OperatorValue {
