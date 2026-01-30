@@ -6,12 +6,6 @@
 import { FMSynth } from './fm-synth.js';
 // Value Class
 class OperatorValue {
-    constructor(volumeParameterName, volumeValue, ratioParameterName, ratioValue) {
-        this.volumeParameterName = volumeParameterName;
-        this.volumeValue = volumeValue;
-        this.ratioParameterName = ratioParameterName;
-        this.ratioValue = ratioValue;
-    }
     get volumeUIValue() {
         return this.volumeValue * 100;
     }
@@ -24,13 +18,14 @@ class OperatorValue {
     set ratioUIValue(newValue) {
         this.ratioValue = newValue;
     }
+    constructor(volumeParameterName, volumeValue, ratioParameterName, ratioValue) {
+        this.volumeParameterName = volumeParameterName;
+        this.volumeValue = volumeValue;
+        this.ratioParameterName = ratioParameterName;
+        this.ratioValue = ratioValue;
+    }
 }
 class FMSynthValue {
-    constructor(samplingRate, waveFrequency, outputVolume) {
-        this._samplingRate = samplingRate;
-        this._waveFrequency = waveFrequency;
-        this._outputVolume = outputVolume;
-    }
     get samplingRate() {
         return this._samplingRate;
     }
@@ -39,6 +34,11 @@ class FMSynthValue {
     }
     get outputVolume() {
         return this._outputVolume;
+    }
+    constructor(samplingRate, waveFrequency, outputVolume) {
+        this._samplingRate = samplingRate;
+        this._waveFrequency = waveFrequency;
+        this._outputVolume = outputVolume;
     }
 }
 // Audio Class
@@ -256,14 +256,14 @@ class WaveformGraph extends Graph {
     }
 }
 class RangeInputUI {
+    get value() {
+        return parseInt(this.inputElement.value);
+    }
     constructor(inputElement, valueLabelElement, initialValue) {
         this.inputElement = inputElement;
         this.valueLabelElement = valueLabelElement;
         this.inputElement.value = initialValue.toString();
         this.valueLabelElement.textContent = initialValue.toString();
-    }
-    get value() {
-        return parseInt(this.inputElement.value);
     }
     addEventListener(listener) {
         this.inputElement.addEventListener('input', () => {
@@ -341,7 +341,7 @@ function setUp() {
             });
         }
     });
-    stopAudioButton?.addEventListener('click', function () {
+    stopAudioButton.addEventListener('click', function () {
         if (audioEngine.isRunning) {
             audioEngine.stop();
         }
