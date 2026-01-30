@@ -8,17 +8,6 @@ import { FMSynth } from './fm-synth.js';
 
 class AudioProcessor extends AudioWorkletProcessor {
 
-  fmSynth: FMSynth;
-
-  constructor() {
-    super();
-
-    const waveFrequency = 440;
-    const fmSynthVolume = 0.25;
-
-    this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
-  }
-
   static get parameterDescriptors(): AudioParamDescriptor[] {
     return [
       {
@@ -36,6 +25,17 @@ class AudioProcessor extends AudioWorkletProcessor {
         automationRate: 'a-rate'
       }
     ];
+  }
+
+  fmSynth: FMSynth;
+
+  constructor() {
+    super();
+
+    const waveFrequency = 440;
+    const fmSynthVolume = 0.25;
+
+    this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
   }
 
   process(
