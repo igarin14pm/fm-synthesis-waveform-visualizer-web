@@ -5,9 +5,6 @@
  */
 // Signal
 export class Signal {
-    constructor(value) {
-        this.value = value;
-    }
     get clippedValue() {
         if (this.value > 1.0) {
             return 1.0;
@@ -19,15 +16,18 @@ export class Signal {
             return this.value;
         }
     }
+    constructor(value) {
+        this.value = value;
+    }
 }
 // FM Synth Modules
 export class MasterPhase {
+    get output() {
+        return this.outputSource;
+    }
     constructor(fmSynth) {
         this.outputSource = new Signal(0.0);
         this.fmSynth = fmSynth;
-    }
-    get output() {
-        return this.outputSource;
     }
     moveFrameForward() {
         const deltaPhase = this.fmSynth.waveFrequency / this.fmSynth.samplingRate;
@@ -35,13 +35,6 @@ export class MasterPhase {
     }
 }
 export class Phase {
-    constructor(operator, masterPhaseSignal, modulatorSignal) {
-        this.valuesWithoutMod = [0.0, 0.0];
-        this.outputSource = new Signal(0.0);
-        this.operator = operator;
-        this.input = masterPhaseSignal;
-        this.modulatorSignal = modulatorSignal;
-    }
     get isLooped() {
         return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
     }
@@ -57,6 +50,13 @@ export class Phase {
             return 0;
         }
     }
+    constructor(operator, masterPhaseSignal, modulatorSignal) {
+        this.valuesWithoutMod = [0.0, 0.0];
+        this.outputSource = new Signal(0.0);
+        this.operator = operator;
+        this.input = masterPhaseSignal;
+        this.modulatorSignal = modulatorSignal;
+    }
     process() {
         let value = this.valuesWithoutMod[0] + this.modulationValue;
         value -= Math.floor(value);
@@ -70,6 +70,9 @@ export class Phase {
     }
 }
 export class Operator {
+    get output() {
+        return this.outputSource;
+    }
     constructor(fmSynth, modulatorSignal) {
         this.volume = 1.0;
         this.ratio = 1;
@@ -85,15 +88,15 @@ export class Operator {
     process() {
         return this.volume * Math.sin(2 * Math.PI * this.phase.output.value);
     }
-    get output() {
-        return this.outputSource;
-    }
     moveFrameForward() {
         this.phase.moveFrameForward();
         this.outputSource.value = this.process();
     }
 }
 export class FMSynth {
+    get output() {
+        return this.outputSource;
+    }
     constructor(samplingRate, waveFrequency, outputVolume) {
         this.outputSource = new Signal(0.0);
         this.samplingRate = samplingRate;
@@ -105,9 +108,6 @@ export class FMSynth {
     }
     process() {
         return this.carrier.output.value * this.outputVolume;
-    }
-    get output() {
-        return this.outputSource;
     }
     moveFrameForward() {
         let frameUpdateQueue = [this.masterPhase, this.modulator, this.carrier];
