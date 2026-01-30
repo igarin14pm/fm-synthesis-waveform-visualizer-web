@@ -15,13 +15,6 @@ class OperatorValue {
   ratioParameterName: string;
   ratioValue: number;
 
-  constructor(volumeParameterName: string, volumeValue: number, ratioParameterName: string, ratioValue: number) {
-    this.volumeParameterName = volumeParameterName;
-    this.volumeValue = volumeValue;
-    this.ratioParameterName = ratioParameterName;
-    this.ratioValue = ratioValue;
-  }
-
   get volumeUIValue(): number {
     return this.volumeValue * 100;
   }
@@ -38,6 +31,13 @@ class OperatorValue {
     this.ratioValue = newValue;
   }
 
+  constructor(volumeParameterName: string, volumeValue: number, ratioParameterName: string, ratioValue: number) {
+    this.volumeParameterName = volumeParameterName;
+    this.volumeValue = volumeValue;
+    this.ratioParameterName = ratioParameterName;
+    this.ratioValue = ratioValue;
+  }
+
 }
 
 class FMSynthValue {
@@ -45,16 +45,6 @@ class FMSynthValue {
   private _samplingRate: number;
   private _waveFrequency: number;
   private _outputVolume: number;
-
-  constructor(
-    samplingRate: number, 
-    waveFrequency: number, 
-    outputVolume: number,
-  ) {
-    this._samplingRate = samplingRate;
-    this._waveFrequency = waveFrequency;
-    this._outputVolume = outputVolume;
-  }
 
   get samplingRate(): number {
     return this._samplingRate;
@@ -66,6 +56,16 @@ class FMSynthValue {
 
   get outputVolume(): number {
     return this._outputVolume;
+  }
+
+  constructor(
+    samplingRate: number, 
+    waveFrequency: number, 
+    outputVolume: number,
+  ) {
+    this._samplingRate = samplingRate;
+    this._waveFrequency = waveFrequency;
+    this._outputVolume = outputVolume;
   }
 
 }
@@ -361,6 +361,10 @@ class RangeInputUI {
   inputElement: HTMLInputElement;
   valueLabelElement: HTMLLabelElement;
 
+  get value(): number {
+    return parseInt(this.inputElement.value);
+  }
+
   constructor(
     inputElement: HTMLInputElement,
     valueLabelElement: HTMLLabelElement,
@@ -371,10 +375,6 @@ class RangeInputUI {
 
     this.inputElement.value = initialValue.toString();
     this.valueLabelElement.textContent = initialValue.toString();
-  }
-
-  get value(): number {
-    return parseInt(this.inputElement.value);
   }
 
   addEventListener(listener: () => void) {
@@ -530,7 +530,7 @@ function setUp() {
     }
   });
 
-  stopAudioButton?.addEventListener('click', function() {
+  stopAudioButton.addEventListener('click', function() {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }
