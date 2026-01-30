@@ -10,10 +10,6 @@ export class Signal {
 
   value: number;
 
-  constructor(value: number) {
-    this.value = value;
-  }
-
   get clippedValue(): number {
     if (this.value > 1.0) {
       return 1.0;
@@ -22,6 +18,10 @@ export class Signal {
     } else {
       return this.value;
     }
+  }
+
+  constructor(value: number) {
+    this.value = value;
   }
 
 }
@@ -53,12 +53,12 @@ export class MasterPhase implements Outputting, Syncable {
 
   outputSource = new Signal(0.0);
 
-  constructor(fmSynth: FMSynth) {
-    this.fmSynth = fmSynth;
-  }
-  
   get output(): Signal {
     return this.outputSource;
+  }
+
+  constructor(fmSynth: FMSynth) {
+    this.fmSynth = fmSynth;
   }
 
   moveFrameForward(): void {
@@ -77,12 +77,6 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
   valuesWithoutMod: number[] = [0.0, 0.0];
   outputSource = new Signal(0.0);
 
-  constructor(operator: Operator, masterPhaseSignal: Signal, modulatorSignal: Signal | null) {
-    this.operator = operator;
-    this.input = masterPhaseSignal;
-    this.modulatorSignal = modulatorSignal
-  }
-
   get isLooped(): boolean {
     return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
   }
@@ -98,6 +92,12 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
     } else {
       return 0
     }
+  }
+
+  constructor(operator: Operator, masterPhaseSignal: Signal, modulatorSignal: Signal | null) {
+    this.operator = operator;
+    this.input = masterPhaseSignal;
+    this.modulatorSignal = modulatorSignal
   }
 
   process(): number {
@@ -126,6 +126,10 @@ export class Operator implements Inputting, Processing, Outputting, Syncable {
 
   outputSource = new Signal(0.0);
 
+  get output(): Signal {
+    return this.outputSource;
+  }
+
   constructor(fmSynth: FMSynth, modulatorSignal: Signal | null) {
     this.phase = new Phase(this, fmSynth.masterPhase.output, modulatorSignal);
     if (modulatorSignal !== null) {
@@ -137,10 +141,6 @@ export class Operator implements Inputting, Processing, Outputting, Syncable {
 
   process(): number {
     return this.volume * Math.sin(2 * Math.PI * this.phase.output.value);
-  }
-
-  get output(): Signal {
-    return this.outputSource;
   }
 
   moveFrameForward(): void {
@@ -162,6 +162,10 @@ export class FMSynth implements Processing, Outputting, Syncable {
 
   outputSource = new Signal(0.0);
 
+  get output(): Signal {
+    return this.outputSource;
+  }
+
   constructor(samplingRate: number, waveFrequency: number, outputVolume: number) {
     this.samplingRate = samplingRate;
     this.waveFrequency = waveFrequency;
@@ -174,10 +178,6 @@ export class FMSynth implements Processing, Outputting, Syncable {
 
   process(): number {
     return this.carrier.output.value * this.outputVolume;
-  }
-
-  get output(): Signal {
-    return this.outputSource;
   }
 
   moveFrameForward(): void {
