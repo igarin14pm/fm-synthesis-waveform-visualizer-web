@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Igarin
+ * This software is released under the MIT License.
+ * https://opensource.org
+ */
 import { FMSynth } from './fm-synth.js';
 // Value Class
 class OperatorValue {
@@ -51,13 +56,14 @@ class AudioEngine {
             param?.setValueAtTime(value, this.audioContext.currentTime);
         }
     }
-    async start(modulatorValue) {
+    async start(modulatorValue, callback) {
         this.audioContext = new AudioContext();
-        await this.audioContext.audioWorklet.addModule('./dist/audio-processor.js');
+        await this.audioContext.audioWorklet.addModule('./scripts/dist/audio-processor.js');
         this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
         this.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
         this.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
         this.audioWorkletNode.connect(this.audioContext.destination);
+        callback();
     }
     stop() {
         this.audioContext?.close();
@@ -74,7 +80,11 @@ class Graph {
         return this.element.height;
     }
     constructor(element) {
+        this.verticalPadding = 10;
         this.element = element;
+    }
+    convertToCoordinateY(value) {
+        return (this.height - this.verticalPadding * 2) * (-1 * value + 1) / 2 + this.verticalPadding;
     }
     clear() {
         let context = this.element.getContext('2d');
@@ -94,36 +104,37 @@ class PhaseGraph extends Graph {
         const sineWaveValueLength = 120;
         const context = this.element.getContext('2d');
         // モジュレーション量を描画
-        context.fillStyle = 'gray';
-        const phaseWithoutModX = this.element.width * this.operator.phase.valuesWithoutMod[0];
+        context.fillStyle = '#00cdb944';
+        const phaseWithoutModX = this.width * this.operator.phase.valuesWithoutMod[0];
         const modRectY = 0;
-        const modRectWidth = this.element.width * this.operator.phase.modulationValue;
-        const modRectHeight = this.element.height;
-        if (phaseWithoutModX + modRectWidth > this.element.width) {
+        const modRectWidth = this.width * this.operator.phase.modulationValue;
+        const modRectHeight = this.height;
+        if (phaseWithoutModX + modRectWidth > this.width) {
             // 長方形がCanvas要素から右側にはみ出る場合
             // 右端の長方形を描画
-            context.fillRect(phaseWithoutModX, modRectY, this.element.width - phaseWithoutModX, this.element.height);
+            context.fillRect(phaseWithoutModX, modRectY, this.width - phaseWithoutModX, this.height);
             // 左端の長方形を描画
-            context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.element.width, modRectHeight);
+            context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.width, modRectHeight);
         }
         else if (phaseWithoutModX + modRectWidth < 0) {
             // 図形がCanvas要素から左側にはみ出る場合
             // 左端の長方形を描画
             context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
             // 右端の長方形を描画
-            context.fillRect(this.element.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+            context.fillRect(this.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
         }
         else {
             // 長方形がCanvas要素からはみ出ない場合
             context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
         }
         // サイン波を描画
-        context.strokeStyle = 'black';
+        context.strokeStyle = '#eeeeee';
+        context.lineWidth = 4;
         context.beginPath();
         for (let i = 0; i < sineWaveValueLength; i++) {
             const sineWaveValue = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
             const sineWaveX = this.width * i / (sineWaveValueLength - 1);
-            const sineWaveY = this.height * (-1 * this.operator.volume * sineWaveValue / 2 + 0.5);
+            const sineWaveY = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
             if (i == 0) {
                 context.moveTo(sineWaveX, sineWaveY);
             }
@@ -133,7 +144,8 @@ class PhaseGraph extends Graph {
         }
         context.stroke();
         // 位相を表す線分を描画
-        context.strokeStyle = 'green';
+        context.strokeStyle = '#00cdb9';
+        context.lineWidth = 8;
         context.beginPath();
         const phaseLineX = this.width * this.operator.phase.output.value;
         const phaseLineStartY = 0;
@@ -142,19 +154,20 @@ class PhaseGraph extends Graph {
         context.lineTo(phaseLineX, phaseLineEndY);
         context.stroke();
         // 値の出力を表す線分を描画
-        context.strokeStyle = 'black';
+        context.strokeStyle = '#888888';
+        context.lineWidth = 4;
         context.beginPath();
         const outputLineStartX = phaseLineX;
         const outputLineEndX = this.width;
-        const outputLineY = this.height * (-1 * this.operator.output.value / 2 + 0.5);
+        const outputLineY = this.convertToCoordinateY(this.operator.output.value);
         context.moveTo(outputLineStartX, outputLineY);
         context.lineTo(outputLineEndX, outputLineY);
         context.stroke();
         // 値を表す円を描画
-        context.fillStyle = 'green';
+        context.fillStyle = '#00cdb9';
         const valueCircleX = phaseLineX;
         const valueCircleY = outputLineY;
-        const valueCircleRadius = 5;
+        const valueCircleRadius = 12.5;
         context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
         context.fill();
     }
@@ -167,30 +180,32 @@ class OutputGraph extends Graph {
     }
     draw() {
         const context = this.element.getContext('2d');
-        // 出力を表す線分を描画
-        context.strokeStyle = 'black';
-        context.beginPath();
         const outputLineStartX = 0;
         const outputLineEndX = this.width;
-        const outputLineY = this.height * (-1 * this.operator.output.value / 2 + 0.5);
-        context.moveTo(outputLineStartX, outputLineY);
-        context.lineTo(outputLineEndX, outputLineY);
-        context.stroke();
+        const outputLineY = this.convertToCoordinateY(this.operator.output.value);
         // 変調を掛ける量を表す長方形を描画
         if (this.showsModulatingAmount) {
-            context.fillStyle = 'gray';
             const amountRectX = this.width / 3;
             const amountRectWidth = this.width / 3;
             // 枠線を描画
-            const amountRectOutlineY = 0;
-            const amountRectOutlineHeight = this.height;
-            context.strokeStyle = 'black';
+            const amountRectOutlineY = this.verticalPadding;
+            const amountRectOutlineHeight = this.height - this.verticalPadding * 2;
+            context.strokeStyle = '#eeeeee';
+            context.lineWidth = 4;
             context.strokeRect(amountRectX, amountRectOutlineY, amountRectWidth, amountRectOutlineHeight);
             // 塗りつぶしを描画
             const amountRectFillY = this.height / 2;
             const amountRectFillHeight = outputLineY - amountRectFillY;
+            context.fillStyle = '#00cdb944';
             context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
         }
+        // 出力を表す線分を描画
+        context.strokeStyle = '#888888';
+        context.lineWidth = 4;
+        context.beginPath();
+        context.moveTo(outputLineStartX, outputLineY);
+        context.lineTo(outputLineEndX, outputLineY);
+        context.stroke();
     }
 }
 class WaveformGraphData {
@@ -213,10 +228,13 @@ class WaveformGraph extends Graph {
     }
     draw() {
         let context = this.element.getContext('2d');
+        // 波形を描画
+        context.strokeStyle = '#eeeeee';
+        context.lineWidth = 4;
         context.beginPath();
         for (const [index, value] of this.data.values.entries()) {
-            let x = (index / (this.data.valueLength - 1)) * this.width;
-            let y = (-(value) + 1) / 2 * this.height;
+            const x = (index / (this.data.valueLength - 1)) * this.width;
+            const y = this.convertToCoordinateY(value);
             if (index === 0) {
                 context.moveTo(x, y);
             }
@@ -224,6 +242,16 @@ class WaveformGraph extends Graph {
                 context.lineTo(x, y);
             }
         }
+        context.stroke();
+        // 左端のボーダーの線分を描画
+        const borderLineX = 1;
+        const borderLineStartY = 0;
+        const borderLineEndY = this.height;
+        context.strokeStyle = '#888888';
+        context.lineWidth = 4;
+        context.beginPath();
+        context.moveTo(borderLineX, borderLineStartY);
+        context.lineTo(borderLineX, borderLineEndY);
         context.stroke();
     }
 }
@@ -304,16 +332,21 @@ function setUp() {
     setModulatorVolume();
     setModulatorRatio();
     const startAudioButton = document.getElementById('start-audio-button');
+    const stopAudioButton = document.getElementById('stop-audio-button');
     startAudioButton.addEventListener('click', function () {
         if (!audioEngine.isRunning) {
-            audioEngine.start(modulatorValue);
+            audioEngine.start(modulatorValue, () => {
+                startAudioButton.style.display = 'none';
+                stopAudioButton.style.display = 'block';
+            });
         }
     });
-    const stopAudioButton = document.getElementById('stop-audio-button');
     stopAudioButton?.addEventListener('click', function () {
         if (audioEngine.isRunning) {
             audioEngine.stop();
         }
+        startAudioButton.style.display = 'block';
+        stopAudioButton.style.display = 'none';
     });
     modulatorVolumeInputUI.addEventListener(function () {
         setModulatorVolume();
@@ -324,4 +357,6 @@ function setUp() {
     const oneSecond_ms = 1000;
     let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
 }
-setUp();
+window.addEventListener('load', () => {
+    setUp();
+});

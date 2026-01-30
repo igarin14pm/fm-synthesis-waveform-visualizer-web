@@ -1,15 +1,21 @@
+/*
+ * Copyright (c) 2026 Igarin
+ * This software is released under the MIT License.
+ * https://opensource.org
+ */
+
 {
   "compilerOptions": {
     "target": "es2020",
     "module": "esNext",
     "lib": ["es2020", "dom"],
     "sourceMap": false,
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "outDir": "./scripts/dist",
+    "rootDir": "./scripts/src",
     "strict": true,
     "baseUrl": "src",
 
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist"]
+  "include": ["scripts/src/**/*"],
+  "exclude": ["scripts/dist"]
 }

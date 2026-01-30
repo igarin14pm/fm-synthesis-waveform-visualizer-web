@@ -1,0 +1,128 @@
+/*
+ * Copyright (c) 2026 Igarin
+ * This software is released under the MIT License.
+ * https://opensource.org
+ */
+
+/* Noto Sans JP */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+body {
+  color: #eeeeee;
+  
+  background-color: #251e16;
+}
+
+body * {
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+main {
+  width: 824px;
+  
+  padding: 0 100px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 2.5rem;
+  
+  margin: 3rem 0 1.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+  
+  margin: 2.5rem 0 1.5rem;
+}
+
+a {
+  color: #00cdb9;
+}
+
+a:visited {
+  color: #aeeae4;
+}
+
+table {
+  text-align: left;
+  
+  margin: 1rem 0;
+}
+
+td {
+  line-height: 2rem;
+}
+
+.graph {
+  display: flex;
+}
+
+.graph * {
+  display: block;
+}
+
+#modulator-phase-graph, #carrier-phase-graph {
+  width: 258px;
+  height: 170px;
+}
+
+#modulator-output-graph, #carrier-output-graph {
+  width: 50px;
+  height: 170px;
+}
+
+#modulator-waveform-graph, #carrier-waveform-graph {
+  width: 516px;
+  height: 170px;
+}
+
+button {
+  border-radius: 8px;
+  border-width: 2px;
+  
+  color: #eeeeee;
+  
+  font-weight: 600;
+  
+  margin: 16px 0;
+  padding: 16px;
+  
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.green-button {
+  background-color: #00cdb988;
+  border-color: #00cdb9;
+}
+
+.green-button:hover {
+  background-color: #00ffe588;
+  border-color: #00fde4;
+}
+
+.red-button {
+  background-color: #f95f5d88;
+  border-color: #f95f5d;
+}
+
+.red-button:hover {
+  background-color: #fa878588;
+  border-color: #fa817f;
+}
+
+#start-audio-button {
+  /* JavaScriptで制御 */
+  display: block;
+}
+
+#stop-audio-button {
+  /* JavaScriptで制御 */
+  display: none;
+}
+
+footer {
+  width: 824px;
+  padding: 0 100px;
+  margin: 50px auto;
+}
