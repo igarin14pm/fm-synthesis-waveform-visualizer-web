@@ -37,7 +37,6 @@ export interface Processing {
 }
 
 export interface Outputting {
-  // outputSource: Signal;
   output: Signal;
 }
 
