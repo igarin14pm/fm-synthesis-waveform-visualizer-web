@@ -37,7 +37,6 @@ export interface Processing {
 }
 
 export interface Outputting {
-  outputSource: Signal;
   output: Signal;
 }
 
@@ -51,7 +50,7 @@ export class MasterPhase implements Outputting, Syncable {
 
   fmSynth: FMSynth;
 
-  outputSource = new Signal(0.0);
+  private outputSource = new Signal(0.0);
 
   get output(): Signal {
     return this.outputSource;
@@ -75,7 +74,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
   modulatorSignal: Signal | null;
 
   valuesWithoutMod: number[] = [0.0, 0.0];
-  outputSource = new Signal(0.0);
+  private outputSource = new Signal(0.0);
 
   get isLooped(): boolean {
     return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
@@ -124,7 +123,7 @@ export class Operator implements Inputting, Processing, Outputting, Syncable {
   volume: number = 1.0;
   ratio: number = 1;
 
-  outputSource = new Signal(0.0);
+  private outputSource = new Signal(0.0);
 
   get output(): Signal {
     return this.outputSource;
@@ -160,7 +159,7 @@ export class FMSynth implements Processing, Outputting, Syncable {
   modulator: Operator;
   carrier: Operator;
 
-  outputSource = new Signal(0.0);
+  private outputSource = new Signal(0.0);
 
   get output(): Signal {
     return this.outputSource;
