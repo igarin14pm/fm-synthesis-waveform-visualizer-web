@@ -8,20 +8,10 @@ import { FMSynth } from './fm-synth.js';
 
 class AudioProcessor extends AudioWorkletProcessor {
 
-  fmSynth: FMSynth;
-
-  constructor() {
-    super();
-
-    const waveFrequency = 440;
-    const fmSynthVolume = 0.25;
-
-    this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
-  }
-
   static get parameterDescriptors(): AudioParamDescriptor[] {
     return [
       {
+        // モジュレーターのVolumeパラメーター
         name: 'modulatorVolume',
         defaultValue: 1,
         minValue: 0,
@@ -29,6 +19,7 @@ class AudioProcessor extends AudioWorkletProcessor {
         automationRate: 'a-rate'
       },
       {
+        // モジュレーターのRatioパラメーター
         name: 'modulatorRatio',
         defaultValue: 1,
         minValue: 1,
@@ -36,6 +27,21 @@ class AudioProcessor extends AudioWorkletProcessor {
         automationRate: 'a-rate'
       }
     ];
+  }
+
+  // 音声を出力するFMシンセサイザー
+  fmSynth: FMSynth;
+
+  constructor() {
+    super();
+
+    // 周波数を440ヘルツ固定にする
+    const waveFrequency = 440;
+    
+    // ボリュームはこれくらいがちょうど良い
+    const fmSynthVolume = 0.25;
+
+    this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
   }
 
   process(
@@ -53,8 +59,10 @@ class AudioProcessor extends AudioWorkletProcessor {
       let modulatorRatioParameter = parameters['modulatorRatio'];
       this.fmSynth.modulator.ratio = modulatorRatioParameter.length > 1 ? modulatorRatioParameter[i] : modulatorRatioParameter[0];
       
-
+      // FMシンセの信号を出力する
       channel[i] = this.fmSynth.output.clippedValue;
+      
+      // FMシンセの動作をサンプリングレート一つ分進める
       this.fmSynth.moveFrameForward();
     }
 

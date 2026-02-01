@@ -6,11 +6,25 @@
 
 <!DOCTYPE html>
 <html lang="ja-JP">
-  <head>
+  <head prefix="og: https://ogp.me/ns#">
     <meta charset="utf-8" />
+    
+    <meta name="robots" content="noindex" />
+    
+    <meta property="og:site_name" content="FM-Synthesis Waveform Visualizer" />
+    <meta property="og:title" content="FM-Synthesis Waveform Visualizer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://igarin14pm.github.io/fm-synthesis-waveform-visualizer-web/" />
+    <meta property="og:image" content="https://igarin14pm.github.io/fm-synthesis-waveform-visualizer-web/images/ogp.png" />
+    <meta property="og:description" content="FMシンセサイザーの波形生成の仕組みをパラメーターを動かしながら学べます" />
+    <meta name="twitter:card" content="summary" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes" />
 
+    <link rel="icon" href="./images/favicon.ico" />
+    <link rel="apple-touch-icon" href="./images/apple-touch-icon.png" />
+    <link rel="android-touch-icon" href="./images/android-touch-icon.png" />
+    
     <link rel="stylesheet" href="./styles/normalize.css" />
     <link rel="stylesheet" href="./styles/style.css" />
     
@@ -21,56 +35,88 @@
     
     <main>
       
-      <h1>FM-Synthesis Waveform Visualizer</h1>
-      
-      <h2>Modulator</h2>
-      
-      <table>
-        <tr>
-          <th>
-            <label for="modulator-volume-input">Volume</label>
-          </th>
-          <td>
-            <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
-          </td>
-          <td>
-            <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <label for="modulator-ratio-input">Ratio</label>
-          </th>
-          <td>
-            <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
-          </td>
-          <td>
-            <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
-          </td>
-        </tr>
-      </table>
-      
-      <div class="graph">
-        <canvas id="modulator-phase-graph" width="516" height="340"></canvas>
-        <canvas id="modulator-output-graph" width="100" height="340"></canvas>
-        <canvas id="modulator-waveform-graph" width="1032" height="340"></canvas>
-      </div>
-      
-      <h2>Carrier</h2>
-  
-      <div class="graph">
-        <canvas id="carrier-phase-graph" width="516" height="340"></canvas>
-        <canvas id="carrier-output-graph" width="100" height="340"></canvas>
-        <canvas id="carrier-waveform-graph" width="1032" height="340"></canvas>
-      </div>
-      
-      <button id="start-audio-button" class="green-button">音声を再生する</button>
-      <button id="stop-audio-button" class="red-button">音声を停止する</button>
+      <section>
         
-    </main>
+        <h1>FM-Synthesis Waveform Visualizer</h1>
+        
+        <div class="div-working-with-javascript">
+                
+          <h2>Modulator</h2>
+        
+          <table>
+            <tr>
+              <th>
+                <label for="modulator-volume-input">Volume</label>
+              </th>
+              <td>
+                <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
+              </td>
+              <td>
+                <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                <label for="modulator-ratio-input">Ratio</label>
+              </th>
+              <td>
+                <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
+              </td>
+              <td>
+                <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
+              </td>
+            </tr>
+          </table>
+          
+          <div class="graph">
+            <canvas id="modulator-phase-graph" width="516" height="340"></canvas>
+            <canvas id="modulator-output-graph" width="100" height="340"></canvas>
+            <canvas id="modulator-waveform-graph" width="1032" height="340"></canvas>
+          </div>
+          
+          <h2>Carrier</h2>
+      
+          <div class="graph">
+            <canvas id="carrier-phase-graph" width="516" height="340"></canvas>
+            <canvas id="carrier-output-graph" width="100" height="340"></canvas>
+            <canvas id="carrier-waveform-graph" width="1032" height="340"></canvas>
+          </div>
+          
+          <button id="start-audio-button" class="green-button">音声を再生する</button>
+          <button id="stop-audio-button" class="red-button">音声を停止する</button>
+          
+        </div>
+        
+        <noscript>
+          <h2>JavaScriptについて</h2>
+          <p><b>現在、このブラウザのJavaScriptがオフに設定されているようです。</b></p>
+          <p>このWebアプリはJavaScriptで動作するため、現在コンテンツが表示できない状態となっております。</p>
+          <p>JavaScriptをオンにする方法は端末やブラウザによって異なりますので、ブラウザのヘルプをご覧になるか、ブラウザの開発元にお問い合わせください。</p>
+        </noscript>
+        
+      </section>
+      
+      <hr />
 
+      <h1>このページについて</h1>
+      <p>&quot;FM-Synthesis Waveform Visualizer&quot;は、YAMAHA DX7に代表されるようなFMシンセサイザーがどのように波形を生成しているのかの学習に役立つWebアプリです。</p>
+      
+      <h2>使い方</h2>
+      <p>FMシンセサイザーにキャリア・モジュレーターがあることはわかるけどそれがどうやって波形を生成しているのかがわからない、といった方に向けて作っています。</p>
+      <p>&quot;Modulator&quot;内の&quot;Volume&quot;・&quot;Ratio&quot;のスライダーを動かすことで、&quot;Carrier&quot;の位相や波形にどのような影響を与えるのかを観察することができます。</p>
+      <p>&quot;Carrier&quot;下の&quot;音声を再生する&quot;ボタンをクリックすることで、実際のFMシンセサイザーの音を聞くことができます。この音は画面上の波形とサンプリングレート・周波数が違うだけで、実際に同じ波形の音を聞くことができます。</p>
+      
+      <h2>ソースコードについて</h2>
+      <p>
+        GitHubにて公開しております。<br />
+        <a href="https://github.com/igarin14pm/fm-synthesis-waveform-visualizer-web/">https://github.com/igarin14pm/fm-synthesis-waveform-visualizer-web/</a>
+      </p>
+      
+    </main>
+    
     <footer>
-      <p><small>v0.4.0</small></p>
+      <hr />
+      <p><small>v1.0.0-beta1</small></p>
       <p><small>&copy; 2026 Igarin</small></p>
       <p>
         <small>
