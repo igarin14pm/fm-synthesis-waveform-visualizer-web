@@ -21,51 +21,66 @@
     
     <main>
       
-      <h1>FM-Synthesis Waveform Visualizer</h1>
+      <section>
+        
+        <h1>FM-Synthesis Waveform Visualizer</h1>
+        
+        <div class="div-working-with-javascript">
+                
+          <h2>Modulator</h2>
+        
+          <table>
+            <tr>
+              <th>
+                <label for="modulator-volume-input">Volume</label>
+              </th>
+              <td>
+                <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
+              </td>
+              <td>
+                <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                <label for="modulator-ratio-input">Ratio</label>
+              </th>
+              <td>
+                <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
+              </td>
+              <td>
+                <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
+              </td>
+            </tr>
+          </table>
+          
+          <div class="graph">
+            <canvas id="modulator-phase-graph" width="516" height="340"></canvas>
+            <canvas id="modulator-output-graph" width="100" height="340"></canvas>
+            <canvas id="modulator-waveform-graph" width="1032" height="340"></canvas>
+          </div>
+          
+          <h2>Carrier</h2>
       
-      <h2>Modulator</h2>
-      
-      <table>
-        <tr>
-          <th>
-            <label for="modulator-volume-input">Volume</label>
-          </th>
-          <td>
-            <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
-          </td>
-          <td>
-            <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <label for="modulator-ratio-input">Ratio</label>
-          </th>
-          <td>
-            <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
-          </td>
-          <td>
-            <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
-          </td>
-        </tr>
-      </table>
-      
-      <div class="graph">
-        <canvas id="modulator-phase-graph" width="516" height="340"></canvas>
-        <canvas id="modulator-output-graph" width="100" height="340"></canvas>
-        <canvas id="modulator-waveform-graph" width="1032" height="340"></canvas>
-      </div>
-      
-      <h2>Carrier</h2>
-  
-      <div class="graph">
-        <canvas id="carrier-phase-graph" width="516" height="340"></canvas>
-        <canvas id="carrier-output-graph" width="100" height="340"></canvas>
-        <canvas id="carrier-waveform-graph" width="1032" height="340"></canvas>
-      </div>
-      
-      <button id="start-audio-button" class="green-button">音声を再生する</button>
-      <button id="stop-audio-button" class="red-button">音声を停止する</button>
+          <div class="graph">
+            <canvas id="carrier-phase-graph" width="516" height="340"></canvas>
+            <canvas id="carrier-output-graph" width="100" height="340"></canvas>
+            <canvas id="carrier-waveform-graph" width="1032" height="340"></canvas>
+          </div>
+          
+          <button id="start-audio-button" class="green-button">音声を再生する</button>
+          <button id="stop-audio-button" class="red-button">音声を停止する</button>
+          
+        </div>
+        
+        <noscript>
+          <h2>JavaScriptについて</h2>
+          <p><b>現在、このブラウザのJavaScriptがオフに設定されているようです。</b></p>
+          <p>このWebアプリはJavaScriptで動作するため、現在コンテンツが表示できない状態となっております。</p>
+          <p>JavaScriptをオンにする方法は端末やブラウザによって異なりますので、ブラウザのヘルプをご覧になるか、ブラウザの開発元にお問い合わせください。</p>
+        </noscript>
+        
+      </section>
       
       <hr />
 

@@ -519,6 +519,11 @@ function moveFrameForward() {
  * WebページのJavaScriptの動作を開始します。
  */
 function setUp() {
+    // JavaScript無効時に非表示になっている要素を表示させる
+    const divWorkingWithJavascript = document.getElementsByClassName('div-working-with-javascript');
+    for (let i = 0; i < divWorkingWithJavascript.length; i++) {
+        divWorkingWithJavascript[i].style.display = 'block';
+    }
     /**
      * UIからモジュレーターのVolumeの値を取得し、FMSynthに適用します。
      */

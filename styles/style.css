@@ -60,6 +60,10 @@ td {
   line-height: 2rem;
 }
 
+.div-working-with-javascript {
+  display: none;
+}
+
 .graph {
   display: flex;
 }
