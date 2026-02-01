@@ -33,7 +33,13 @@ h1 {
 h2 {
   font-size: 2rem;
   
-  margin: 2.5rem 0 1.5rem;
+  margin: 3rem 0 1.5rem;
+}
+
+p {
+  line-height: 1.5rem;
+  
+  margin: 1rem 0;
 }
 
 a {
@@ -52,6 +58,10 @@ table {
 
 td {
   line-height: 2rem;
+}
+
+.div-working-with-javascript {
+  display: none;
 }
 
 .graph {
@@ -125,4 +135,12 @@ footer {
   width: 824px;
   padding: 0 100px;
   margin: 50px auto;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #eeeeee;
+  opacity: 50%;
+  
+  margin: 64px 0;
 }
