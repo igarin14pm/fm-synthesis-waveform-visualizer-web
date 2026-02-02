@@ -240,15 +240,12 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
 /**
  * FMシンセサイザーで波形を生成するオペレーターを表すクラスです。
  */
-export class Operator implements Inputting, Processing, Outputting, Syncable {
+export class Operator implements Processing, Outputting, Syncable {
 
   /**
    * オペレーターの位相を表すPhaseクラスのインスタンス
    */
   phase: Phase;
-  
-  // 削除予定
-  input: Signal;
 
   /**
    * Volumeパラメーター
@@ -281,11 +278,6 @@ export class Operator implements Inputting, Processing, Outputting, Syncable {
    */
   constructor(fmSynth: FMSynth, modulatorSignal: Signal | null) {
     this.phase = new Phase(this, fmSynth.masterPhase.output, modulatorSignal);
-    if (modulatorSignal !== null) {
-      this.input = modulatorSignal;
-    } else {
-      this.input = new Signal(0.0);
-    }
   }
 
   /**
