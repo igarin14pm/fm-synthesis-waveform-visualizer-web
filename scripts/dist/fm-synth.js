@@ -160,12 +160,6 @@ export class Operator {
          */
         this.outputSource = new Signal(0.0);
         this.phase = new Phase(this, fmSynth.masterPhase.output, modulatorSignal);
-        if (modulatorSignal !== null) {
-            this.input = modulatorSignal;
-        }
-        else {
-            this.input = new Signal(0.0);
-        }
     }
     /**
      * 信号を処理して出力信号の値を計算します。
