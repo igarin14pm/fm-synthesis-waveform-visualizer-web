@@ -39,7 +39,7 @@ export class MasterPhase {
      * 出力信号
      */
     get output() {
-        return this.outputSource;
+        return this._output;
     }
     /**
      * MasterPhaseのインスタンスを生成します。
@@ -49,7 +49,7 @@ export class MasterPhase {
         /**
          * 出力信号のインスタンス
          */
-        this.outputSource = new Signal(0.0);
+        this._output = new Signal(0.0);
         this.fmSynth = fmSynth;
     }
     /**
@@ -57,7 +57,7 @@ export class MasterPhase {
      */
     moveFrameForward() {
         const deltaPhase = this.fmSynth.waveFrequency / this.fmSynth.samplingRate;
-        this.outputSource.value = (this.outputSource.value + deltaPhase) % 1;
+        this._output.value = (this._output.value + deltaPhase) % 1;
     }
 }
 /**
@@ -74,7 +74,7 @@ export class Phase {
      * 出力信号
      */
     get output() {
-        return this.outputSource;
+        return this._output;
     }
     /**
      * モジュレーターの信号から計算した、実際に変調で使うモジュレーションの値
@@ -105,7 +105,7 @@ export class Phase {
         /**
          * 出力信号のインスタンス
          */
-        this.outputSource = new Signal(0.0);
+        this._output = new Signal(0.0);
         this.operator = operator;
         this.input = masterPhaseSignal;
         this.modulatorSignal = modulatorSignal;
@@ -126,7 +126,7 @@ export class Phase {
         let valueWithoutMod = this.input.value * this.operator.ratio % 1;
         this.valuesWithoutMod.pop();
         this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
-        this.outputSource.value = this.process();
+        this._output.value = this.process();
     }
 }
 /**
@@ -137,7 +137,7 @@ export class Operator {
      * 出力信号
      */
     get output() {
-        return this.outputSource;
+        return this._output;
     }
     /**
      * Operatorのインスタンスを生成します。
@@ -158,7 +158,7 @@ export class Operator {
         /**
          * 出力信号のインスタンス
          */
-        this.outputSource = new Signal(0.0);
+        this._output = new Signal(0.0);
         this.phase = new Phase(this, fmSynth.masterPhase.output, modulatorSignal);
     }
     /**
@@ -173,7 +173,7 @@ export class Operator {
      */
     moveFrameForward() {
         this.phase.moveFrameForward();
-        this.outputSource.value = this.process();
+        this._output.value = this.process();
     }
 }
 /**
@@ -184,7 +184,7 @@ export class FMSynth {
      * 出力信号
      */
     get output() {
-        return this.outputSource;
+        return this._output;
     }
     /**
      * FMSynthのインスタンスを生成します。
@@ -196,7 +196,7 @@ export class FMSynth {
         /**
          * 出力信号のインスタンス
          */
-        this.outputSource = new Signal(0.0);
+        this._output = new Signal(0.0);
         this.samplingRate = samplingRate;
         this.waveFrequency = waveFrequency;
         this.outputVolume = outputVolume;
@@ -219,6 +219,6 @@ export class FMSynth {
         frameUpdateQueue.forEach(syncable => {
             syncable.moveFrameForward();
         });
-        this.outputSource.value = this.process();
+        this._output.value = this.process();
     }
 }
