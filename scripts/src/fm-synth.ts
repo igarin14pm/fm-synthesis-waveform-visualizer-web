@@ -73,13 +73,14 @@ export interface Outputting {
   
   /**
    * 出力する信号
-   * フィールド内のSignalインスタンスを参照するゲッタとして実装することでSignal.valueを他モジュールに伝えることができます。
+   * Signalインスタンスを格納したプライベートフィールドを参照するゲッタとして実装することで、
+   * Signalインスタンスを他シンセモジュールに参照渡しすることができます。
    * @example
    * class SomeClass implements Outputting {
    *   // Signalのインスタンス
-   *   private outputSource = Signal(0);
+   *   private _output = Signal(0);
    *
-   *   get output(): Signal { return this.outputSource; }
+   *   get output(): Signal { return this._output; }
    * }
    */
   output: Signal;
@@ -112,13 +113,13 @@ export class MasterPhase implements Outputting, Syncable {
   /**
    * 出力信号のインスタンス
    */
-  private outputSource = new Signal(0.0);
+  private _output = new Signal(0.0);
 
   /**
    * 出力信号
    */
   get output(): Signal {
-    return this.outputSource;
+    return this._output;
   }
 
   /**
@@ -134,7 +135,7 @@ export class MasterPhase implements Outputting, Syncable {
    */
   moveFrameForward(): void {
     const deltaPhase = this.fmSynth.waveFrequency / this.fmSynth.samplingRate;
-    this.outputSource.value = (this.outputSource.value + deltaPhase) % 1;
+    this._output.value = (this._output.value + deltaPhase) % 1;
   }
 
 }
@@ -169,7 +170,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
   /**
    * 出力信号のインスタンス
    */
-  private outputSource = new Signal(0.0);
+  private _output = new Signal(0.0);
 
   /**
    * 位相が一周して (計算した位相の値 < 一つ前に計算した位相の値) となった時にtrue、そうでない時にfalseとなります。
@@ -182,7 +183,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
    * 出力信号
    */
   get output(): Signal {
-    return this.outputSource;
+    return this._output;
   }
 
   /**
@@ -232,7 +233,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
     this.valuesWithoutMod.pop();
     this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
 
-    this.outputSource.value = this.process();
+    this._output.value = this.process();
   }
 
 }
@@ -262,13 +263,13 @@ export class Operator implements Processing, Outputting, Syncable {
   /**
    * 出力信号のインスタンス
    */
-  private outputSource = new Signal(0.0);
+  private _output = new Signal(0.0);
 
   /**
    * 出力信号
    */
   get output(): Signal {
-    return this.outputSource;
+    return this._output;
   }
 
   /**
@@ -293,7 +294,7 @@ export class Operator implements Processing, Outputting, Syncable {
    */
   moveFrameForward(): void {
     this.phase.moveFrameForward();
-    this.outputSource.value = this.process();
+    this._output.value = this.process();
   }
 
 }
@@ -336,13 +337,13 @@ export class FMSynth implements Processing, Outputting, Syncable {
   /**
    * 出力信号のインスタンス
    */
-  private outputSource = new Signal(0.0);
+  private _output = new Signal(0.0);
 
   /**
    * 出力信号
    */
   get output(): Signal {
-    return this.outputSource;
+    return this._output;
   }
 
   /**
@@ -378,7 +379,7 @@ export class FMSynth implements Processing, Outputting, Syncable {
       syncable.moveFrameForward();
     });
 
-    this.outputSource.value = this.process();
+    this._output.value = this.process();
   }
 
 }
