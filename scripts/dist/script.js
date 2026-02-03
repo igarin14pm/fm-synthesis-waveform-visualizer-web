@@ -4,7 +4,7 @@
  * https://opensource.org
  */
 import { FMSynth } from './fm-synth.js';
-// Value Class
+/* -------- Value Class -------- */
 /**
  * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
  */
@@ -81,7 +81,7 @@ class FMSynthValue {
         this._outputVolume = outputVolume;
     }
 }
-// Audio Class
+/* -------- Audio Class -------- */
 /**
  * オーディオの処理を行うクラスです。
  */
@@ -136,7 +136,7 @@ class AudioEngine {
         this.audioWorkletNode = null;
     }
 }
-// UI Classes
+/* -------- UI Classes -------- */
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
@@ -461,7 +461,7 @@ class OperatorUI {
         this.waveformGraph.update();
     }
 }
-// Script
+/* -------- Script -------- */
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
  */
