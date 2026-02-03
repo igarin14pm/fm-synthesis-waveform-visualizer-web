@@ -4,7 +4,7 @@
  * https://opensource.org
  */
 
-// Signal
+/* -------- Signal -------- */
 
 /**
  * シンセサイザー内でやりとりされる信号を表します。
@@ -39,7 +39,7 @@ export class Signal {
 
 }
 
-// Interface
+/* -------- Interface -------- */
 
 /**
  * シンセサイザー・モジュールが入力を持っていることを表します。
@@ -98,7 +98,7 @@ export interface Syncable {
   moveFrameForward(): void;
 }
 
-// FM Synth Modules
+/* -------- FM Synth Modules -------- */
 
 /**
  * FMシンセ内ですべてのPhaseの同期元となるクラスです。

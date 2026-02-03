@@ -6,7 +6,7 @@
 
 import { Syncable, Operator, FMSynth } from './fm-synth.js';
 
-// Value Class
+/* -------- Value Class -------- */
 
 /**
  * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
@@ -136,7 +136,7 @@ class FMSynthValue {
 
 }
 
-// Audio Class
+/* -------- Audio Class -------- */
 
 /**
  * オーディオの処理を行うクラスです。
@@ -206,7 +206,7 @@ class AudioEngine {
   }
 }
 
-// UI Classes
+/* -------- UI Classes -------- */
 
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
@@ -669,7 +669,7 @@ class OperatorUI implements Syncable {
 
 }
 
-// Script
+/* -------- Script -------- */
 
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
