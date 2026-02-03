@@ -3,7 +3,7 @@
  * This software is released under the MIT License.
  * https://opensource.org
  */
-// Signal
+/* -------- Signal -------- */
 /**
  * シンセサイザー内でやりとりされる信号を表します。
  */
@@ -30,7 +30,7 @@ export class Signal {
         this.value = value;
     }
 }
-// FM Synth Modules
+/* -------- FM Synth Modules -------- */
 /**
  * FMシンセ内ですべてのPhaseの同期元となるクラスです。
  */
