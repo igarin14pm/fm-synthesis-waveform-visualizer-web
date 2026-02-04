@@ -2,9 +2,13 @@
 
 YAMAHA DX7に代表されるようなFMシンセサイザーがどのように波形を生成しているのかの学習に役立つWebアプリです。
 
-![FM-Synthesis Waveform Visualizer for Webのスクリーンショット](images/readme-screenshot.png)
+![FM-Synthesis Waveform Visualizer for Webのスクリーンショット](./images/readme-screenshot.png)
 
-# 簡単な使い方
+## GitHub Pages
+
+[https://igarin14pm.github.io/fm-synthesis-waveform-visualizer-web/](https://igarin14pm.github.io/fm-synthesis-waveform-visualizer-web/)
+
+## 簡単な使い方
 
 FMシンセサイザーにキャリア・モジュレーターがあることはわかるけどそれがどうやって波形を生成しているのかがわからない、といった方に向けて作っています。
 
@@ -36,4 +40,4 @@ Releasesから最新のバージョンをダウンロードしてPCの任意の�
 
 ### Igarin
 
-- GitHub: [@igarin14pm](https://github.com/igarin14pm)
+- GitHub: [@igarin14pm](https://github.com/igarin14pm/)

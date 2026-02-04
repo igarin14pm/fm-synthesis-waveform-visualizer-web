@@ -4,7 +4,7 @@
  * https://opensource.org
  */
 import { FMSynth } from './fm-synth.js';
-// Value Class
+/* -------- Value Class -------- */
 /**
  * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
  */
@@ -81,7 +81,7 @@ class FMSynthValue {
         this._outputVolume = outputVolume;
     }
 }
-// Audio Class
+/* -------- Audio Class -------- */
 /**
  * オーディオの処理を行うクラスです。
  */
@@ -136,7 +136,7 @@ class AudioEngine {
         this.audioWorkletNode = null;
     }
 }
-// UI Classes
+/* -------- UI Classes -------- */
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
@@ -205,7 +205,8 @@ class PhaseGraph extends Graph {
      * グラフを描画します。
      */
     draw() {
-        const sineWaveValueLength = 120;
+        // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+        const sineWaveValueLength = 120 + 1;
         const context = this.element.getContext('2d');
         // モジュレーション量を描画
         context.fillStyle = '#00cdb944';
@@ -335,7 +336,8 @@ class WaveformGraphData {
      */
     constructor(samplingRate) {
         const numberOfWaves = 4;
-        this.valueLength = samplingRate * numberOfWaves;
+        // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+        this.valueLength = samplingRate * numberOfWaves + 1;
         let values = new Array(this.valueLength);
         values.fill(0.0);
         this.values = values;
@@ -459,7 +461,7 @@ class OperatorUI {
         this.waveformGraph.update();
     }
 }
-// Script
+/* -------- Script -------- */
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
  */

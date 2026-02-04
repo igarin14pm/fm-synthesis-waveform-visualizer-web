@@ -6,7 +6,7 @@
 
 import { Syncable, Operator, FMSynth } from './fm-synth.js';
 
-// Value Class
+/* -------- Value Class -------- */
 
 /**
  * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
@@ -136,7 +136,7 @@ class FMSynthValue {
 
 }
 
-// Audio Class
+/* -------- Audio Class -------- */
 
 /**
  * オーディオの処理を行うクラスです。
@@ -206,7 +206,7 @@ class AudioEngine {
   }
 }
 
-// UI Classes
+/* -------- UI Classes -------- */
 
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
@@ -302,7 +302,8 @@ class PhaseGraph extends Graph {
    * グラフを描画します。
    */
   override draw(): void {
-    const sineWaveValueLength = 120;
+    // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+    const sineWaveValueLength = 120 + 1;
     const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
 
     // モジュレーション量を描画
@@ -477,7 +478,8 @@ class WaveformGraphData {
    */
   constructor(samplingRate: number) {
     const numberOfWaves = 4;
-    this.valueLength = samplingRate * numberOfWaves;
+    // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+    this.valueLength = samplingRate * numberOfWaves + 1;
 
     let values = new Array<number>(this.valueLength);
     values.fill(0.0);
@@ -667,7 +669,7 @@ class OperatorUI implements Syncable {
 
 }
 
-// Script
+/* -------- Script -------- */
 
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
