@@ -269,16 +269,11 @@ export class Operator implements Processing, Outputting, Syncable {
   volume: number = 1.0;
 
   /**
-   * `ratio`のプライベートフィールド
-   */
-  private _ratio: number;
-
-  /**
    * Ratioパラメーター
    * `MasterPhase`の周波数に対する周波数比
    */
   get ratio(): number {
-    return this._ratio;
+    return this.phase.operatorRatio;
   }
 
   /**
@@ -286,7 +281,6 @@ export class Operator implements Processing, Outputting, Syncable {
    * `MasterPhase`の周波数に対する周波数比
    */
   set ratio(newValue) {
-    this._ratio = newValue;
     this.phase.operatorRatio = newValue;
   }
 
@@ -316,7 +310,6 @@ export class Operator implements Processing, Outputting, Syncable {
     modulatorSignal: Signal | null
   ) {
     this.volume = volume;
-    this._ratio = ratio;
     this.phase = new Phase(masterPhaseSignal, ratio, modulatorSignal);
   }
 
