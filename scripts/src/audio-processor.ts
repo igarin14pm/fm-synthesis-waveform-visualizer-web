@@ -50,17 +50,30 @@ class AudioProcessor extends AudioWorkletProcessor {
     parameters: Record<string, Float32Array>
   ): boolean {
     let output = outputs[0];
-    let channel = output[0];
+    let channels = output[0];
 
-    for (let i = 0; i < channel.length; i++) {
-      let modulatorVolumeParameter = parameters['modulatorVolume'];
-      this.fmSynth.modulator.volume = modulatorVolumeParameter.length > 1 ? modulatorVolumeParameter[i] : modulatorVolumeParameter[0];
+    /**
+     * `AudioParamDescriptor`からパラメータの値を取得します
+     * @param parameterName `AudioParamDescriptor.name`で指定した文字列
+     * @param channelIndex 1つの出力に含まれるチャンネルのindex
+     * @returns パラメータの値
+     */
+    function getParameterValue(parameterName: string, channelIndex: number): number {
+      const parameterValues = parameters[parameterName];
+      if (parameterValues.length > 1) {
+        return parameterValues[channelIndex];
+      } else {
+        return parameterValues[0];
+      }
+    }
 
-      let modulatorRatioParameter = parameters['modulatorRatio'];
-      this.fmSynth.modulator.ratio = modulatorRatioParameter.length > 1 ? modulatorRatioParameter[i] : modulatorRatioParameter[0];
-      
+    for (let channelIndex = 0; channelIndex < channels.length; channelIndex++) {
+      // パラメーターの値を取得、FMシンセに設定する
+      this.fmSynth.modulator.volume = getParameterValue('modulatorVolume', channelIndex);
+      this.fmSynth.modulator.ratio = getParameterValue('modulatorRatio', channelIndex);
+
       // FMシンセの信号を出力する
-      channel[i] = this.fmSynth.output.clippedValue;
+      channels[channelIndex] = this.fmSynth.output.clippedValue;
       
       // FMシンセの動作をサンプリングレート一つ分進める
       this.fmSynth.moveFrameForward();
