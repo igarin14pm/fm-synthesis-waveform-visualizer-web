@@ -47,12 +47,12 @@ export class MasterPhase {
      * @param waveFrequency 出力波形の周波数
      */
     constructor(samplingRate, waveFrequency) {
+        this.samplingRate = samplingRate;
+        this.waveFrequency = waveFrequency;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
-        this.samplingRate = samplingRate;
-        this.waveFrequency = waveFrequency;
     }
     /**
      * `MasterPhase`の動作をサンプリングレート一つ分進めます。
@@ -96,9 +96,11 @@ export class Phase {
      * `Phase`のインスタンスを生成します。
      * @param masterPhaseSignal `MasterPhase`からの信号
      * @param operatorRatio `Operator`のRatioパラメーターの値
-     * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`を渡してください
+     * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`となります
      */
     constructor(masterPhaseSignal, operatorRatio, modulatorSignal) {
+        this.operatorRatio = operatorRatio;
+        this.modulatorSignal = modulatorSignal;
         /**
          * まだモジュレーションが掛かっていない位相の値
          * [0]がその時点で最後に計算された値、[1]はその1つ前に計算された値です。
@@ -109,8 +111,6 @@ export class Phase {
          */
         this._output = new Signal(0.0);
         this.input = masterPhaseSignal;
-        this.operatorRatio = operatorRatio;
-        this.modulatorSignal = modulatorSignal;
     }
     /**
      * 信号を処理して出力信号の値を計算します。
@@ -163,16 +163,11 @@ export class Operator {
      * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`を渡してください
      */
     constructor(volume, ratio, masterPhaseSignal, modulatorSignal) {
-        /**
-         * Volumeパラメーター
-         * キャリアの場合は音量、モジュレーターの場合はモジュレーション量になります。
-         */
-        this.volume = 1.0;
+        this.volume = volume;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
-        this.volume = volume;
         this.phase = new Phase(masterPhaseSignal, ratio, modulatorSignal);
     }
     /**
@@ -207,13 +202,13 @@ export class FMSynth {
      * @param outputVolume 出力信号のボリューム
      */
     constructor(samplingRate, waveFrequency, outputVolume) {
+        this.samplingRate = samplingRate;
+        this.waveFrequency = waveFrequency;
+        this.outputVolume = outputVolume;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
-        this.samplingRate = samplingRate;
-        this.waveFrequency = waveFrequency;
-        this.outputVolume = outputVolume;
         this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
         this.modulator = new Operator(1, 1, this.masterPhase.output, null);
         this.carrier = new Operator(1, 1, this.masterPhase.output, this.modulator.output);
