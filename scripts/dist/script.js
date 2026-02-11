@@ -82,7 +82,7 @@ class AudioEngine {
      * AudioEngineが音を出力中かを表します
      */
     get isRunning() {
-        return this.audioContext !== null && this.audioWorkletNode !== null;
+        return this.audioContext != null && this.audioWorkletNode != null;
     }
     /**
      * 指定したパラメーター名にパラメーターの値をセットします
@@ -222,7 +222,7 @@ class PhaseGraph extends Graph {
             const sineWaveValue = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
             const sineWaveX = this.width * i / (sineWaveValueLength - 1);
             const sineWaveY = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
-            if (i == 0) {
+            if (i === 0) {
                 context.moveTo(sineWaveX, sineWaveY);
             }
             else {

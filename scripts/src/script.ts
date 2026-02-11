@@ -97,7 +97,7 @@ class AudioEngine {
    * AudioEngineが音を出力中かを表します
    */
   get isRunning(): boolean {
-    return this.audioContext !== null && this.audioWorkletNode !== null;
+    return this.audioContext != null && this.audioWorkletNode != null;
   }
 
   /**
@@ -275,7 +275,7 @@ class PhaseGraph extends Graph {
       const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
       const sineWaveY: number = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
 
-      if (i == 0) {
+      if (i === 0) {
         context.moveTo(sineWaveX, sineWaveY);
       } else {
         context.lineTo(sineWaveX, sineWaveY);
