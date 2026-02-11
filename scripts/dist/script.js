@@ -461,6 +461,8 @@ const audioEngine = new AudioEngine();
  */
 const visualFMSynth = new FMSynth(visualFMSynthValue.samplingRate, visualFMSynthValue.waveFrequency, visualFMSynthValue.outputVolume);
 // Modulator Volume Input
+// `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
 const modulatorVolumeInputElement = document.getElementById('modulator-volume-input');
 const modulatorVolumeValueLabelElement = document.getElementById('modulator-volume-value-label');
 /**
@@ -468,6 +470,8 @@ const modulatorVolumeValueLabelElement = document.getElementById('modulator-volu
  */
 const modulatorVolumeInputUI = new RangeInputUI(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUIValue);
 // Modulator Ratio Input
+// `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
 const modulatorRatioInputElement = document.getElementById('modulator-ratio-input');
 const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label');
 /**
@@ -475,6 +479,8 @@ const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio
  */
 const modulatorRatioInputUI = new RangeInputUI(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUIValue);
 // Modulator Graph
+// `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
 const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph');
 const modulatorOutputGraphElement = document.getElementById('modulator-output-graph');
 const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph');
@@ -483,6 +489,8 @@ const modulatorWaveformGraphElement = document.getElementById('modulator-wavefor
  */
 const modulatorUI = new OperatorUI(visualFMSynth.modulator, modulatorPhaseGraphElement, modulatorOutputGraphElement, modulatorWaveformGraphElement, true, visualFMSynthValue.samplingRate);
 // Carrier Graph
+// `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
 const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph');
 const carrierOutputGraphElement = document.getElementById('carrier-output-graph');
 const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph');
@@ -504,6 +512,8 @@ function moveFrameForward() {
  */
 function setUp() {
     // JavaScript無効時に非表示になっている要素を表示させる
+    // `index.html`内で`.div-working-with-javascript`が付与されている要素は全て`<div>`要素であり、
+    // これらの要素は動的に削除されず、classが動的に付与・削除されることがないため、この型キャストは成功する。
     const divWorkingWithJavascript = document.getElementsByClassName('div-working-with-javascript');
     for (let i = 0; i < divWorkingWithJavascript.length; i++) {
         divWorkingWithJavascript[i].style.display = 'block';
@@ -539,10 +549,14 @@ function setUp() {
     /**
      * "音声を再生する"ボタンの要素
      */
+    // `index.html`内で`#start-audio-button`は`<button>`要素であり、
+    // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
     const startAudioButton = document.getElementById('start-audio-button');
     /**
      * "音声を停止する"ボタンの要素
      */
+    // `index.html`内で`#stop-audio-button`は`<button>`要素であり、
+    // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
     const stopAudioButton = document.getElementById('stop-audio-button');
     startAudioButton.addEventListener('click', () => {
         if (!audioEngine.isRunning) {
