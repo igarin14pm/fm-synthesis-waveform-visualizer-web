@@ -598,8 +598,10 @@ const visualFMSynth = new FMSynth(
 );
 
 // Modulator Volume Input
-const modulatorVolumeInputElement = <HTMLInputElement>document.getElementById('modulator-volume-input');
-const modulatorVolumeValueLabelElement = <HTMLLabelElement>document.getElementById('modulator-volume-value-label');
+// `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const modulatorVolumeInputElement = document.getElementById('modulator-volume-input') as HTMLInputElement;
+const modulatorVolumeValueLabelElement = document.getElementById('modulator-volume-value-label') as HTMLLabelElement;
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
@@ -610,8 +612,10 @@ const modulatorVolumeInputUI = new RangeInputUI(
 )
 
 // Modulator Ratio Input
-const modulatorRatioInputElement = <HTMLInputElement>document.getElementById('modulator-ratio-input');
-const modulatorRatioValueLabelElement = <HTMLLabelElement>document.getElementById('modulator-ratio-value-label');
+// `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const modulatorRatioInputElement = document.getElementById('modulator-ratio-input') as HTMLInputElement;
+const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label') as HTMLLabelElement;
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
@@ -622,9 +626,11 @@ const modulatorRatioInputUI = new RangeInputUI(
 )
 
 // Modulator Graph
-const modulatorPhaseGraphElement = <HTMLCanvasElement>document.getElementById('modulator-phase-graph');
-const modulatorOutputGraphElement = <HTMLCanvasElement>document.getElementById('modulator-output-graph');
-const modulatorWaveformGraphElement = <HTMLCanvasElement>document.getElementById('modulator-waveform-graph');
+// `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph') as HTMLCanvasElement;
+const modulatorOutputGraphElement = document.getElementById('modulator-output-graph') as HTMLCanvasElement;
+const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph') as HTMLCanvasElement;
 /**
  * Modulatorのグラフを制御するクラスのインスタンス
  */
@@ -638,9 +644,11 @@ const modulatorUI = new OperatorUI(
 )
 
 // Carrier Graph
-const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
-const carrierOutputGraphElement = <HTMLCanvasElement>document.getElementById('carrier-output-graph');
-const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
+// `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph') as HTMLCanvasElement;
+const carrierOutputGraphElement = document.getElementById('carrier-output-graph') as HTMLCanvasElement;
+const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph') as HTMLCanvasElement;
 /**
  * Carrierのグラフを制御するクラスのインスタンス
  */
@@ -669,7 +677,9 @@ function moveFrameForward() {
 function setUp() {
 
   // JavaScript無効時に非表示になっている要素を表示させる
-  const divWorkingWithJavascript = <HTMLCollectionOf<HTMLDivElement>>document.getElementsByClassName('div-working-with-javascript');
+  // `index.html`内で`.div-working-with-javascript`が付与されている要素は全て`<div>`要素であり、
+  // これらの要素は動的に削除されず、classが動的に付与・削除されることがないため、この型キャストは成功する。
+  const divWorkingWithJavascript = document.getElementsByClassName('div-working-with-javascript') as HTMLCollectionOf<HTMLDivElement>;
   for (let i = 0; i < divWorkingWithJavascript.length; i++) {
     divWorkingWithJavascript[i].style.display = 'block';
   }
@@ -718,12 +728,16 @@ function setUp() {
   /**
    * "音声を再生する"ボタンの要素
    */
-  const startAudioButton = <HTMLButtonElement>document.getElementById('start-audio-button');
+  // `index.html`内で`#start-audio-button`は`<button>`要素であり、
+  // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
+  const startAudioButton = document.getElementById('start-audio-button') as HTMLButtonElement;
   
   /**
    * "音声を停止する"ボタンの要素
    */
-  const stopAudioButton = <HTMLButtonElement>document.getElementById('stop-audio-button');
+  // `index.html`内で`#stop-audio-button`は`<button>`要素であり、
+  // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
+  const stopAudioButton = document.getElementById('stop-audio-button') as HTMLButtonElement;
 
   startAudioButton.addEventListener('click', () => {
     if (!audioEngine.isRunning) {
