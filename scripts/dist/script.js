@@ -544,7 +544,7 @@ function setUp() {
      * "音声を停止する"ボタンの要素
      */
     const stopAudioButton = document.getElementById('stop-audio-button');
-    startAudioButton.addEventListener('click', function () {
+    startAudioButton.addEventListener('click', () => {
         if (!audioEngine.isRunning) {
             audioEngine.start(modulatorValue, () => {
                 startAudioButton.style.display = 'none';
@@ -552,17 +552,17 @@ function setUp() {
             });
         }
     });
-    stopAudioButton.addEventListener('click', function () {
+    stopAudioButton.addEventListener('click', () => {
         if (audioEngine.isRunning) {
             audioEngine.stop();
         }
         startAudioButton.style.display = 'block';
         stopAudioButton.style.display = 'none';
     });
-    modulatorVolumeInputUI.addEventListener(function () {
+    modulatorVolumeInputUI.addEventListener(() => {
         setModulatorVolume();
     });
-    modulatorRatioInputUI.addEventListener(function () {
+    modulatorRatioInputUI.addEventListener(() => {
         setModulatorRatio();
     });
     /**

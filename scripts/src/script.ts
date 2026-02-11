@@ -725,7 +725,7 @@ function setUp() {
    */
   const stopAudioButton = <HTMLButtonElement>document.getElementById('stop-audio-button');
 
-  startAudioButton.addEventListener('click', function() {
+  startAudioButton.addEventListener('click', () => {
     if (!audioEngine.isRunning) {
       audioEngine.start(modulatorValue, () => {
         startAudioButton.style.display = 'none';
@@ -734,7 +734,7 @@ function setUp() {
     }
   });
 
-  stopAudioButton.addEventListener('click', function() {
+  stopAudioButton.addEventListener('click', () => {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }
@@ -742,10 +742,10 @@ function setUp() {
     stopAudioButton.style.display = 'none';
   });
 
-  modulatorVolumeInputUI.addEventListener(function() {
+  modulatorVolumeInputUI.addEventListener(() => {
     setModulatorVolume();
   });
-  modulatorRatioInputUI.addEventListener(function() {
+  modulatorRatioInputUI.addEventListener(() => {
     setModulatorRatio();
   });
 
