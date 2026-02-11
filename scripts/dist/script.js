@@ -52,33 +52,15 @@ class OperatorValue {
  */
 class FMSynthValue {
     /**
-     * FMシンセサイザーのサンプリングレート
-     */
-    get samplingRate() {
-        return this._samplingRate;
-    }
-    /**
-     * 出力波形の周波数
-     */
-    get waveFrequency() {
-        return this._waveFrequency;
-    }
-    /**
-     * 出力波形のボリューム
-     */
-    get outputVolume() {
-        return this._outputVolume;
-    }
-    /**
      * FMSynthValueのインスタンスを生成します。
      * @param samplingRate FMシンセサイザーのサンプリングレート
      * @param waveFrequency 出力波形の周波数
      * @param outputVolume 出力波形のボリューム
      */
     constructor(samplingRate, waveFrequency, outputVolume) {
-        this._samplingRate = samplingRate;
-        this._waveFrequency = waveFrequency;
-        this._outputVolume = outputVolume;
+        this.samplingRate = samplingRate;
+        this.waveFrequency = waveFrequency;
+        this.outputVolume = outputVolume;
     }
 }
 /* -------- Audio Class -------- */
@@ -158,11 +140,11 @@ class Graph {
      * @param element DOMで取得したCanvas要素
      */
     constructor(element) {
+        this.element = element;
         /**
          * グラフに描画する波形の上下の余白の大きさ
          */
         this.verticalPadding = 10;
-        this.element = element;
     }
     /**
      * 波形の出力信号の値(-1.0〜1.0)をグラフのY座標に変換します
@@ -288,10 +270,10 @@ class OutputGraph extends Graph {
      * @param operator 出力グラフに描画したいOperatorのインスタンス
      * @param showsModulatingAmount モジュレーターの出力量を描画するか operatorがモジュレーターである時にtrueにします
      */
-    constructor(element, operator, showsModulatingAmout) {
+    constructor(element, operator, showsModulatingAmount) {
         super(element);
         this.operator = operator;
-        this.showsModulatingAmount = showsModulatingAmout;
+        this.showsModulatingAmount = showsModulatingAmount;
     }
     /**
      * グラフを描画します。
@@ -416,8 +398,8 @@ class RangeInputUI {
     constructor(inputElement, valueLabelElement, initialValue) {
         this.inputElement = inputElement;
         this.valueLabelElement = valueLabelElement;
-        this.inputElement.value = initialValue.toString();
-        this.valueLabelElement.textContent = initialValue.toString();
+        inputElement.value = initialValue.toString();
+        valueLabelElement.textContent = initialValue.toString();
     }
     /**
      * `<input>`要素に値が入力した時に発生するイベントリスナーを設定します。

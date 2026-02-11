@@ -14,26 +14,6 @@ import { Syncable, Operator, FMSynth } from './fm-synth.js';
 class OperatorValue {
 
   /**
-   * AudioParamDescriptorにおけるVolumeのパラメーター名
-   */
-  volumeParameterName: string;
-  
-  /**
-   * OperatorのパラメーターVolumeの値(0〜1.0)
-   */
-  volumeValue: number;
-  
-  /**
-   * AudioParamDescriptorにおけるRatioのパラメーター名
-   */
-  ratioParameterName: string;
-  
-  /**
-   * OperatorのパラメーターRatioの値(1〜10)
-   */
-  ratioValue: number;
-
-  /**
    * オペレーターのVolumeのUI上での値(0〜100)
    */
   get volumeUIValue(): number {
@@ -68,12 +48,12 @@ class OperatorValue {
    * @param ratioParameterName AudioParamDescriptorにおけるRatioのパラメーター名
    * @param ratioValue OperatorのパラメーターRatioの値(1〜10)
    */
-  constructor(volumeParameterName: string, volumeValue: number, ratioParameterName: string, ratioValue: number) {
-    this.volumeParameterName = volumeParameterName;
-    this.volumeValue = volumeValue;
-    this.ratioParameterName = ratioParameterName;
-    this.ratioValue = ratioValue;
-  }
+  constructor(
+    public volumeParameterName: string, 
+    public volumeValue: number, 
+    public ratioParameterName: string, 
+    public ratioValue: number
+  ) { }
 
 }
 
@@ -83,56 +63,16 @@ class OperatorValue {
 class FMSynthValue {
 
   /**
-   * FMシンセサイザーのサンプリングレートのプライベートフィールド
-   */
-  private _samplingRate: number;
-  
-  /**
-   * 出力波形の周波数のプライベートフィールド
-   */
-  private _waveFrequency: number;
-  
-  /**
-   * 出力波形のボリュームのプライベートフィールド
-   */
-  private _outputVolume: number;
-
-  /**
-   * FMシンセサイザーのサンプリングレート
-   */
-  get samplingRate(): number {
-    return this._samplingRate;
-  }
-
-  /**
-   * 出力波形の周波数
-   */
-  get waveFrequency(): number {
-    return this._waveFrequency;
-  }
-
-  /**
-   * 出力波形のボリューム
-   */
-  get outputVolume(): number {
-    return this._outputVolume;
-  }
-
-  /**
    * FMSynthValueのインスタンスを生成します。
    * @param samplingRate FMシンセサイザーのサンプリングレート
    * @param waveFrequency 出力波形の周波数
    * @param outputVolume 出力波形のボリューム
    */
   constructor(
-    samplingRate: number, 
-    waveFrequency: number, 
-    outputVolume: number,
-  ) {
-    this._samplingRate = samplingRate;
-    this._waveFrequency = waveFrequency;
-    this._outputVolume = outputVolume;
-  }
+    public readonly samplingRate: number, 
+    public readonly waveFrequency: number, 
+    public readonly outputVolume: number,
+  ) { }
 
 }
 
@@ -214,11 +154,6 @@ class AudioEngine {
 abstract class Graph {
 
   /**
-   * DOMで取得した`<canvas>`要素
-   */
-  element: HTMLCanvasElement;
-  
-  /**
    * グラフに描画する波形の上下の余白の大きさ
    */
   verticalPadding: number = 10;
@@ -241,9 +176,7 @@ abstract class Graph {
    * Graphのインスタンスを生成します。
    * @param element DOMで取得したCanvas要素
    */
-  constructor(element: HTMLCanvasElement) {
-    this.element = element
-  }
+  constructor(public element: HTMLCanvasElement) { }
 
   /**
    * 波形の出力信号の値(-1.0〜1.0)をグラフのY座標に変換します
@@ -284,18 +217,15 @@ abstract class Graph {
 class PhaseGraph extends Graph {
 
   /**
-   * 位相グラフに描画したいOperatorのインスタンス
-   */
-  operator: Operator;
-
-  /**
    * PhaseGraphのインスタンスを生成します。
    * @param element DOMで取得した`<canvas>`要素
    * @param operator 位相グラフに描画したいOperatorのインスタンス
    */
-  constructor(element: HTMLCanvasElement, operator: Operator) {
+  constructor(
+    element: HTMLCanvasElement, 
+    public operator: Operator
+  ) {
     super(element);
-    this.operator = operator
   }
 
   /**
@@ -393,26 +323,17 @@ class PhaseGraph extends Graph {
 class OutputGraph extends Graph {
 
   /**
-   * 出力グラフに描画したいOperatorのインスタンス
-   */
-  operator: Operator;
-  
-  /**
-   * モジュレーターの出力量を描画するかを表します。
-   * operatorがモジュレーターである時にtrueにします。
-   */
-  showsModulatingAmount: boolean;
-
-  /**
    * OutputGraphのインスタンスを生成します。
    * @param element DOMで取得した`<canvas>`要素
    * @param operator 出力グラフに描画したいOperatorのインスタンス
    * @param showsModulatingAmount モジュレーターの出力量を描画するか operatorがモジュレーターである時にtrueにします
    */
-  constructor(element: HTMLCanvasElement, operator: Operator, showsModulatingAmout: boolean) {
+  constructor(
+    element: HTMLCanvasElement, 
+    public operator: Operator, 
+    public showsModulatingAmount: boolean
+  ) {
     super(element);
-    this.operator = operator;
-    this.showsModulatingAmount = showsModulatingAmout;
   }
 
   /**
@@ -559,16 +480,6 @@ class WaveformGraph extends Graph {
 class RangeInputUI {
 
   /**
-   * DOMで取得した`<input>`要素
-   */
-  inputElement: HTMLInputElement;
-  
-  /**
-   * DOMで取得した値を表示する`<label>`要素
-   */
-  valueLabelElement: HTMLLabelElement;
-
-  /**
    * `<input>`要素の値
    */
   get value(): number {
@@ -582,15 +493,12 @@ class RangeInputUI {
    * @param initialValue `<input>`要素に設定する初期値
    */
   constructor(
-    inputElement: HTMLInputElement,
-    valueLabelElement: HTMLLabelElement,
+    public inputElement: HTMLInputElement,
+    public valueLabelElement: HTMLLabelElement,
     initialValue: number
   ) {
-    this.inputElement = inputElement;
-    this.valueLabelElement = valueLabelElement;
-
-    this.inputElement.value = initialValue.toString();
-    this.valueLabelElement.textContent = initialValue.toString();
+    inputElement.value = initialValue.toString();
+    valueLabelElement.textContent = initialValue.toString();
   }
 
   /**
@@ -609,11 +517,6 @@ class RangeInputUI {
  * オペレーターが関わるグラフを管理するクラスです。
  */
 class OperatorUI implements Syncable {
-
-  /**
-   * グラフに表示させたいOperatorのインスタンス
-   */
-  operator: Operator;
   
   /**
    * PhaseGraphのインスタンス
@@ -640,14 +543,13 @@ class OperatorUI implements Syncable {
    * @param samplingRate FMSynthのサンプリングレート
    */
   constructor(
-    operator: Operator,
+    public operator: Operator,
     phaseGraphElement: HTMLCanvasElement,
     outputGraphElement: HTMLCanvasElement,
     waveformGraphElement: HTMLCanvasElement,
     showsModulatingAmount: boolean,
     samplingRate: number
   ) {
-    this.operator = operator;
     this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
     this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
     this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
