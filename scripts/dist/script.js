@@ -152,7 +152,7 @@ class RangeInputComponent {
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
-class Graph {
+class GraphComponent {
     /**
      * `<canvas>`要素の幅
      */
@@ -203,7 +203,7 @@ class Graph {
  * 位相グラフを描画するためのクラスです。
  * オペレーターの位相を描画します。
  */
-class PhaseGraph extends Graph {
+class PhaseGraphComponent extends GraphComponent {
     /**
      * PhaseGraphのインスタンスを生成します。
      * @param element DOMで取得した`<canvas>`要素
@@ -292,7 +292,7 @@ class PhaseGraph extends Graph {
  * 出力グラフを描画するためのクラスです。
  * モジュレーターの出力量を描画します。
  */
-class OutputGraph extends Graph {
+class OutputGraphComponent extends GraphComponent {
     /**
      * OutputGraphのインスタンスを生成します。
      * @param element DOMで取得した`<canvas>`要素
@@ -366,7 +366,7 @@ class WaveformGraphData {
  * 波形グラフを描画するためのクラスです。
  * オペレーターの波形を描画します。
  */
-class WaveformGraph extends Graph {
+class WaveformGraphComponent extends GraphComponent {
     /**
      * WaveformGraphのインスタンスを生成します。
      * @param element DOMで取得した`<canvas>`要素
@@ -423,9 +423,9 @@ class OperatorUi {
      */
     constructor(operator, phaseGraphElement, outputGraphElement, waveformGraphElement, showsModulatingAmount, samplingRate) {
         this.operator = operator;
-        this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
-        this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
-        this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
+        this.phaseGraph = new PhaseGraphComponent(phaseGraphElement, operator);
+        this.outputGraph = new OutputGraphComponent(outputGraphElement, operator, showsModulatingAmount);
+        this.waveformGraph = new WaveformGraphComponent(waveformGraphElement, samplingRate);
         this.phaseGraph.draw();
         this.outputGraph.draw();
         this.waveformGraph.draw();
