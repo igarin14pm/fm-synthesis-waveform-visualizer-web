@@ -480,6 +480,32 @@ class WaveformGraphComponent extends GraphComponent {
 
 }
 
+class ButtonComponent {
+
+  constructor(public element: HTMLButtonElement) { }
+
+  addClickEventListener(listener: () => void): void {
+    this.element.addEventListener('click', listener);
+  }
+
+}
+
+class AudioButtonComponent extends ButtonComponent {
+
+  constructor(element: HTMLButtonElement) {
+    super(element);
+  }
+
+  hide(): void {
+    this.element.style.display = 'none';
+  }
+
+  show(): void {
+    this.element.style.display = 'block';
+  }
+
+}
+
 // -------- Script --------
 
 /**
@@ -574,6 +600,14 @@ const carrierWaveformGraphComponent = new WaveformGraphComponent(
   visualFmSynthValue.samplingRate
 );
 
+// Audio Button
+// `index.html`内で`#start-audio-button`・`#stop-audio-button`は`<button>`要素であり、
+// 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
+const startAudioButtonElement = document.querySelector('#start-audio-button') as HTMLButtonElement;
+const stopAudioButtonElement = document.querySelector('#stop-audio-button') as HTMLButtonElement;
+const startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
+const stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
+
 /**
  * グラフの動作をサンプリングレート一つ分進めます。
  */
@@ -650,35 +684,20 @@ function setUp(): void {
   setModulatorVolume();
   setModulatorRatio();
 
-  /**
-   * "音声を再生する"ボタンの要素
-   */
-  // `index.html`内で`#start-audio-button`は`<button>`要素であり、
-  // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
-  const startAudioButton = document.getElementById('start-audio-button') as HTMLButtonElement;
-  
-  /**
-   * "音声を停止する"ボタンの要素
-   */
-  // `index.html`内で`#stop-audio-button`は`<button>`要素であり、
-  // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
-  const stopAudioButton = document.getElementById('stop-audio-button') as HTMLButtonElement;
-
-  startAudioButton.addEventListener('click', () => {
+  startAudioButtonComponent.addClickEventListener(() => {
     if (!audioEngine.isRunning) {
       audioEngine.start(modulatorValue, () => {
-        startAudioButton.style.display = 'none';
-        stopAudioButton.style.display = 'block';
+        startAudioButtonComponent.hide();
+        stopAudioButtonComponent.show();
       });
     }
   });
-
-  stopAudioButton.addEventListener('click', () => {
+  stopAudioButtonComponent.addClickEventListener(() => {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }
-    startAudioButton.style.display = 'block';
-    stopAudioButton.style.display = 'none';
+    stopAudioButtonComponent.hide();
+    startAudioButtonComponent.show();
   });
 
   modulatorVolumeInputComponent.addEventListener(() => {
