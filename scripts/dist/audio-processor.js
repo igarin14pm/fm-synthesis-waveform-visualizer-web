@@ -1,9 +1,7 @@
-/*
- * Copyright (c) 2026 Igarin
- * This software is released under the MIT License.
- * https://opensource.org
- */
-import { FMSynth } from './fm-synth.js';
+// Copyright (c) 2026 Igarin
+// This software is released under the MIT License.
+// https://opensource.org
+import { FmSynth } from './fm-synth.js';
 class AudioProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
         return [
@@ -31,7 +29,7 @@ class AudioProcessor extends AudioWorkletProcessor {
         const waveFrequency = 440;
         // ボリュームはこれくらいがちょうど良い
         const fmSynthVolume = 0.25;
-        this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
+        this.fmSynth = new FmSynth(sampleRate, waveFrequency, fmSynthVolume);
     }
     process(inputs, outputs, parameters) {
         let output = outputs[0];
