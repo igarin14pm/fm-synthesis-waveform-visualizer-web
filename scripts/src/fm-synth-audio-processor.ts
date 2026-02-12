@@ -4,7 +4,7 @@
 
 import { FmSynth } from './fm-synth.js';
 
-class AudioProcessor extends AudioWorkletProcessor {
+class FmSynthAudioProcessor extends AudioWorkletProcessor {
 
   static get parameterDescriptors(): AudioParamDescriptor[] {
     return [
@@ -82,4 +82,4 @@ class AudioProcessor extends AudioWorkletProcessor {
 
 }
 
-registerProcessor('audio-processor', AudioProcessor);
+registerProcessor('fm-synth-audio-processor', FmSynthAudioProcessor);
