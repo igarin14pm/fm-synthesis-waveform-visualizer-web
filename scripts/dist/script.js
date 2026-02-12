@@ -80,7 +80,7 @@ class AudioEngine {
      * AudioEngineが音を出力中かを表します
      */
     get isRunning() {
-        return this.audioContext != null && this.audioWorkletNode != null;
+        return this.audioContext != null;
     }
     /**
      * 指定したパラメーター名にパラメーターの値をセットします
@@ -88,7 +88,7 @@ class AudioEngine {
      * @param value パラメーターの値
      */
     setParameterValue(name, value) {
-        if (this.isRunning) {
+        if (this.audioContext != null && this.audioWorkletNode != null) {
             const param = this.audioWorkletNode.parameters.get(name);
             param?.setValueAtTime(value, this.audioContext.currentTime);
         }
