@@ -188,7 +188,7 @@ class RangeInputComponent {
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
-abstract class Graph {
+abstract class GraphComponent {
 
   /**
    * グラフに描画する波形の上下の余白の大きさ
@@ -251,7 +251,7 @@ abstract class Graph {
  * 位相グラフを描画するためのクラスです。
  * オペレーターの位相を描画します。
  */
-class PhaseGraph extends Graph {
+class PhaseGraphComponent extends GraphComponent {
 
   /**
    * PhaseGraphのインスタンスを生成します。
@@ -356,7 +356,7 @@ class PhaseGraph extends Graph {
  * 出力グラフを描画するためのクラスです。
  * モジュレーターの出力量を描画します。
  */
-class OutputGraph extends Graph {
+class OutputGraphComponent extends GraphComponent {
 
   /**
    * OutputGraphのインスタンスを生成します。
@@ -457,7 +457,7 @@ class WaveformGraphData {
  * 波形グラフを描画するためのクラスです。
  * オペレーターの波形を描画します。
  */
-class WaveformGraph extends Graph {
+class WaveformGraphComponent extends GraphComponent {
 
   /**
    * 表示するデータを格納したWaveformGraphDataのインスタンス
@@ -517,17 +517,17 @@ class OperatorUi implements Syncable {
   /**
    * PhaseGraphのインスタンス
    */
-  phaseGraph: PhaseGraph;
+  phaseGraph: PhaseGraphComponent;
   
   /**
    * OutputGraphのインスタンス
    */
-  outputGraph: OutputGraph;
+  outputGraph: OutputGraphComponent;
   
   /**
    * WaveformGraphのインスタンス
    */
-  waveformGraph: WaveformGraph;
+  waveformGraph: WaveformGraphComponent;
   
   /**
    * OperatorUIのインスタンスを生成します。
@@ -546,9 +546,9 @@ class OperatorUi implements Syncable {
     showsModulatingAmount: boolean,
     samplingRate: number
   ) {
-    this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
-    this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
-    this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
+    this.phaseGraph = new PhaseGraphComponent(phaseGraphElement, operator);
+    this.outputGraph = new OutputGraphComponent(outputGraphElement, operator, showsModulatingAmount);
+    this.waveformGraph = new WaveformGraphComponent(waveformGraphElement, samplingRate);
 
     this.phaseGraph.draw();
     this.outputGraph.draw();
@@ -601,7 +601,7 @@ const modulatorVolumeValueLabelElement = document.getElementById('modulator-volu
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputUi = new RangeInputComponent(
+const modulatorVolumeInputComponent = new RangeInputComponent(
   modulatorVolumeInputElement,
   modulatorVolumeValueLabelElement,
   modulatorValue.volumeUiValue
@@ -615,7 +615,7 @@ const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputUi = new RangeInputComponent(
+const modulatorRatioInputComponent = new RangeInputComponent(
   modulatorRatioInputElement,
   modulatorRatioValueLabelElement,
   modulatorValue.ratioUiValue
@@ -685,7 +685,7 @@ function setUp(): void {
    */
   function setModulatorVolume(): void {
     // UIから値を取得
-    modulatorValue.volumeUiValue = modulatorVolumeInputUi.value;
+    modulatorValue.volumeUiValue = modulatorVolumeInputComponent.value;
 
     // グラフ用FMSynthに適用
     visualFmSynth.modulator.volume = modulatorValue.volumeValue;
@@ -704,7 +704,7 @@ function setUp(): void {
    */
   function setModulatorRatio(): void {
     // UIから値を取得
-    modulatorValue.ratioUiValue = modulatorRatioInputUi.value;
+    modulatorValue.ratioUiValue = modulatorRatioInputComponent.value;
 
     // グラフ用FMSynthに適用
     visualFmSynth.modulator.ratio = modulatorValue.ratioValue;
@@ -752,10 +752,10 @@ function setUp(): void {
     stopAudioButton.style.display = 'none';
   });
 
-  modulatorVolumeInputUi.addEventListener(() => {
+  modulatorVolumeInputComponent.addEventListener(() => {
     setModulatorVolume();
   });
-  modulatorRatioInputUi.addEventListener(() => {
+  modulatorRatioInputComponent.addEventListener(() => {
     setModulatorRatio();
   });
 
