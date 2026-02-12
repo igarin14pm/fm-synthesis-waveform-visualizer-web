@@ -294,7 +294,7 @@ export class Operator implements Processing, Outputting, Syncable {
 /**
  * FMシンセサイザーを表すクラスです。
  */
-export class FMSynth implements Processing, Outputting, Syncable {
+export class FmSynth implements Processing, Outputting, Syncable {
 
   /**
    * `MasterPhase`のインスタンス
