@@ -1,10 +1,8 @@
-/*
- * Copyright (c) 2026 Igarin
- * This software is released under the MIT License.
- * https://opensource.org
- */
+// Copyright (c) 2026 Igarin
+// This software is released under the MIT License.
+// https://opensource.org
 import { FmSynth } from './fm-synth.js';
-/* -------- Value Class -------- */
+// -------- Value Class --------
 /**
  * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
  */
@@ -63,7 +61,7 @@ class FmSynthValue {
         this.outputVolume = outputVolume;
     }
 }
-/* -------- Audio Class -------- */
+// -------- Audio Class --------
 /**
  * オーディオの処理を行うクラスです。
  */
@@ -118,7 +116,7 @@ class AudioEngine {
         this.audioWorkletNode = null;
     }
 }
-/* -------- UI Classes -------- */
+// -------- UI Classes --------
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
@@ -442,7 +440,7 @@ class OperatorUi {
         this.waveformGraph.update();
     }
 }
-/* -------- Script -------- */
+// -------- Script --------
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
  */
