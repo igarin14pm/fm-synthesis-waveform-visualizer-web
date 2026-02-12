@@ -432,8 +432,8 @@ const visualFmSynth = new FmSynth(visualFmSynthValue.samplingRate, visualFmSynth
 // Modulator Volume Input
 // `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-const modulatorVolumeInputElement = document.getElementById('modulator-volume-input');
-const modulatorVolumeValueLabelElement = document.getElementById('modulator-volume-value-label');
+const modulatorVolumeInputElement = document.querySelector('#modulator-volume-input');
+const modulatorVolumeValueLabelElement = document.querySelector('#modulator-volume-value-label');
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
@@ -441,8 +441,8 @@ const modulatorVolumeInputComponent = new RangeInputComponent(modulatorVolumeInp
 // Modulator Ratio Input
 // `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-const modulatorRatioInputElement = document.getElementById('modulator-ratio-input');
-const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label');
+const modulatorRatioInputElement = document.querySelector('#modulator-ratio-input');
+const modulatorRatioValueLabelElement = document.querySelector('#modulator-ratio-value-label');
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
@@ -450,18 +450,18 @@ const modulatorRatioInputComponent = new RangeInputComponent(modulatorRatioInput
 // Modulator Graph
 // `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph');
-const modulatorOutputGraphElement = document.getElementById('modulator-output-graph');
-const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph');
+const modulatorPhaseGraphElement = document.querySelector('#modulator-phase-graph');
+const modulatorOutputGraphElement = document.querySelector('#modulator-output-graph');
+const modulatorWaveformGraphElement = document.querySelector('#modulator-waveform-graph');
 const modulatorPhaseGraphComponent = new PhaseGraphComponent(modulatorPhaseGraphElement, visualFmSynth.modulator);
 const modulatorOutputGraphComponent = new OutputGraphComponent(modulatorOutputGraphElement, visualFmSynth.modulator, true);
 const modulatorWaveformGraphComponent = new WaveformGraphComponent(modulatorWaveformGraphElement, visualFmSynthValue.samplingRate);
 // Carrier Graph
 // `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph');
-const carrierOutputGraphElement = document.getElementById('carrier-output-graph');
-const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph');
+const carrierPhaseGraphElement = document.querySelector('#carrier-phase-graph');
+const carrierOutputGraphElement = document.querySelector('#carrier-output-graph');
+const carrierWaveformGraphElement = document.querySelector('#carrier-waveform-graph');
 const carrierPhaseGraphComponent = new PhaseGraphComponent(carrierPhaseGraphElement, visualFmSynth.carrier);
 const carrierOutputGraphComponent = new OutputGraphComponent(carrierOutputGraphElement, visualFmSynth.carrier, false);
 const carrierWaveformGraphComponent = new WaveformGraphComponent(carrierWaveformGraphElement, visualFmSynthValue.samplingRate);
@@ -498,7 +498,7 @@ function setUp() {
     // JavaScript無効時に非表示になっている要素を表示させる
     // `index.html`内で`.div-working-with-javascript`が付与されている要素は全て`<div>`要素であり、
     // これらの要素は動的に削除されず、classが動的に付与・削除されることがないため、この型キャストは成功する。
-    const divWorkingWithJavascript = document.getElementsByClassName('div-working-with-javascript');
+    const divWorkingWithJavascript = document.querySelectorAll('.div-working-with-javascript');
     for (let i = 0; i < divWorkingWithJavascript.length; i++) {
         divWorkingWithJavascript[i].style.display = 'block';
     }
