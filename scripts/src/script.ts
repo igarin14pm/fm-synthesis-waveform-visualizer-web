@@ -414,55 +414,15 @@ class OutputGraphComponent extends GraphComponent {
 }
 
 /**
- * 波形グラフのためのデータを保持するクラスです。
- */
-class WaveformGraphData {
-
-  /**
-   * オペレーターから出力された値のデータの長さ
-   */
-  valueLength: number;
-  
-  /**
-   * オペレーターから出力された値のデータ
-   */
-  values: number[];
-
-  /**
-   * WaveformGraphDataのインスタンスを生成します。
-   * @param samplingRate FMSynthのサンプリングレート
-   */
-  constructor(samplingRate: number) {
-    const numberOfWaves = 4;
-    // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
-    this.valueLength = samplingRate * numberOfWaves + 1;
-
-    let values = new Array<number>(this.valueLength);
-    values.fill(0.0);
-    this.values = values;
-  }
-
-  /**
-   * データに値を追加します。
-   * @param value 追加する波形の出力信号の値
-   */
-  add(value: number): void {
-    this.values.pop();
-    this.values.splice(0, 0, value);
-  }
-
-}
-
-/**
  * 波形グラフを描画するためのクラスです。
  * オペレーターの波形を描画します。
  */
 class WaveformGraphComponent extends GraphComponent {
 
   /**
-   * 表示するデータを格納したWaveformGraphDataのインスタンス
+   * 表示するデータの値の配列
    */
-  data: WaveformGraphData;
+  values: number[];
 
   /**
    * WaveformGraphのインスタンスを生成します。
@@ -471,7 +431,18 @@ class WaveformGraphComponent extends GraphComponent {
    */
   constructor(element: HTMLCanvasElement, samplingRate: number) {
     super(element);
-    this.data = new WaveformGraphData(samplingRate);
+    const duration_sec = 4;
+    const valueLength: number = samplingRate * duration_sec + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+    this.values = new Array<number>(valueLength).fill(0);
+  }
+
+  /**
+   * データの配列に値を追加します
+   * @param value 追加する値
+   */
+  addValue(value: number) {
+    this.values.pop();
+    this.values.splice(0, 0, value);
   }
 
   /**
@@ -484,8 +455,8 @@ class WaveformGraphComponent extends GraphComponent {
     context.strokeStyle = '#eeeeee';
     context.lineWidth = 4;
     context.beginPath();
-    for (const [index, value] of this.data.values.entries()) {
-      const waveX: number = (index / (this.data.valueLength - 1)) * this.width;
+    for (const [index, value] of this.values.entries()) {
+      const waveX: number = (index / (this.values.length - 1)) * this.width;
       const waveY: number = this.convertToCoordinateY(value);
       if (index === 0) {
         context.moveTo(waveX, waveY);
@@ -609,8 +580,8 @@ const carrierWaveformGraphComponent = new WaveformGraphComponent(
 function moveFrameForward(): void {
   visualFmSynth.moveFrameForward();
   
-  modulatorWaveformGraphComponent.data.add(visualFmSynth.modulator.output.value);
-  carrierWaveformGraphComponent.data.add(visualFmSynth.carrier.output.value);
+  modulatorWaveformGraphComponent.addValue(visualFmSynth.modulator.output.value);
+  carrierWaveformGraphComponent.addValue(visualFmSynth.carrier.output.value);
 
   const graphComponents: GraphComponent[] = [
     modulatorPhaseGraphComponent,

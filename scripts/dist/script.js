@@ -338,31 +338,6 @@ class OutputGraphComponent extends GraphComponent {
     }
 }
 /**
- * 波形グラフのためのデータを保持するクラスです。
- */
-class WaveformGraphData {
-    /**
-     * WaveformGraphDataのインスタンスを生成します。
-     * @param samplingRate FMSynthのサンプリングレート
-     */
-    constructor(samplingRate) {
-        const numberOfWaves = 4;
-        // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
-        this.valueLength = samplingRate * numberOfWaves + 1;
-        let values = new Array(this.valueLength);
-        values.fill(0.0);
-        this.values = values;
-    }
-    /**
-     * データに値を追加します。
-     * @param value 追加する波形の出力信号の値
-     */
-    add(value) {
-        this.values.pop();
-        this.values.splice(0, 0, value);
-    }
-}
-/**
  * 波形グラフを描画するためのクラスです。
  * オペレーターの波形を描画します。
  */
@@ -374,7 +349,17 @@ class WaveformGraphComponent extends GraphComponent {
      */
     constructor(element, samplingRate) {
         super(element);
-        this.data = new WaveformGraphData(samplingRate);
+        const duration_sec = 4;
+        const valueLength = samplingRate * duration_sec + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+        this.values = new Array(valueLength).fill(0);
+    }
+    /**
+     * データの配列に値を追加します
+     * @param value 追加する値
+     */
+    addValue(value) {
+        this.values.pop();
+        this.values.splice(0, 0, value);
     }
     /**
      * グラフを描画します。
@@ -385,8 +370,8 @@ class WaveformGraphComponent extends GraphComponent {
         context.strokeStyle = '#eeeeee';
         context.lineWidth = 4;
         context.beginPath();
-        for (const [index, value] of this.data.values.entries()) {
-            const waveX = (index / (this.data.valueLength - 1)) * this.width;
+        for (const [index, value] of this.values.entries()) {
+            const waveX = (index / (this.values.length - 1)) * this.width;
             const waveY = this.convertToCoordinateY(value);
             if (index === 0) {
                 context.moveTo(waveX, waveY);
@@ -408,62 +393,6 @@ class WaveformGraphComponent extends GraphComponent {
         context.stroke();
     }
 }
-/**
- * オペレーターが関わるグラフを管理するクラスです。
- */
-// class OperatorUi implements Syncable {
-/**
- * PhaseGraphのインスタンス
- */
-// phaseGraph: PhaseGraphComponent;
-/**
- * OutputGraphのインスタンス
- */
-// outputGraph: OutputGraphComponent;
-/**
- * WaveformGraphのインスタンス
- */
-// waveformGraph: WaveformGraphComponent;
-/**
- * OperatorUIのインスタンスを生成します。
- * @param operator グラフに表示させたいOperatorのインスタンス
- * @param phaseGraphElement DOMで取得した位相グラフの`<canvas>`要素
- * @param outputGraphElement DOMで取得した出力グラフの`<canvas>`要素
- * @param waveformGraphElement DOMで取得した波形グラフの`<canvas>`要素
- * @param showsModulatingAmount 出力グラフにモジュレーションを掛ける量を表示するか
- * @param samplingRate FMSynthのサンプリングレート
- */
-/*
-constructor(
-  public operator: Operator,
-  phaseGraphElement: HTMLCanvasElement,
-  outputGraphElement: HTMLCanvasElement,
-  waveformGraphElement: HTMLCanvasElement,
-  showsModulatingAmount: boolean,
-  samplingRate: number
-) {
-  this.phaseGraph = new PhaseGraphComponent(phaseGraphElement, operator);
-  this.outputGraph = new OutputGraphComponent(outputGraphElement, operator, showsModulatingAmount);
-  this.waveformGraph = new WaveformGraphComponent(waveformGraphElement, samplingRate);
-
-  this.phaseGraph.draw();
-  this.outputGraph.draw();
-  this.waveformGraph.draw();
-}
-*/
-/**
- * OperatorUIの動作をサンプリングレート一つ分進めます。
- */
-/*
-moveFrameForward(): void {
-  this.phaseGraph.update();
-  this.outputGraph.update();
-  this.waveformGraph.data.add(this.operator.output.value);
-  this.waveformGraph.update();
-}
-
-}
-*/
 // -------- Script --------
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
@@ -508,19 +437,6 @@ const modulatorWaveformGraphElement = document.getElementById('modulator-wavefor
 const modulatorPhaseGraphComponent = new PhaseGraphComponent(modulatorPhaseGraphElement, visualFmSynth.modulator);
 const modulatorOutputGraphComponent = new OutputGraphComponent(modulatorOutputGraphElement, visualFmSynth.modulator, true);
 const modulatorWaveformGraphComponent = new WaveformGraphComponent(modulatorWaveformGraphElement, visualFmSynthValue.samplingRate);
-/**
- * Modulatorのグラフを制御するクラスのインスタンス
- */
-/*
-const modulatorUi = new OperatorUi(
-  visualFmSynth.modulator,
-  modulatorPhaseGraphElement,
-  modulatorOutputGraphElement,
-  modulatorWaveformGraphElement,
-  true,
-  visualFmSynthValue.samplingRate
-)
-*/
 // Carrier Graph
 // `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -531,25 +447,12 @@ const carrierPhaseGraphComponent = new PhaseGraphComponent(carrierPhaseGraphElem
 const carrierOutputGraphComponent = new OutputGraphComponent(carrierOutputGraphElement, visualFmSynth.carrier, false);
 const carrierWaveformGraphComponent = new WaveformGraphComponent(carrierWaveformGraphElement, visualFmSynthValue.samplingRate);
 /**
- * Carrierのグラフを制御するクラスのインスタンス
- */
-/*
-const carrierUi = new OperatorUi(
-  visualFmSynth.carrier,
-  carrierPhaseGraphElement,
-  carrierOutputGraphElement,
-  carrierWaveformGraphElement,
-  false,
-  visualFmSynthValue.samplingRate
-);
-*/
-/**
  * グラフの動作をサンプリングレート一つ分進めます。
  */
 function moveFrameForward() {
     visualFmSynth.moveFrameForward();
-    modulatorWaveformGraphComponent.data.add(visualFmSynth.modulator.output.value);
-    carrierWaveformGraphComponent.data.add(visualFmSynth.carrier.output.value);
+    modulatorWaveformGraphComponent.addValue(visualFmSynth.modulator.output.value);
+    carrierWaveformGraphComponent.addValue(visualFmSynth.carrier.output.value);
     const graphComponents = [
         modulatorPhaseGraphComponent,
         modulatorOutputGraphComponent,
