@@ -4,7 +4,7 @@
  * https://opensource.org
  */
 
-import { FMSynth } from './fm-synth.js';
+import { FmSynth } from './fm-synth.js';
 
 class AudioProcessor extends AudioWorkletProcessor {
 
@@ -30,7 +30,7 @@ class AudioProcessor extends AudioWorkletProcessor {
   }
 
   // 音声を出力するFMシンセサイザー
-  fmSynth: FMSynth;
+  fmSynth: FmSynth;
 
   constructor() {
     super();
@@ -41,7 +41,7 @@ class AudioProcessor extends AudioWorkletProcessor {
     // ボリュームはこれくらいがちょうど良い
     const fmSynthVolume = 0.25;
 
-    this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
+    this.fmSynth = new FmSynth(sampleRate, waveFrequency, fmSynthVolume);
   }
 
   process(

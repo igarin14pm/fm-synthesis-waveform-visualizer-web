@@ -4,7 +4,7 @@
  * https://opensource.org
  */
 
-import { Syncable, Operator, FMSynth } from './fm-synth.js';
+import { Syncable, Operator, FmSynth } from './fm-synth.js';
 
 /* -------- Value Class -------- */
 
@@ -16,28 +16,28 @@ class OperatorValue {
   /**
    * オペレーターのVolumeのUI上での値(0〜100)
    */
-  get volumeUIValue(): number {
+  get volumeUiValue(): number {
     return this.volumeValue * 100;
   }
 
   /**
    * オペレーターのVolumeのUI上での値(0〜100)
    */
-  set volumeUIValue(newValue: number) {
+  set volumeUiValue(newValue: number) {
     this.volumeValue = newValue / 100;
   }
 
   /**
    * オペレーターのRatioのUI上での値(1〜10)
    */
-  get ratioUIValue(): number {
+  get ratioUiValue(): number {
     return this.ratioValue;
   }
 
   /**
    * オペレーターのRatioのUI上での値(1〜10)
    */
-  set ratioUIValue(newValue: number) {
+  set ratioUiValue(newValue: number) {
     this.ratioValue = newValue;
   }
 
@@ -60,7 +60,7 @@ class OperatorValue {
 /**
  * FMシンセサイザーの値を保持するクラスです。
  */
-class FMSynthValue {
+class FmSynthValue {
 
   /**
    * FMSynthValueのインスタンスを生成します。
@@ -351,7 +351,6 @@ class OutputGraph extends Graph {
       const amountRectX: number = this.width / 3;
       const amountRectWidth: number = this.width / 3;
 
-
       // 枠線を描画
       const amountRectOutlineY: number = this.verticalPadding;
       const amountRectOutlineHeight: number = this.height - this.verticalPadding * 2;
@@ -450,12 +449,12 @@ class WaveformGraph extends Graph {
     context.lineWidth = 4;
     context.beginPath();
     for (const [index, value] of this.data.values.entries()) {
-      const x = (index / (this.data.valueLength - 1)) * this.width;
-      const y = this.convertToCoordinateY(value);
+      const waveX = (index / (this.data.valueLength - 1)) * this.width;
+      const waveY = this.convertToCoordinateY(value);
       if (index === 0) {
-        context.moveTo(x, y);
+        context.moveTo(waveX, waveY);
       } else {
-        context.lineTo(x, y);
+        context.lineTo(waveX, waveY);
       }
     }
     context.stroke();
@@ -477,7 +476,7 @@ class WaveformGraph extends Graph {
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
-class RangeInputUI {
+class RangeInputUi {
 
   /**
    * `<input>`要素の値
@@ -516,7 +515,7 @@ class RangeInputUI {
 /**
  * オペレーターが関わるグラフを管理するクラスです。
  */
-class OperatorUI implements Syncable {
+class OperatorUi implements Syncable {
   
   /**
    * PhaseGraphのインスタンス
@@ -576,7 +575,7 @@ class OperatorUI implements Syncable {
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
  */
-const visualFMSynthValue = new FMSynthValue(120, 0.5, 1);
+const visualFmSynthValue = new FmSynthValue(120, 0.5, 1);
 
 /**
  * 画面に表示される波形を生成する`FMSynth`にあるModulatorのパラメーター値を管理する`OperatorValue`のインスタンス
@@ -591,10 +590,10 @@ const audioEngine = new AudioEngine();
 /**
  * 画面に表示される波形を生成する`FMSynth`のインスタンス
  */
-const visualFMSynth = new FMSynth(
-  visualFMSynthValue.samplingRate,
-  visualFMSynthValue.waveFrequency,
-  visualFMSynthValue.outputVolume
+const visualFmSynth = new FmSynth(
+  visualFmSynthValue.samplingRate,
+  visualFmSynthValue.waveFrequency,
+  visualFmSynthValue.outputVolume
 );
 
 // Modulator Volume Input
@@ -605,10 +604,10 @@ const modulatorVolumeValueLabelElement = document.getElementById('modulator-volu
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputUI = new RangeInputUI(
+const modulatorVolumeInputUi = new RangeInputUi(
   modulatorVolumeInputElement,
   modulatorVolumeValueLabelElement,
-  modulatorValue.volumeUIValue
+  modulatorValue.volumeUiValue
 )
 
 // Modulator Ratio Input
@@ -619,10 +618,10 @@ const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputUI = new RangeInputUI(
+const modulatorRatioInputUi = new RangeInputUi(
   modulatorRatioInputElement,
   modulatorRatioValueLabelElement,
-  modulatorValue.ratioUIValue
+  modulatorValue.ratioUiValue
 )
 
 // Modulator Graph
@@ -634,13 +633,13 @@ const modulatorWaveformGraphElement = document.getElementById('modulator-wavefor
 /**
  * Modulatorのグラフを制御するクラスのインスタンス
  */
-const modulatorUI = new OperatorUI(
-  visualFMSynth.modulator,
+const modulatorUi = new OperatorUi(
+  visualFmSynth.modulator,
   modulatorPhaseGraphElement,
   modulatorOutputGraphElement,
   modulatorWaveformGraphElement,
   true,
-  visualFMSynthValue.samplingRate
+  visualFmSynthValue.samplingRate
 )
 
 // Carrier Graph
@@ -652,20 +651,20 @@ const carrierWaveformGraphElement = document.getElementById('carrier-waveform-gr
 /**
  * Carrierのグラフを制御するクラスのインスタンス
  */
-const carrierUI = new OperatorUI(
-  visualFMSynth.carrier,
+const carrierUi = new OperatorUi(
+  visualFmSynth.carrier,
   carrierPhaseGraphElement,
   carrierOutputGraphElement,
   carrierWaveformGraphElement,
   false,
-  visualFMSynthValue.samplingRate
+  visualFmSynthValue.samplingRate
 );
 
 /**
  * グラフの動作をサンプリングレート一つ分進めます。
  */
 function moveFrameForward() {
-  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierUI];
+  let frameUpdateQueue: Syncable[] = [visualFmSynth, modulatorUi, carrierUi];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
   });
@@ -689,10 +688,10 @@ function setUp() {
    */
   function setModulatorVolume() {
     // UIから値を取得
-    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+    modulatorValue.volumeUiValue = modulatorVolumeInputUi.value;
 
     // グラフ用FMSynthに適用
-    visualFMSynth.modulator.volume = modulatorValue.volumeValue;
+    visualFmSynth.modulator.volume = modulatorValue.volumeValue;
     
     // 音声用FMSynthに適用
     if (audioEngine.isRunning) {
@@ -708,10 +707,10 @@ function setUp() {
    */
   function setModulatorRatio() {
     // UIから値を取得
-    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+    modulatorValue.ratioUiValue = modulatorRatioInputUi.value;
 
     // グラフ用FMSynthに適用
-    visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
+    visualFmSynth.modulator.ratio = modulatorValue.ratioValue;
     
     // 音声用FMSynthに適用
     if (audioEngine.isRunning) {
@@ -756,10 +755,10 @@ function setUp() {
     stopAudioButton.style.display = 'none';
   });
 
-  modulatorVolumeInputUI.addEventListener(() => {
+  modulatorVolumeInputUi.addEventListener(() => {
     setModulatorVolume();
   });
-  modulatorRatioInputUI.addEventListener(() => {
+  modulatorRatioInputUi.addEventListener(() => {
     setModulatorRatio();
   });
 
@@ -768,7 +767,7 @@ function setUp() {
    */
   const oneSecond_ms = 1_000;
   
-  let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
+  let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFmSynthValue.samplingRate);
 }
 
 // 読み込みが終わってからコードを実行する

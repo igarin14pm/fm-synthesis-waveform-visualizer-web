@@ -188,7 +188,7 @@ export class Operator {
 /**
  * FMシンセサイザーを表すクラスです。
  */
-export class FMSynth {
+export class FmSynth {
     /**
      * 出力信号
      */
