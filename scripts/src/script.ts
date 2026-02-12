@@ -144,7 +144,7 @@ class AudioEngine {
   }
 }
 
-// -------- UI Classes --------
+// -------- UI Components --------
 
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
