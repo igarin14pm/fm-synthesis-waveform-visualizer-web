@@ -1,12 +1,10 @@
-/*
- * Copyright (c) 2026 Igarin
- * This software is released under the MIT License.
- * https://opensource.org
- */
+// Copyright (c) 2026 Igarin
+// This software is released under the MIT License.
+// https://opensource.org
 
-import { Syncable, Operator, FMSynth } from './fm-synth.js';
+import { Syncable, Operator, FmSynth } from './fm-synth.js';
 
-/* -------- Value Class -------- */
+// -------- Value Class --------
 
 /**
  * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
@@ -14,50 +12,30 @@ import { Syncable, Operator, FMSynth } from './fm-synth.js';
 class OperatorValue {
 
   /**
-   * AudioParamDescriptorにおけるVolumeのパラメーター名
-   */
-  volumeParameterName: string;
-  
-  /**
-   * OperatorのパラメーターVolumeの値(0〜1.0)
-   */
-  volumeValue: number;
-  
-  /**
-   * AudioParamDescriptorにおけるRatioのパラメーター名
-   */
-  ratioParameterName: string;
-  
-  /**
-   * OperatorのパラメーターRatioの値(1〜10)
-   */
-  ratioValue: number;
-
-  /**
    * オペレーターのVolumeのUI上での値(0〜100)
    */
-  get volumeUIValue(): number {
+  get volumeUiValue(): number {
     return this.volumeValue * 100;
   }
 
   /**
    * オペレーターのVolumeのUI上での値(0〜100)
    */
-  set volumeUIValue(newValue: number) {
+  set volumeUiValue(newValue: number) {
     this.volumeValue = newValue / 100;
   }
 
   /**
    * オペレーターのRatioのUI上での値(1〜10)
    */
-  get ratioUIValue(): number {
+  get ratioUiValue(): number {
     return this.ratioValue;
   }
 
   /**
    * オペレーターのRatioのUI上での値(1〜10)
    */
-  set ratioUIValue(newValue: number) {
+  set ratioUiValue(newValue: number) {
     this.ratioValue = newValue;
   }
 
@@ -68,55 +46,19 @@ class OperatorValue {
    * @param ratioParameterName AudioParamDescriptorにおけるRatioのパラメーター名
    * @param ratioValue OperatorのパラメーターRatioの値(1〜10)
    */
-  constructor(volumeParameterName: string, volumeValue: number, ratioParameterName: string, ratioValue: number) {
-    this.volumeParameterName = volumeParameterName;
-    this.volumeValue = volumeValue;
-    this.ratioParameterName = ratioParameterName;
-    this.ratioValue = ratioValue;
-  }
+  constructor(
+    public volumeParameterName: string, 
+    public volumeValue: number, 
+    public ratioParameterName: string, 
+    public ratioValue: number
+  ) { }
 
 }
 
 /**
  * FMシンセサイザーの値を保持するクラスです。
  */
-class FMSynthValue {
-
-  /**
-   * FMシンセサイザーのサンプリングレートのプライベートフィールド
-   */
-  private _samplingRate: number;
-  
-  /**
-   * 出力波形の周波数のプライベートフィールド
-   */
-  private _waveFrequency: number;
-  
-  /**
-   * 出力波形のボリュームのプライベートフィールド
-   */
-  private _outputVolume: number;
-
-  /**
-   * FMシンセサイザーのサンプリングレート
-   */
-  get samplingRate(): number {
-    return this._samplingRate;
-  }
-
-  /**
-   * 出力波形の周波数
-   */
-  get waveFrequency(): number {
-    return this._waveFrequency;
-  }
-
-  /**
-   * 出力波形のボリューム
-   */
-  get outputVolume(): number {
-    return this._outputVolume;
-  }
+class FmSynthValue {
 
   /**
    * FMSynthValueのインスタンスを生成します。
@@ -125,18 +67,14 @@ class FMSynthValue {
    * @param outputVolume 出力波形のボリューム
    */
   constructor(
-    samplingRate: number, 
-    waveFrequency: number, 
-    outputVolume: number,
-  ) {
-    this._samplingRate = samplingRate;
-    this._waveFrequency = waveFrequency;
-    this._outputVolume = outputVolume;
-  }
+    public readonly samplingRate: number, 
+    public readonly waveFrequency: number, 
+    public readonly outputVolume: number,
+  ) { }
 
 }
 
-/* -------- Audio Class -------- */
+// -------- Audio Class --------
 
 /**
  * オーディオの処理を行うクラスです。
@@ -157,7 +95,7 @@ class AudioEngine {
    * AudioEngineが音を出力中かを表します
    */
   get isRunning(): boolean {
-    return this.audioContext !== null && this.audioWorkletNode !== null;
+    return this.audioContext != null && this.audioWorkletNode != null;
   }
 
   /**
@@ -167,7 +105,7 @@ class AudioEngine {
    */
   setParameterValue(name: string, value: number) {
     if (this.isRunning) {
-      const param = this.audioWorkletNode!.parameters.get(name);
+      const param: AudioParam | undefined = this.audioWorkletNode!.parameters.get(name);
       param?.setValueAtTime(value, this.audioContext!.currentTime);
     }
   }
@@ -206,7 +144,7 @@ class AudioEngine {
   }
 }
 
-/* -------- UI Classes -------- */
+// -------- UI Classes --------
 
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
@@ -214,14 +152,9 @@ class AudioEngine {
 abstract class Graph {
 
   /**
-   * DOMで取得した`<canvas>`要素
-   */
-  element: HTMLCanvasElement;
-  
-  /**
    * グラフに描画する波形の上下の余白の大きさ
    */
-  verticalPadding: number = 10;
+  verticalPadding = 10;
 
   /**
    * `<canvas>`要素の幅
@@ -241,9 +174,7 @@ abstract class Graph {
    * Graphのインスタンスを生成します。
    * @param element DOMで取得したCanvas要素
    */
-  constructor(element: HTMLCanvasElement) {
-    this.element = element
-  }
+  constructor(public element: HTMLCanvasElement) { }
 
   /**
    * 波形の出力信号の値(-1.0〜1.0)をグラフのY座標に変換します
@@ -284,32 +215,28 @@ abstract class Graph {
 class PhaseGraph extends Graph {
 
   /**
-   * 位相グラフに描画したいOperatorのインスタンス
-   */
-  operator: Operator;
-
-  /**
    * PhaseGraphのインスタンスを生成します。
    * @param element DOMで取得した`<canvas>`要素
    * @param operator 位相グラフに描画したいOperatorのインスタンス
    */
-  constructor(element: HTMLCanvasElement, operator: Operator) {
+  constructor(
+    element: HTMLCanvasElement, 
+    public operator: Operator
+  ) {
     super(element);
-    this.operator = operator
   }
 
   /**
    * グラフを描画します。
    */
   override draw(): void {
-    // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
-    const sineWaveValueLength = 120 + 1;
+    const sineWaveValueLength = 120 + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
     const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
 
     // モジュレーション量を描画
     context.fillStyle = '#00cdb944';
     const phaseWithoutModX: number = this.width * this.operator.phase.valuesWithoutMod[0];
-    const modRectY: number = 0;
+    const modRectY = 0;
     const modRectWidth: number = this.width * this.operator.phase.modulationValue;
     const modRectHeight: number = this.height;
     if (phaseWithoutModX + modRectWidth > this.width) {
@@ -339,13 +266,13 @@ class PhaseGraph extends Graph {
     context.strokeStyle = '#eeeeee';
     context.lineWidth = 4;
     context.beginPath();
-    for (let i: number = 0; i < sineWaveValueLength; i++) {
+    for (let i = 0; i < sineWaveValueLength; i++) {
       const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
 
       const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
       const sineWaveY: number = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
 
-      if (i == 0) {
+      if (i === 0) {
         context.moveTo(sineWaveX, sineWaveY);
       } else {
         context.lineTo(sineWaveX, sineWaveY);
@@ -358,7 +285,7 @@ class PhaseGraph extends Graph {
     context.lineWidth = 8;
     context.beginPath();
     const phaseLineX: number = this.width * this.operator.phase.output.value;
-    const phaseLineStartY: number = 0;
+    const phaseLineStartY = 0;
     const phaseLineEndY: number = this.height;
     context.moveTo(phaseLineX, phaseLineStartY);
     context.lineTo(phaseLineX, phaseLineEndY);
@@ -379,7 +306,7 @@ class PhaseGraph extends Graph {
     context.fillStyle = '#00cdb9';
     const valueCircleX: number = phaseLineX;
     const valueCircleY: number = outputLineY;
-    const valueCircleRadius: number = 12.5;
+    const valueCircleRadius = 12.5;
     context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
     context.fill();
   }
@@ -393,26 +320,17 @@ class PhaseGraph extends Graph {
 class OutputGraph extends Graph {
 
   /**
-   * 出力グラフに描画したいOperatorのインスタンス
-   */
-  operator: Operator;
-  
-  /**
-   * モジュレーターの出力量を描画するかを表します。
-   * operatorがモジュレーターである時にtrueにします。
-   */
-  showsModulatingAmount: boolean;
-
-  /**
    * OutputGraphのインスタンスを生成します。
    * @param element DOMで取得した`<canvas>`要素
    * @param operator 出力グラフに描画したいOperatorのインスタンス
    * @param showsModulatingAmount モジュレーターの出力量を描画するか operatorがモジュレーターである時にtrueにします
    */
-  constructor(element: HTMLCanvasElement, operator: Operator, showsModulatingAmout: boolean) {
+  constructor(
+    element: HTMLCanvasElement, 
+    public operator: Operator, 
+    public showsModulatingAmount: boolean
+  ) {
     super(element);
-    this.operator = operator;
-    this.showsModulatingAmount = showsModulatingAmout;
   }
 
   /**
@@ -421,7 +339,7 @@ class OutputGraph extends Graph {
   override draw(): void {
     const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
 
-    const outputLineStartX: number = 0;
+    const outputLineStartX = 0;
     const outputLineEndX: number = this.width;
     const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
 
@@ -429,7 +347,6 @@ class OutputGraph extends Graph {
     if (this.showsModulatingAmount) {
       const amountRectX: number = this.width / 3;
       const amountRectWidth: number = this.width / 3;
-
 
       // 枠線を描画
       const amountRectOutlineY: number = this.verticalPadding;
@@ -490,7 +407,7 @@ class WaveformGraphData {
    * データに値を追加します。
    * @param value 追加する波形の出力信号の値
    */
-  add(value: number) {
+  add(value: number): void {
     this.values.pop();
     this.values.splice(0, 0, value);
   }
@@ -529,19 +446,19 @@ class WaveformGraph extends Graph {
     context.lineWidth = 4;
     context.beginPath();
     for (const [index, value] of this.data.values.entries()) {
-      const x = (index / (this.data.valueLength - 1)) * this.width;
-      const y = this.convertToCoordinateY(value);
+      const waveX: number = (index / (this.data.valueLength - 1)) * this.width;
+      const waveY: number = this.convertToCoordinateY(value);
       if (index === 0) {
-        context.moveTo(x, y);
+        context.moveTo(waveX, waveY);
       } else {
-        context.lineTo(x, y);
+        context.lineTo(waveX, waveY);
       }
     }
     context.stroke();
 
     // 左端のボーダーの線分を描画
-    const borderLineX: number = 1;
-    const borderLineStartY: number = 0;
+    const borderLineX = 1;
+    const borderLineStartY = 0;
     const borderLineEndY: number = this.height;
     context.strokeStyle = '#888888';
     context.lineWidth = 4;
@@ -556,17 +473,7 @@ class WaveformGraph extends Graph {
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
-class RangeInputUI {
-
-  /**
-   * DOMで取得した`<input>`要素
-   */
-  inputElement: HTMLInputElement;
-  
-  /**
-   * DOMで取得した値を表示する`<label>`要素
-   */
-  valueLabelElement: HTMLLabelElement;
+class RangeInputUi {
 
   /**
    * `<input>`要素の値
@@ -582,21 +489,18 @@ class RangeInputUI {
    * @param initialValue `<input>`要素に設定する初期値
    */
   constructor(
-    inputElement: HTMLInputElement,
-    valueLabelElement: HTMLLabelElement,
+    public inputElement: HTMLInputElement,
+    public valueLabelElement: HTMLLabelElement,
     initialValue: number
   ) {
-    this.inputElement = inputElement;
-    this.valueLabelElement = valueLabelElement;
-
-    this.inputElement.value = initialValue.toString();
-    this.valueLabelElement.textContent = initialValue.toString();
+    inputElement.value = initialValue.toString();
+    valueLabelElement.textContent = initialValue.toString();
   }
 
   /**
    * `<input>`要素に値が入力した時に発生するイベントリスナーを設定します。
    */
-  addEventListener(listener: () => void) {
+  addEventListener(listener: () => void): void {
     this.inputElement.addEventListener('input', () => {
       listener();
       this.valueLabelElement.textContent = this.inputElement.value;
@@ -608,12 +512,7 @@ class RangeInputUI {
 /**
  * オペレーターが関わるグラフを管理するクラスです。
  */
-class OperatorUI implements Syncable {
-
-  /**
-   * グラフに表示させたいOperatorのインスタンス
-   */
-  operator: Operator;
+class OperatorUi implements Syncable {
   
   /**
    * PhaseGraphのインスタンス
@@ -640,14 +539,13 @@ class OperatorUI implements Syncable {
    * @param samplingRate FMSynthのサンプリングレート
    */
   constructor(
-    operator: Operator,
+    public operator: Operator,
     phaseGraphElement: HTMLCanvasElement,
     outputGraphElement: HTMLCanvasElement,
     waveformGraphElement: HTMLCanvasElement,
     showsModulatingAmount: boolean,
     samplingRate: number
   ) {
-    this.operator = operator;
     this.phaseGraph = new PhaseGraph(phaseGraphElement, operator);
     this.outputGraph = new OutputGraph(outputGraphElement, operator, showsModulatingAmount);
     this.waveformGraph = new WaveformGraph(waveformGraphElement, samplingRate);
@@ -669,12 +567,12 @@ class OperatorUI implements Syncable {
 
 }
 
-/* -------- Script -------- */
+// -------- Script --------
 
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
  */
-const visualFMSynthValue = new FMSynthValue(120, 0.5, 1);
+const visualFmSynthValue = new FmSynthValue(120, 0.5, 1);
 
 /**
  * 画面に表示される波形を生成する`FMSynth`にあるModulatorのパラメーター値を管理する`OperatorValue`のインスタンス
@@ -689,73 +587,81 @@ const audioEngine = new AudioEngine();
 /**
  * 画面に表示される波形を生成する`FMSynth`のインスタンス
  */
-const visualFMSynth = new FMSynth(
-  visualFMSynthValue.samplingRate,
-  visualFMSynthValue.waveFrequency,
-  visualFMSynthValue.outputVolume
+const visualFmSynth = new FmSynth(
+  visualFmSynthValue.samplingRate,
+  visualFmSynthValue.waveFrequency,
+  visualFmSynthValue.outputVolume
 );
 
 // Modulator Volume Input
-const modulatorVolumeInputElement = <HTMLInputElement>document.getElementById('modulator-volume-input');
-const modulatorVolumeValueLabelElement = <HTMLLabelElement>document.getElementById('modulator-volume-value-label');
+// `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const modulatorVolumeInputElement = document.getElementById('modulator-volume-input') as HTMLInputElement;
+const modulatorVolumeValueLabelElement = document.getElementById('modulator-volume-value-label') as HTMLLabelElement;
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputUI = new RangeInputUI(
+const modulatorVolumeInputUi = new RangeInputUi(
   modulatorVolumeInputElement,
   modulatorVolumeValueLabelElement,
-  modulatorValue.volumeUIValue
+  modulatorValue.volumeUiValue
 )
 
 // Modulator Ratio Input
-const modulatorRatioInputElement = <HTMLInputElement>document.getElementById('modulator-ratio-input');
-const modulatorRatioValueLabelElement = <HTMLLabelElement>document.getElementById('modulator-ratio-value-label');
+// `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const modulatorRatioInputElement = document.getElementById('modulator-ratio-input') as HTMLInputElement;
+const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio-value-label') as HTMLLabelElement;
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputUI = new RangeInputUI(
+const modulatorRatioInputUi = new RangeInputUi(
   modulatorRatioInputElement,
   modulatorRatioValueLabelElement,
-  modulatorValue.ratioUIValue
+  modulatorValue.ratioUiValue
 )
 
 // Modulator Graph
-const modulatorPhaseGraphElement = <HTMLCanvasElement>document.getElementById('modulator-phase-graph');
-const modulatorOutputGraphElement = <HTMLCanvasElement>document.getElementById('modulator-output-graph');
-const modulatorWaveformGraphElement = <HTMLCanvasElement>document.getElementById('modulator-waveform-graph');
+// `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const modulatorPhaseGraphElement = document.getElementById('modulator-phase-graph') as HTMLCanvasElement;
+const modulatorOutputGraphElement = document.getElementById('modulator-output-graph') as HTMLCanvasElement;
+const modulatorWaveformGraphElement = document.getElementById('modulator-waveform-graph') as HTMLCanvasElement;
 /**
  * Modulatorのグラフを制御するクラスのインスタンス
  */
-const modulatorUI = new OperatorUI(
-  visualFMSynth.modulator,
+const modulatorUi = new OperatorUi(
+  visualFmSynth.modulator,
   modulatorPhaseGraphElement,
   modulatorOutputGraphElement,
   modulatorWaveformGraphElement,
   true,
-  visualFMSynthValue.samplingRate
+  visualFmSynthValue.samplingRate
 )
 
 // Carrier Graph
-const carrierPhaseGraphElement = <HTMLCanvasElement>document.getElementById('carrier-phase-graph');
-const carrierOutputGraphElement = <HTMLCanvasElement>document.getElementById('carrier-output-graph');
-const carrierWaveformGraphElement = <HTMLCanvasElement>document.getElementById('carrier-waveform-graph');
+// `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
+// 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
+const carrierPhaseGraphElement = document.getElementById('carrier-phase-graph') as HTMLCanvasElement;
+const carrierOutputGraphElement = document.getElementById('carrier-output-graph') as HTMLCanvasElement;
+const carrierWaveformGraphElement = document.getElementById('carrier-waveform-graph') as HTMLCanvasElement;
 /**
  * Carrierのグラフを制御するクラスのインスタンス
  */
-const carrierUI = new OperatorUI(
-  visualFMSynth.carrier,
+const carrierUi = new OperatorUi(
+  visualFmSynth.carrier,
   carrierPhaseGraphElement,
   carrierOutputGraphElement,
   carrierWaveformGraphElement,
   false,
-  visualFMSynthValue.samplingRate
+  visualFmSynthValue.samplingRate
 );
 
 /**
  * グラフの動作をサンプリングレート一つ分進めます。
  */
-function moveFrameForward() {
-  let frameUpdateQueue: Syncable[] = [visualFMSynth, modulatorUI, carrierUI];
+function moveFrameForward(): void {
+  let frameUpdateQueue: Syncable[] = [visualFmSynth, modulatorUi, carrierUi];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
   });
@@ -764,10 +670,12 @@ function moveFrameForward() {
 /**
  * WebページのJavaScriptの動作を開始します。
  */
-function setUp() {
+function setUp(): void {
 
   // JavaScript無効時に非表示になっている要素を表示させる
-  const divWorkingWithJavascript = <HTMLCollectionOf<HTMLDivElement>>document.getElementsByClassName('div-working-with-javascript');
+  // `index.html`内で`.div-working-with-javascript`が付与されている要素は全て`<div>`要素であり、
+  // これらの要素は動的に削除されず、classが動的に付与・削除されることがないため、この型キャストは成功する。
+  const divWorkingWithJavascript = document.getElementsByClassName('div-working-with-javascript') as HTMLCollectionOf<HTMLDivElement>;
   for (let i = 0; i < divWorkingWithJavascript.length; i++) {
     divWorkingWithJavascript[i].style.display = 'block';
   }
@@ -775,12 +683,12 @@ function setUp() {
   /**
    * UIからモジュレーターのVolumeの値を取得し、FMSynthに適用します。
    */
-  function setModulatorVolume() {
+  function setModulatorVolume(): void {
     // UIから値を取得
-    modulatorValue.volumeUIValue = modulatorVolumeInputUI.value;
+    modulatorValue.volumeUiValue = modulatorVolumeInputUi.value;
 
     // グラフ用FMSynthに適用
-    visualFMSynth.modulator.volume = modulatorValue.volumeValue;
+    visualFmSynth.modulator.volume = modulatorValue.volumeValue;
     
     // 音声用FMSynthに適用
     if (audioEngine.isRunning) {
@@ -794,12 +702,12 @@ function setUp() {
   /**
    * UIからモジュレーターのRatioの値を取得し、FMSynthに適用します。
    */
-  function setModulatorRatio() {
+  function setModulatorRatio(): void {
     // UIから値を取得
-    modulatorValue.ratioUIValue = modulatorRatioInputUI.value;
+    modulatorValue.ratioUiValue = modulatorRatioInputUi.value;
 
     // グラフ用FMSynthに適用
-    visualFMSynth.modulator.ratio = modulatorValue.ratioValue;
+    visualFmSynth.modulator.ratio = modulatorValue.ratioValue;
     
     // 音声用FMSynthに適用
     if (audioEngine.isRunning) {
@@ -816,14 +724,18 @@ function setUp() {
   /**
    * "音声を再生する"ボタンの要素
    */
-  const startAudioButton = <HTMLButtonElement>document.getElementById('start-audio-button');
+  // `index.html`内で`#start-audio-button`は`<button>`要素であり、
+  // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
+  const startAudioButton = document.getElementById('start-audio-button') as HTMLButtonElement;
   
   /**
    * "音声を停止する"ボタンの要素
    */
-  const stopAudioButton = <HTMLButtonElement>document.getElementById('stop-audio-button');
+  // `index.html`内で`#stop-audio-button`は`<button>`要素であり、
+  // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
+  const stopAudioButton = document.getElementById('stop-audio-button') as HTMLButtonElement;
 
-  startAudioButton.addEventListener('click', function() {
+  startAudioButton.addEventListener('click', () => {
     if (!audioEngine.isRunning) {
       audioEngine.start(modulatorValue, () => {
         startAudioButton.style.display = 'none';
@@ -832,7 +744,7 @@ function setUp() {
     }
   });
 
-  stopAudioButton.addEventListener('click', function() {
+  stopAudioButton.addEventListener('click', () => {
     if (audioEngine.isRunning) {
       audioEngine.stop();
     }
@@ -840,10 +752,10 @@ function setUp() {
     stopAudioButton.style.display = 'none';
   });
 
-  modulatorVolumeInputUI.addEventListener(function() {
+  modulatorVolumeInputUi.addEventListener(() => {
     setModulatorVolume();
   });
-  modulatorRatioInputUI.addEventListener(function() {
+  modulatorRatioInputUi.addEventListener(() => {
     setModulatorRatio();
   });
 
@@ -852,10 +764,10 @@ function setUp() {
    */
   const oneSecond_ms = 1_000;
   
-  let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFMSynthValue.samplingRate);
+  let intervalId: number = setInterval(moveFrameForward, oneSecond_ms / visualFmSynthValue.samplingRate);
 }
 
 // 読み込みが終わってからコードを実行する
 window.addEventListener('load', () => {
   setUp();
-})
+});
