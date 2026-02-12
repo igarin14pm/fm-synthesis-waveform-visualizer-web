@@ -120,7 +120,7 @@ class AudioEngine {
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
-class RangeInputUi {
+class RangeInputComponent {
     /**
      * `<input>`要素の値
      */
@@ -465,7 +465,7 @@ const modulatorVolumeValueLabelElement = document.getElementById('modulator-volu
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputUi = new RangeInputUi(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUiValue);
+const modulatorVolumeInputUi = new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUiValue);
 // Modulator Ratio Input
 // `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -474,7 +474,7 @@ const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputUi = new RangeInputUi(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUiValue);
+const modulatorRatioInputUi = new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUiValue);
 // Modulator Graph
 // `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。

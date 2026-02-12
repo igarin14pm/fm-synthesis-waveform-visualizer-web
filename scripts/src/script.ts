@@ -149,7 +149,7 @@ class AudioEngine {
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
-class RangeInputUi {
+class RangeInputComponent {
 
   /**
    * `<input>`要素の値
@@ -601,7 +601,7 @@ const modulatorVolumeValueLabelElement = document.getElementById('modulator-volu
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputUi = new RangeInputUi(
+const modulatorVolumeInputUi = new RangeInputComponent(
   modulatorVolumeInputElement,
   modulatorVolumeValueLabelElement,
   modulatorValue.volumeUiValue
@@ -615,7 +615,7 @@ const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputUi = new RangeInputUi(
+const modulatorRatioInputUi = new RangeInputComponent(
   modulatorRatioInputElement,
   modulatorRatioValueLabelElement,
   modulatorValue.ratioUiValue
