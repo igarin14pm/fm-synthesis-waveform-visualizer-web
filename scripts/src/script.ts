@@ -95,7 +95,7 @@ class AudioEngine {
    * AudioEngineが音を出力中かを表します
    */
   get isRunning(): boolean {
-    return this.audioContext != null && this.audioWorkletNode != null;
+    return this.audioContext != null;
   }
 
   /**
@@ -104,8 +104,8 @@ class AudioEngine {
    * @param value パラメーターの値
    */
   setParameterValue(name: string, value: number) {
-    if (this.isRunning) {
-      const param: AudioParam | undefined = this.audioWorkletNode!.parameters.get(name);
+    if (this.audioContext != null && this.audioWorkletNode != null) {
+      const param: AudioParam | undefined = this.audioWorkletNode.parameters.get(name);
       param?.setValueAtTime(value, this.audioContext!.currentTime);
     }
   }
