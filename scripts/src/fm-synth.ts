@@ -124,7 +124,7 @@ export class MasterPhase implements Outputting, Syncable {
    * `MasterPhase`の動作をサンプリングレート一つ分進めます。
    */
   moveFrameForward(): void {
-    const deltaPhase = this.waveFrequency / this.samplingRate;
+    const deltaPhase: number = this.waveFrequency / this.samplingRate;
     this._output.value = (this._output.value + deltaPhase) % 1;
   }
 
@@ -172,7 +172,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
   get modulationValue(): number {
     
     // 変調量の係数 学習用に使うならこれくらいが多すぎず少なすぎずちょうどいい
-    const modulationCoefficient: number = 0.25;
+    const modulationCoefficient = 0.25;
     
     if (this.modulatorSignal != null) {
       return this.modulatorSignal.value * modulationCoefficient;
@@ -201,7 +201,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
    * @returns 計算した出力信号の値
    */
   process(): number {
-    let value = this.valuesWithoutMod[0] + this.modulationValue;
+    let value: number = this.valuesWithoutMod[0] + this.modulationValue;
     value -= Math.floor(value);
     return value;
   }
@@ -241,7 +241,7 @@ export class Operator implements Processing, Outputting, Syncable {
    * Ratioパラメーター
    * `MasterPhase`の周波数に対する周波数比
    */
-  set ratio(newValue) {
+  set ratio(newValue: number) {
     this.phase.operatorRatio = newValue;
   }
 

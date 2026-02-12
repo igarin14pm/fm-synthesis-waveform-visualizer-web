@@ -107,7 +107,7 @@ class AudioEngine {
    */
   setParameterValue(name: string, value: number) {
     if (this.isRunning) {
-      const param = this.audioWorkletNode!.parameters.get(name);
+      const param: AudioParam | undefined = this.audioWorkletNode!.parameters.get(name);
       param?.setValueAtTime(value, this.audioContext!.currentTime);
     }
   }
@@ -156,7 +156,7 @@ abstract class Graph {
   /**
    * グラフに描画する波形の上下の余白の大きさ
    */
-  verticalPadding: number = 10;
+  verticalPadding = 10;
 
   /**
    * `<canvas>`要素の幅
@@ -232,14 +232,13 @@ class PhaseGraph extends Graph {
    * グラフを描画します。
    */
   override draw(): void {
-    // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
-    const sineWaveValueLength = 120 + 1;
+    const sineWaveValueLength = 120 + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
     const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
 
     // モジュレーション量を描画
     context.fillStyle = '#00cdb944';
     const phaseWithoutModX: number = this.width * this.operator.phase.valuesWithoutMod[0];
-    const modRectY: number = 0;
+    const modRectY = 0;
     const modRectWidth: number = this.width * this.operator.phase.modulationValue;
     const modRectHeight: number = this.height;
     if (phaseWithoutModX + modRectWidth > this.width) {
@@ -269,7 +268,7 @@ class PhaseGraph extends Graph {
     context.strokeStyle = '#eeeeee';
     context.lineWidth = 4;
     context.beginPath();
-    for (let i: number = 0; i < sineWaveValueLength; i++) {
+    for (let i = 0; i < sineWaveValueLength; i++) {
       const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
 
       const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
@@ -288,7 +287,7 @@ class PhaseGraph extends Graph {
     context.lineWidth = 8;
     context.beginPath();
     const phaseLineX: number = this.width * this.operator.phase.output.value;
-    const phaseLineStartY: number = 0;
+    const phaseLineStartY = 0;
     const phaseLineEndY: number = this.height;
     context.moveTo(phaseLineX, phaseLineStartY);
     context.lineTo(phaseLineX, phaseLineEndY);
@@ -309,7 +308,7 @@ class PhaseGraph extends Graph {
     context.fillStyle = '#00cdb9';
     const valueCircleX: number = phaseLineX;
     const valueCircleY: number = outputLineY;
-    const valueCircleRadius: number = 12.5;
+    const valueCircleRadius = 12.5;
     context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
     context.fill();
   }
@@ -342,7 +341,7 @@ class OutputGraph extends Graph {
   override draw(): void {
     const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
 
-    const outputLineStartX: number = 0;
+    const outputLineStartX = 0;
     const outputLineEndX: number = this.width;
     const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
 
@@ -410,7 +409,7 @@ class WaveformGraphData {
    * データに値を追加します。
    * @param value 追加する波形の出力信号の値
    */
-  add(value: number) {
+  add(value: number): void {
     this.values.pop();
     this.values.splice(0, 0, value);
   }
@@ -449,8 +448,8 @@ class WaveformGraph extends Graph {
     context.lineWidth = 4;
     context.beginPath();
     for (const [index, value] of this.data.values.entries()) {
-      const waveX = (index / (this.data.valueLength - 1)) * this.width;
-      const waveY = this.convertToCoordinateY(value);
+      const waveX: number = (index / (this.data.valueLength - 1)) * this.width;
+      const waveY: number = this.convertToCoordinateY(value);
       if (index === 0) {
         context.moveTo(waveX, waveY);
       } else {
@@ -460,8 +459,8 @@ class WaveformGraph extends Graph {
     context.stroke();
 
     // 左端のボーダーの線分を描画
-    const borderLineX: number = 1;
-    const borderLineStartY: number = 0;
+    const borderLineX = 1;
+    const borderLineStartY = 0;
     const borderLineEndY: number = this.height;
     context.strokeStyle = '#888888';
     context.lineWidth = 4;
@@ -503,7 +502,7 @@ class RangeInputUi {
   /**
    * `<input>`要素に値が入力した時に発生するイベントリスナーを設定します。
    */
-  addEventListener(listener: () => void) {
+  addEventListener(listener: () => void): void {
     this.inputElement.addEventListener('input', () => {
       listener();
       this.valueLabelElement.textContent = this.inputElement.value;
@@ -663,7 +662,7 @@ const carrierUi = new OperatorUi(
 /**
  * グラフの動作をサンプリングレート一つ分進めます。
  */
-function moveFrameForward() {
+function moveFrameForward(): void {
   let frameUpdateQueue: Syncable[] = [visualFmSynth, modulatorUi, carrierUi];
   frameUpdateQueue.forEach(syncable => {
     syncable.moveFrameForward();
@@ -673,7 +672,7 @@ function moveFrameForward() {
 /**
  * WebページのJavaScriptの動作を開始します。
  */
-function setUp() {
+function setUp(): void {
 
   // JavaScript無効時に非表示になっている要素を表示させる
   // `index.html`内で`.div-working-with-javascript`が付与されている要素は全て`<div>`要素であり、
@@ -686,7 +685,7 @@ function setUp() {
   /**
    * UIからモジュレーターのVolumeの値を取得し、FMSynthに適用します。
    */
-  function setModulatorVolume() {
+  function setModulatorVolume(): void {
     // UIから値を取得
     modulatorValue.volumeUiValue = modulatorVolumeInputUi.value;
 
@@ -705,7 +704,7 @@ function setUp() {
   /**
    * UIからモジュレーターのRatioの値を取得し、FMSynthに適用します。
    */
-  function setModulatorRatio() {
+  function setModulatorRatio(): void {
     // UIから値を取得
     modulatorValue.ratioUiValue = modulatorRatioInputUi.value;
 
@@ -767,10 +766,10 @@ function setUp() {
    */
   const oneSecond_ms = 1_000;
   
-  let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFmSynthValue.samplingRate);
+  let intervalId: number = setInterval(moveFrameForward, oneSecond_ms / visualFmSynthValue.samplingRate);
 }
 
 // 読み込みが終わってからコードを実行する
 window.addEventListener('load', () => {
   setUp();
-})
+});
