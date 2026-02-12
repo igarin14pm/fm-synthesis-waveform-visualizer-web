@@ -2,7 +2,7 @@
 // This software is released under the MIT License.
 // https://opensource.org
 import { FmSynth } from './fm-synth.js';
-class AudioProcessor extends AudioWorkletProcessor {
+class FmSynthAudioProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
         return [
             {
@@ -61,4 +61,4 @@ class AudioProcessor extends AudioWorkletProcessor {
         return true;
     }
 }
-registerProcessor('audio-processor', AudioProcessor);
+registerProcessor('fm-synth-audio-processor', FmSynthAudioProcessor);
