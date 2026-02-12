@@ -147,6 +147,45 @@ class AudioEngine {
 // -------- UI Classes --------
 
 /**
+ * パラメーターを変更する`<input>`要素を扱うためのクラスです。
+ */
+class RangeInputUi {
+
+  /**
+   * `<input>`要素の値
+   */
+  get value(): number {
+    return parseInt(this.inputElement.value);
+  }
+
+  /**
+   * RangeInputUIのインスタンスを生成します。
+   * @param inputElement DOMで取得した`<input>`要素
+   * @param valueLabelElement DOMで取得した値を表示する`<label>`要素
+   * @param initialValue `<input>`要素に設定する初期値
+   */
+  constructor(
+    public inputElement: HTMLInputElement,
+    public valueLabelElement: HTMLLabelElement,
+    initialValue: number
+  ) {
+    inputElement.value = initialValue.toString();
+    valueLabelElement.textContent = initialValue.toString();
+  }
+
+  /**
+   * `<input>`要素に値が入力した時に発生するイベントリスナーを設定します。
+   */
+  addEventListener(listener: () => void): void {
+    this.inputElement.addEventListener('input', () => {
+      listener();
+      this.valueLabelElement.textContent = this.inputElement.value;
+    })
+  }
+
+}
+
+/**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
 abstract class Graph {
@@ -466,45 +505,6 @@ class WaveformGraph extends Graph {
     context.moveTo(borderLineX, borderLineStartY);
     context.lineTo(borderLineX, borderLineEndY);
     context.stroke();
-  }
-
-}
-
-/**
- * パラメーターを変更する`<input>`要素を扱うためのクラスです。
- */
-class RangeInputUi {
-
-  /**
-   * `<input>`要素の値
-   */
-  get value(): number {
-    return parseInt(this.inputElement.value);
-  }
-
-  /**
-   * RangeInputUIのインスタンスを生成します。
-   * @param inputElement DOMで取得した`<input>`要素
-   * @param valueLabelElement DOMで取得した値を表示する`<label>`要素
-   * @param initialValue `<input>`要素に設定する初期値
-   */
-  constructor(
-    public inputElement: HTMLInputElement,
-    public valueLabelElement: HTMLLabelElement,
-    initialValue: number
-  ) {
-    inputElement.value = initialValue.toString();
-    valueLabelElement.textContent = initialValue.toString();
-  }
-
-  /**
-   * `<input>`要素に値が入力した時に発生するイベントリスナーを設定します。
-   */
-  addEventListener(listener: () => void): void {
-    this.inputElement.addEventListener('input', () => {
-      listener();
-      this.valueLabelElement.textContent = this.inputElement.value;
-    })
   }
 
 }
