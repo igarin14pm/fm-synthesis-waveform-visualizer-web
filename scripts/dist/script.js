@@ -116,7 +116,7 @@ class AudioEngine {
         this.audioWorkletNode = null;
     }
 }
-// -------- UI Classes --------
+// -------- UI Components --------
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
@@ -465,7 +465,7 @@ const modulatorVolumeValueLabelElement = document.getElementById('modulator-volu
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputUi = new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUiValue);
+const modulatorVolumeInputComponent = new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUiValue);
 // Modulator Ratio Input
 // `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -474,7 +474,7 @@ const modulatorRatioValueLabelElement = document.getElementById('modulator-ratio
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputUi = new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUiValue);
+const modulatorRatioInputComponent = new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUiValue);
 // Modulator Graph
 // `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -520,7 +520,7 @@ function setUp() {
      */
     function setModulatorVolume() {
         // UIから値を取得
-        modulatorValue.volumeUiValue = modulatorVolumeInputUi.value;
+        modulatorValue.volumeUiValue = modulatorVolumeInputComponent.value;
         // グラフ用FMSynthに適用
         visualFmSynth.modulator.volume = modulatorValue.volumeValue;
         // 音声用FMSynthに適用
@@ -533,7 +533,7 @@ function setUp() {
      */
     function setModulatorRatio() {
         // UIから値を取得
-        modulatorValue.ratioUiValue = modulatorRatioInputUi.value;
+        modulatorValue.ratioUiValue = modulatorRatioInputComponent.value;
         // グラフ用FMSynthに適用
         visualFmSynth.modulator.ratio = modulatorValue.ratioValue;
         // 音声用FMSynthに適用
@@ -570,10 +570,10 @@ function setUp() {
         startAudioButton.style.display = 'block';
         stopAudioButton.style.display = 'none';
     });
-    modulatorVolumeInputUi.addEventListener(() => {
+    modulatorVolumeInputComponent.addEventListener(() => {
         setModulatorVolume();
     });
-    modulatorRatioInputUi.addEventListener(() => {
+    modulatorRatioInputComponent.addEventListener(() => {
         setModulatorRatio();
     });
     /**
