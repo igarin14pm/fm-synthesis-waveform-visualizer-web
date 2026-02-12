@@ -393,6 +393,25 @@ class WaveformGraphComponent extends GraphComponent {
         context.stroke();
     }
 }
+class ButtonComponent {
+    constructor(element) {
+        this.element = element;
+    }
+    addClickEventListener(listener) {
+        this.element.addEventListener('click', listener);
+    }
+}
+class AudioButtonComponent extends ButtonComponent {
+    constructor(element) {
+        super(element);
+    }
+    hide() {
+        this.element.style.display = 'none';
+    }
+    show() {
+        this.element.style.display = 'block';
+    }
+}
 // -------- Script --------
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
@@ -446,6 +465,13 @@ const carrierWaveformGraphElement = document.getElementById('carrier-waveform-gr
 const carrierPhaseGraphComponent = new PhaseGraphComponent(carrierPhaseGraphElement, visualFmSynth.carrier);
 const carrierOutputGraphComponent = new OutputGraphComponent(carrierOutputGraphElement, visualFmSynth.carrier, false);
 const carrierWaveformGraphComponent = new WaveformGraphComponent(carrierWaveformGraphElement, visualFmSynthValue.samplingRate);
+// Audio Button
+// `index.html`内で`#start-audio-button`・`#stop-audio-button`は`<button>`要素であり、
+// 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
+const startAudioButtonElement = document.querySelector('#start-audio-button');
+const stopAudioButtonElement = document.querySelector('#stop-audio-button');
+const startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
+const stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
 /**
  * グラフの動作をサンプリングレート一つ分進めます。
  */
@@ -504,32 +530,20 @@ function setUp() {
     }
     setModulatorVolume();
     setModulatorRatio();
-    /**
-     * "音声を再生する"ボタンの要素
-     */
-    // `index.html`内で`#start-audio-button`は`<button>`要素であり、
-    // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
-    const startAudioButton = document.getElementById('start-audio-button');
-    /**
-     * "音声を停止する"ボタンの要素
-     */
-    // `index.html`内で`#stop-audio-button`は`<button>`要素であり、
-    // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
-    const stopAudioButton = document.getElementById('stop-audio-button');
-    startAudioButton.addEventListener('click', () => {
+    startAudioButtonComponent.addClickEventListener(() => {
         if (!audioEngine.isRunning) {
             audioEngine.start(modulatorValue, () => {
-                startAudioButton.style.display = 'none';
-                stopAudioButton.style.display = 'block';
+                startAudioButtonComponent.hide();
+                stopAudioButtonComponent.show();
             });
         }
     });
-    stopAudioButton.addEventListener('click', () => {
+    stopAudioButtonComponent.addClickEventListener(() => {
         if (audioEngine.isRunning) {
             audioEngine.stop();
         }
-        startAudioButton.style.display = 'block';
-        stopAudioButton.style.display = 'none';
+        stopAudioButtonComponent.hide();
+        startAudioButtonComponent.show();
     });
     modulatorVolumeInputComponent.addEventListener(() => {
         setModulatorVolume();
