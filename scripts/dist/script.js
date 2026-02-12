@@ -187,8 +187,7 @@ class PhaseGraph extends Graph {
      * グラフを描画します。
      */
     draw() {
-        // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
-        const sineWaveValueLength = 120 + 1;
+        const sineWaveValueLength = 120 + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
         const context = this.element.getContext('2d');
         // モジュレーション量を描画
         context.fillStyle = '#00cdb944';

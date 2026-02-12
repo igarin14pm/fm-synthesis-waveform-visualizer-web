@@ -49,8 +49,8 @@ class AudioProcessor extends AudioWorkletProcessor {
     outputs: Float32Array[][], 
     parameters: Record<string, Float32Array>
   ): boolean {
-    let output = outputs[0];
-    let channels = output[0];
+    let output: Float32Array[] = outputs[0];
+    let channels: Float32Array = output[0];
 
     /**
      * `AudioParamDescriptor`からパラメータの値を取得します
@@ -59,7 +59,7 @@ class AudioProcessor extends AudioWorkletProcessor {
      * @returns パラメータの値
      */
     function getParameterValue(parameterName: string, channelIndex: number): number {
-      const parameterValues = parameters[parameterName];
+      const parameterValues: Float32Array = parameters[parameterName];
       if (parameterValues.length > 1) {
         return parameterValues[channelIndex];
       } else {
