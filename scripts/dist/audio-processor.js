@@ -1,8 +1,6 @@
-/*
- * Copyright (c) 2026 Igarin
- * This software is released under the MIT License.
- * https://opensource.org
- */
+// Copyright (c) 2026 Igarin
+// This software is released under the MIT License.
+// https://opensource.org
 import { FmSynth } from './fm-synth.js';
 class AudioProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
