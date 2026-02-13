@@ -578,6 +578,46 @@ class AudioButtonComponent extends ButtonComponent {
 
 }
 
+// -------- Casting HTML Elements --------
+
+class InvalidHtmlElementError extends TypeError {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
+function returnHTMLButtonElementOrError(element: Element | null): HTMLButtonElement {
+  if (element instanceof HTMLButtonElement) {
+    return element;
+  } else {
+    throw new InvalidHtmlElementError(`${element} is not HTMLButtonElement`);
+  }
+}
+
+function returnHTMLCanvasElementOrError(element: Element | null): HTMLCanvasElement {
+  if (element instanceof HTMLCanvasElement) {
+    return element;
+  } else {
+    throw new InvalidHtmlElementError(`${element} is not HTMLCanvasElement`);
+  }
+}
+
+function returnHTMLInputElementOrError(element: Element | null): HTMLInputElement {
+  if (element instanceof HTMLInputElement) {
+    return element;
+  } else {
+    throw new InvalidHtmlElementError(`${element} is not HTMLInputElement`);
+  }
+}
+
+function returnHTMLLabelElementOrError(element: Element | null): HTMLLabelElement {
+  if (element instanceof HTMLLabelElement) {
+    return element;
+  } else {
+    throw new InvalidHtmlElementError(`${element} is not HTMLLabelElement`);
+  }
+}
+
 // -------- App --------
 
 /**
@@ -701,19 +741,27 @@ class FmSynthesisWaveformVisualizerApp {
 
     // UI Components
 
-    // `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
-    // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-    const modulatorVolumeInputElement = document.querySelector('#modulator-volume-input') as HTMLInputElement;
-    const modulatorVolumeValueLabelElement = document.querySelector('#modulator-volume-value-label') as HTMLLabelElement;
-    // `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
-    // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-    const modulatorRatioInputElement = document.querySelector('#modulator-ratio-input') as HTMLInputElement;
-    const modulatorRatioValueLabelElement = document.querySelector('#modulator-ratio-value-label') as HTMLLabelElement;
-    // `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
-    // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-    const modulatorPhaseGraphElement = document.querySelector('#modulator-phase-graph') as HTMLCanvasElement;
-    const modulatorOutputGraphElement = document.querySelector('#modulator-output-graph') as HTMLCanvasElement;
-    const modulatorWaveformGraphElement = document.querySelector('#modulator-waveform-graph') as HTMLCanvasElement;
+    const modulatorVolumeInputElement: HTMLInputElement = returnHTMLInputElementOrError(
+      document.querySelector('#modulator-volume-input')
+    );
+    const modulatorVolumeValueLabelElement = returnHTMLLabelElementOrError(
+      document.querySelector('#modulator-volume-value-label')
+    );
+    const modulatorRatioInputElement: HTMLInputElement = returnHTMLInputElementOrError(
+      document.querySelector('#modulator-ratio-input')
+    );
+    const modulatorRatioValueLabelElement: HTMLLabelElement = returnHTMLLabelElementOrError(
+      document.querySelector('#modulator-ratio-value-label')
+    );
+    const modulatorPhaseGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
+      document.querySelector('#modulator-phase-graph')
+    );
+    const modulatorOutputGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
+      document.querySelector('#modulator-output-graph')
+    );
+    const modulatorWaveformGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
+      document.querySelector('#modulator-waveform-graph')
+    );
 
     this.modulatorComponent = {
       volumeInput: new RangeInputComponent(
@@ -741,11 +789,15 @@ class FmSynthesisWaveformVisualizerApp {
       )
     }
 
-    // `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
-    // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-    const carrierPhaseGraphElement = document.querySelector('#carrier-phase-graph') as HTMLCanvasElement;
-    const carrierOutputGraphElement = document.querySelector('#carrier-output-graph') as HTMLCanvasElement;
-    const carrierWaveformGraphElement = document.querySelector('#carrier-waveform-graph') as HTMLCanvasElement;
+    const carrierPhaseGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
+      document.querySelector('#carrier-phase-graph')
+    );
+    const carrierOutputGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
+      document.querySelector('#carrier-output-graph')
+    );
+    const carrierWaveformGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
+      document.querySelector('#carrier-waveform-graph')
+    );
     
     this.carrierComponent = {
       phaseGraph: new PhaseGraphComponent(
@@ -763,10 +815,12 @@ class FmSynthesisWaveformVisualizerApp {
       )
     }
 
-    // `index.html`内で`#start-audio-button`・`#stop-audio-button`は`<button>`要素であり、
-    // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
-    const startAudioButtonElement = document.querySelector('#start-audio-button') as HTMLButtonElement;
-    const stopAudioButtonElement = document.querySelector('#stop-audio-button') as HTMLButtonElement;
+    const startAudioButtonElement: HTMLButtonElement = returnHTMLButtonElementOrError(
+      document.querySelector('#start-audio-button')
+    )
+    const stopAudioButtonElement: HTMLButtonElement = returnHTMLButtonElementOrError(
+      document.querySelector('#stop-audio-button')
+    )
 
     this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
     this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
