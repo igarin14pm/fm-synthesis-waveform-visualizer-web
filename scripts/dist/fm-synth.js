@@ -30,9 +30,14 @@ export class Signal {
 }
 // -------- FM Synth Modules --------
 /**
+ * `FmSynth`のモジュールであることを表す基底クラスです。
+ */
+export class FmSynthModule {
+}
+/**
  * FMシンセ内ですべてのPhaseの同期元となるクラスです。
  */
-export class MasterPhase {
+export class MasterPhase extends FmSynthModule {
     /**
      * 出力信号
      */
@@ -45,6 +50,7 @@ export class MasterPhase {
      * @param waveFrequency 出力波形の周波数
      */
     constructor(samplingRate, waveFrequency) {
+        super();
         this.samplingRate = samplingRate;
         this.waveFrequency = waveFrequency;
         /**
@@ -63,7 +69,7 @@ export class MasterPhase {
 /**
  * `Operator`の位相を表すクラスです。
  */
-export class Phase {
+export class Phase extends FmSynthModule {
     /**
      * 位相が一周して (計算した位相の値 < 一つ前に計算した位相の値) となった時に`true`、そうでない時に`false`となります。
      */
@@ -97,6 +103,7 @@ export class Phase {
      * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`となります
      */
     constructor(masterPhaseSignal, operatorRatio, modulatorSignal) {
+        super();
         this.operatorRatio = operatorRatio;
         this.modulatorSignal = modulatorSignal;
         /**
@@ -132,7 +139,7 @@ export class Phase {
 /**
  * FMシンセサイザーで波形を生成するオペレーターを表すクラスです。
  */
-export class Operator {
+export class Operator extends FmSynthModule {
     /**
      * Ratioパラメーター
      * `MasterPhase`の周波数に対する周波数比
@@ -161,6 +168,7 @@ export class Operator {
      * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`を渡してください
      */
     constructor(volume, ratio, masterPhaseSignal, modulatorSignal) {
+        super();
         this.volume = volume;
         /**
          * 出力信号のインスタンス

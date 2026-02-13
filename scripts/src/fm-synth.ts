@@ -92,9 +92,14 @@ export interface Syncable {
 // -------- FM Synth Modules --------
 
 /**
+ * `FmSynth`のモジュールであることを表す基底クラスです。
+ */
+export class FmSynthModule { }
+
+/**
  * FMシンセ内ですべてのPhaseの同期元となるクラスです。
  */
-export class MasterPhase implements Outputting, Syncable {
+export class MasterPhase extends FmSynthModule implements Outputting, Syncable {
 
   /**
    * 出力信号のインスタンス
@@ -116,7 +121,9 @@ export class MasterPhase implements Outputting, Syncable {
   constructor(
     public samplingRate: number,
     public waveFrequency: number
-  ) { }
+  ) {
+    super();
+  }
   
   /**
    * `MasterPhase`の動作をサンプリングレート一つ分進めます。
@@ -131,7 +138,7 @@ export class MasterPhase implements Outputting, Syncable {
 /**
  * `Operator`の位相を表すクラスです。
  */
-export class Phase implements Inputting, Processing, Outputting, Syncable {
+export class Phase extends FmSynthModule implements Inputting, Processing, Outputting, Syncable {
   
   /**
    * `MasterPhase`からの信号
@@ -191,6 +198,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
     public operatorRatio: number,
     public modulatorSignal: Signal | null
   ) {
+    super();
     this.input = masterPhaseSignal;
   }
 
@@ -220,7 +228,7 @@ export class Phase implements Inputting, Processing, Outputting, Syncable {
 /**
  * FMシンセサイザーで波形を生成するオペレーターを表すクラスです。
  */
-export class Operator implements Processing, Outputting, Syncable {
+export class Operator extends FmSynthModule implements Processing, Outputting, Syncable {
 
   /**
    * オペレーターの位相を表す`Phase`クラスのインスタンス
@@ -268,6 +276,7 @@ export class Operator implements Processing, Outputting, Syncable {
     masterPhaseSignal: Signal,
     modulatorSignal: Signal | null
   ) {
+    super();
     this.phase = new Phase(masterPhaseSignal, ratio, modulatorSignal);
   }
 
