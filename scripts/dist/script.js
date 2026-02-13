@@ -460,6 +460,7 @@ class AudioButtonComponent extends ButtonComponent {
 class InvalidHtmlElementError extends TypeError {
     constructor(message) {
         super(message);
+        this.name = 'InvalidHtmlElementError';
     }
 }
 function returnHTMLButtonElementOrError(element) {
@@ -644,6 +645,15 @@ class FmSynthesisWaveformVisualizerApp {
 }
 // -------- Script --------
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new FmSynthesisWaveformVisualizerApp();
-    app.init();
+    try {
+        const app = new FmSynthesisWaveformVisualizerApp();
+        app.init();
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            console.error(`${error.name}: ${error.message}`);
+        }
+        window.alert('アプリの内部でエラーが発生しました。\n' +
+            'アプリの設計上の不具合の可能性がありますので、開発者までお知らせください。');
+    }
 });
