@@ -457,12 +457,25 @@ class AudioButtonComponent extends ButtonComponent {
     }
 }
 // -------- Casting HTML Elements --------
+/**
+ * 取得したHTML要素の型が正しくない時に発生するエラーです。
+ */
 class InvalidHtmlElementError extends TypeError {
+    /**
+     * `InvalidHtmlElementError`のインスタンスを生成します。
+     * @param message エラーメッセージ
+     */
     constructor(message) {
         super(message);
         this.name = 'InvalidHtmlElementError';
     }
 }
+/**
+ * `element`が`HTMLButtonElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLButtonElement`にキャストされた`element`
+ */
 function returnHTMLButtonElementOrError(element) {
     if (element instanceof HTMLButtonElement) {
         return element;
@@ -471,6 +484,12 @@ function returnHTMLButtonElementOrError(element) {
         throw new InvalidHtmlElementError(`${element} is not HTMLButtonElement`);
     }
 }
+/**
+ * `element`が`HTMLCanvasElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLCanvasElement`にキャストされた`element`
+ */
 function returnHTMLCanvasElementOrError(element) {
     if (element instanceof HTMLCanvasElement) {
         return element;
@@ -479,6 +498,12 @@ function returnHTMLCanvasElementOrError(element) {
         throw new InvalidHtmlElementError(`${element} is not HTMLCanvasElement`);
     }
 }
+/**
+ * `element`が`HTMLInputElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLInputElement`にキャストされた`element`
+ */
 function returnHTMLInputElementOrError(element) {
     if (element instanceof HTMLInputElement) {
         return element;
@@ -487,6 +512,12 @@ function returnHTMLInputElementOrError(element) {
         throw new InvalidHtmlElementError(`${element} is not HTMLInputElement`);
     }
 }
+/**
+ * `element`が`HTMLLabelElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLLabelElement`にキャストされた`element`
+ */
 function returnHTMLLabelElementOrError(element) {
     if (element instanceof HTMLLabelElement) {
         return element;

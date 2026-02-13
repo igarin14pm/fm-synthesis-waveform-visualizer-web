@@ -580,13 +580,28 @@ class AudioButtonComponent extends ButtonComponent {
 
 // -------- Casting HTML Elements --------
 
+/**
+ * 取得したHTML要素の型が正しくない時に発生するエラーです。
+ */
 class InvalidHtmlElementError extends TypeError {
+
+  /**
+   * `InvalidHtmlElementError`のインスタンスを生成します。
+   * @param message エラーメッセージ
+   */
   constructor(message?: string) {
     super(message);
     this.name = 'InvalidHtmlElementError';
   }
+
 }
 
+/**
+ * `element`が`HTMLButtonElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLButtonElement`にキャストされた`element`
+ */
 function returnHTMLButtonElementOrError(element: Element | null): HTMLButtonElement {
   if (element instanceof HTMLButtonElement) {
     return element;
@@ -595,6 +610,12 @@ function returnHTMLButtonElementOrError(element: Element | null): HTMLButtonElem
   }
 }
 
+/**
+ * `element`が`HTMLCanvasElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLCanvasElement`にキャストされた`element`
+ */
 function returnHTMLCanvasElementOrError(element: Element | null): HTMLCanvasElement {
   if (element instanceof HTMLCanvasElement) {
     return element;
@@ -603,6 +624,12 @@ function returnHTMLCanvasElementOrError(element: Element | null): HTMLCanvasElem
   }
 }
 
+/**
+ * `element`が`HTMLInputElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLInputElement`にキャストされた`element`
+ */
 function returnHTMLInputElementOrError(element: Element | null): HTMLInputElement {
   if (element instanceof HTMLInputElement) {
     return element;
@@ -611,6 +638,12 @@ function returnHTMLInputElementOrError(element: Element | null): HTMLInputElemen
   }
 }
 
+/**
+ * `element`が`HTMLLabelElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLLabelElement`にキャストされた`element`
+ */
 function returnHTMLLabelElementOrError(element: Element | null): HTMLLabelElement {
   if (element instanceof HTMLLabelElement) {
     return element;
