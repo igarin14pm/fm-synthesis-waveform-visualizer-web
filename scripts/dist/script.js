@@ -2,58 +2,94 @@
 // This software is released under the MIT License.
 // https://opensource.org
 import { FmSynth } from './fm-synth.js';
-// -------- Value Class --------
+// -------- Program Class --------
 /**
- * オペレーターのパラメーターの値を保持し、UI上での値とFMシンセ側の値を変換するクラスです。
+ * プログラムのパラメータを表す抽象クラスです
  */
-class OperatorValue {
+class ProgramParameter {
     /**
-     * オペレーターのVolumeのUI上での値(0〜100)
+     * `ProgramParameter`のインスタンスを生成します
+     * @param name `AudioParam`で使用するパラメータ名
+     * @param initialValue パラメータの初期値
      */
-    get volumeUiValue() {
-        return this.volumeValue * 100;
-    }
-    /**
-     * オペレーターのVolumeのUI上での値(0〜100)
-     */
-    set volumeUiValue(newValue) {
-        this.volumeValue = newValue / 100;
-    }
-    /**
-     * オペレーターのRatioのUI上での値(1〜10)
-     */
-    get ratioUiValue() {
-        return this.ratioValue;
-    }
-    /**
-     * オペレーターのRatioのUI上での値(1〜10)
-     */
-    set ratioUiValue(newValue) {
-        this.ratioValue = newValue;
-    }
-    /**
-     * OperatorValueのインスタンスを生成します。
-     * @param volumeParameterName AudioParamDescriptorにおけるVolumeのパラメーター名
-     * @param volumeValue OperatorのパラメーターVolumeの値(0〜1.0)
-     * @param ratioParameterName AudioParamDescriptorにおけるRatioのパラメーター名
-     * @param ratioValue OperatorのパラメーターRatioの値(1〜10)
-     */
-    constructor(volumeParameterName, volumeValue, ratioParameterName, ratioValue) {
-        this.volumeParameterName = volumeParameterName;
-        this.volumeValue = volumeValue;
-        this.ratioParameterName = ratioParameterName;
-        this.ratioValue = ratioValue;
+    constructor(name, initialValue) {
+        this.name = name;
+        this.value = initialValue;
     }
 }
 /**
- * FMシンセサイザーの値を保持するクラスです。
+ * `Operator`のVolumeパラメータを表すクラスです
  */
-class FmSynthValue {
+class OperatorVolumeParameter extends ProgramParameter {
     /**
-     * FMSynthValueのインスタンスを生成します。
-     * @param samplingRate FMシンセサイザーのサンプリングレート
-     * @param waveFrequency 出力波形の周波数
-     * @param outputVolume 出力波形のボリューム
+     * UI上で表示するパラメーターの値
+     */
+    get uiValue() {
+        return this.value * 100;
+    }
+    /**
+     * UI上で表示するパラメーターの値
+     */
+    set uiValue(newValue) {
+        this.value = newValue / 100;
+    }
+    /**
+     * `OperatorVolumeParameter`のインスタンスを生成します
+     * @param name `AudioParam`で使用するパラメータ名
+     * @param initialValue パラメータの初期値
+     */
+    constructor(name, initialValue) {
+        super(name, initialValue);
+    }
+}
+/**
+ * `Operator`のRatioパラメータを表すクラスです
+ */
+class OperatorRatioParameter extends ProgramParameter {
+    /**
+     * UI上で表示するパラメーターの値
+     */
+    get uiValue() {
+        return this.value;
+    }
+    /**
+     * UI上で表示するパラメーターの値
+     */
+    set uiValue(newValue) {
+        this.value = newValue;
+    }
+    /**
+     * `OperatorRatioParameter`のインスタンスを生成します
+     * @param name `AudioParam`で使用するパラメータ名
+     * @param initialValue パラメータの初期値
+     */
+    constructor(name, initialValue) {
+        super(name, initialValue);
+    }
+}
+/**
+ * `Operator`のプログラムを表すクラスです
+ */
+class OperatorProgram {
+    /**
+     * `OperatorProgram`のインスタンスを生成します
+     * @param volumeParameter Volumeパラメータを表す`OperatorVolumeParameter`のインスタンス
+     * @param ratioParameter Ratioパラメータを表す`OperatorRatioParameter`のインスタンス
+     */
+    constructor(volumeParameter, ratioParameter) {
+        this.volumeParameter = volumeParameter;
+        this.ratioParameter = ratioParameter;
+    }
+}
+/**
+ * `FmSynth`のプログラムを表すクラスです
+ */
+class FmSynthProgram {
+    /**
+     * `FmSynthProgram`のインスタンスを生成します
+     * @param samplingRate `FmSynth`のサンプリングレート
+     * @param waveFrequency `FmSynth`の出力波形の周波数
+     * @param outputVolume `FmSynth`の出力のボリューム
      */
     constructor(samplingRate, waveFrequency, outputVolume) {
         this.samplingRate = samplingRate;
@@ -98,12 +134,12 @@ class AudioEngine {
      * @param modulatorValue モジュレーターの値を格納したOperatorValueのインスタンス
      * @param callback 再生を始める処理が完了した後に呼ばれる関数
      */
-    async start(modulatorValue, callback) {
+    async start(modulatorProgram, callback) {
         this.audioContext = new AudioContext();
         await this.audioContext.audioWorklet.addModule('./scripts/dist/fm-synth-audio-processor.js');
         this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'fm-synth-audio-processor');
-        this.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
-        this.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+        this.setParameterValue(modulatorProgram.volumeParameter.name, modulatorProgram.volumeParameter.value);
+        this.setParameterValue(modulatorProgram.ratioParameter.name, modulatorProgram.ratioParameter.value);
         this.audioWorkletNode.connect(this.audioContext.destination);
         callback();
     }
@@ -416,11 +452,11 @@ class AudioButtonComponent extends ButtonComponent {
 /**
  * 画面に表示される波形を生成する`FMSynth`のパラメーター値を管理する`FMSynthValue`のインスタンス
  */
-const visualFmSynthValue = new FmSynthValue(120, 0.5, 1);
+const visualFmSynthProgram = new FmSynthProgram(120, 0.5, 1);
 /**
  * 画面に表示される波形を生成する`FMSynth`にあるModulatorのパラメーター値を管理する`OperatorValue`のインスタンス
  */
-const modulatorValue = new OperatorValue('modulatorVolume', 1, 'modulatorRatio', 1);
+const modulatorProgram = new OperatorProgram(new OperatorVolumeParameter('modulatorVolume', 1), new OperatorRatioParameter('modulatorRatio', 1));
 /**
  * 音声を再生・停止する`AudioEngine`のインスタンス
  */
@@ -428,7 +464,7 @@ const audioEngine = new AudioEngine();
 /**
  * 画面に表示される波形を生成する`FMSynth`のインスタンス
  */
-const visualFmSynth = new FmSynth(visualFmSynthValue.samplingRate, visualFmSynthValue.waveFrequency, visualFmSynthValue.outputVolume);
+const visualFmSynth = new FmSynth(visualFmSynthProgram.samplingRate, visualFmSynthProgram.waveFrequency, visualFmSynthProgram.outputVolume);
 // Modulator Volume Input
 // `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -437,7 +473,7 @@ const modulatorVolumeValueLabelElement = document.querySelector('#modulator-volu
 /**
  * ModulatorのVolumeパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorVolumeInputComponent = new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorValue.volumeUiValue);
+const modulatorVolumeInputComponent = new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, modulatorProgram.volumeParameter.uiValue);
 // Modulator Ratio Input
 // `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -446,7 +482,7 @@ const modulatorRatioValueLabelElement = document.querySelector('#modulator-ratio
 /**
  * ModulatorのRatioパラメーターの`<input>`要素を制御するクラスのインスタンス
  */
-const modulatorRatioInputComponent = new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorValue.ratioUiValue);
+const modulatorRatioInputComponent = new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, modulatorProgram.ratioParameter.uiValue);
 // Modulator Graph
 // `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -455,7 +491,7 @@ const modulatorOutputGraphElement = document.querySelector('#modulator-output-gr
 const modulatorWaveformGraphElement = document.querySelector('#modulator-waveform-graph');
 const modulatorPhaseGraphComponent = new PhaseGraphComponent(modulatorPhaseGraphElement, visualFmSynth.modulator);
 const modulatorOutputGraphComponent = new OutputGraphComponent(modulatorOutputGraphElement, visualFmSynth.modulator, true);
-const modulatorWaveformGraphComponent = new WaveformGraphComponent(modulatorWaveformGraphElement, visualFmSynthValue.samplingRate);
+const modulatorWaveformGraphComponent = new WaveformGraphComponent(modulatorWaveformGraphElement, visualFmSynthProgram.samplingRate);
 // Carrier Graph
 // `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
 // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
@@ -464,7 +500,7 @@ const carrierOutputGraphElement = document.querySelector('#carrier-output-graph'
 const carrierWaveformGraphElement = document.querySelector('#carrier-waveform-graph');
 const carrierPhaseGraphComponent = new PhaseGraphComponent(carrierPhaseGraphElement, visualFmSynth.carrier);
 const carrierOutputGraphComponent = new OutputGraphComponent(carrierOutputGraphElement, visualFmSynth.carrier, false);
-const carrierWaveformGraphComponent = new WaveformGraphComponent(carrierWaveformGraphElement, visualFmSynthValue.samplingRate);
+const carrierWaveformGraphComponent = new WaveformGraphComponent(carrierWaveformGraphElement, visualFmSynthProgram.samplingRate);
 // Audio Button
 // `index.html`内で`#start-audio-button`・`#stop-audio-button`は`<button>`要素であり、
 // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
@@ -507,12 +543,12 @@ function setUp() {
      */
     function setModulatorVolume() {
         // UIから値を取得
-        modulatorValue.volumeUiValue = modulatorVolumeInputComponent.value;
+        modulatorProgram.volumeParameter.uiValue = modulatorVolumeInputComponent.value;
         // グラフ用FMSynthに適用
-        visualFmSynth.modulator.volume = modulatorValue.volumeValue;
+        visualFmSynth.modulator.volume = modulatorProgram.volumeParameter.value;
         // 音声用FMSynthに適用
         if (audioEngine.isRunning) {
-            audioEngine.setParameterValue(modulatorValue.volumeParameterName, modulatorValue.volumeValue);
+            audioEngine.setParameterValue(modulatorProgram.volumeParameter.name, modulatorProgram.volumeParameter.value);
         }
     }
     /**
@@ -520,19 +556,19 @@ function setUp() {
      */
     function setModulatorRatio() {
         // UIから値を取得
-        modulatorValue.ratioUiValue = modulatorRatioInputComponent.value;
+        modulatorProgram.ratioParameter.uiValue = modulatorRatioInputComponent.value;
         // グラフ用FMSynthに適用
-        visualFmSynth.modulator.ratio = modulatorValue.ratioValue;
+        visualFmSynth.modulator.ratio = modulatorProgram.ratioParameter.value;
         // 音声用FMSynthに適用
         if (audioEngine.isRunning) {
-            audioEngine.setParameterValue(modulatorValue.ratioParameterName, modulatorValue.ratioValue);
+            audioEngine.setParameterValue(modulatorProgram.ratioParameter.name, modulatorProgram.ratioParameter.value);
         }
     }
     setModulatorVolume();
     setModulatorRatio();
     startAudioButtonComponent.addClickEventListener(() => {
         if (!audioEngine.isRunning) {
-            audioEngine.start(modulatorValue, () => {
+            audioEngine.start(modulatorProgram, () => {
                 startAudioButtonComponent.hide();
                 stopAudioButtonComponent.show();
             });
@@ -555,7 +591,7 @@ function setUp() {
      * 1秒をミリ秒で表した数
      */
     const oneSecond_ms = 1000;
-    let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFmSynthValue.samplingRate);
+    let intervalId = setInterval(moveFrameForward, oneSecond_ms / visualFmSynthProgram.samplingRate);
 }
 // 読み込みが終わってからコードを実行する
 window.addEventListener('load', () => {
