@@ -456,12 +456,22 @@ class AudioButtonComponent extends ButtonComponent {
         this.element.style.display = 'block';
     }
 }
+/**
+ * "FM-Synthesis Waveform Visualizer"のアプリを表すクラスです。
+ */
 class FmSynthesisWaveformVisualizerApp {
+    /**
+     * `FmSynthesisWaveformVisualizerApp`のインスタンスを生成します。
+     */
     constructor() {
+        // Program
         this.visualFmSynthProgram = new FmSynthProgram(120, 0.5, 1);
         this.modulatorProgram = new OperatorProgram(new OperatorVolumeParameter('modulatorVolume', 1), new OperatorRatioParameter('modulatorRatio', 1));
+        // Visual FM Synth
         this.visualFmSynth = new FmSynth(this.visualFmSynthProgram.samplingRate, this.visualFmSynthProgram.waveFrequency, this.visualFmSynthProgram.outputVolume);
+        // Audio Engine
         this.audioEngine = new AudioEngine();
+        // UI Components
         // `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
         // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
         const modulatorVolumeInputElement = document.querySelector('#modulator-volume-input');
@@ -499,9 +509,15 @@ class FmSynthesisWaveformVisualizerApp {
         this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
         this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
     }
+    /**
+     * `<html>`タグの`.no-js`クラスを`.js`に置き換え、JavaScriptが必要な要素の表示を切り替えます。
+     */
     applyJsStyle() {
         document.documentElement.classList.replace('no-js', 'js');
     }
+    /**
+     * アプリの動作を`visualFmSynth`のサンプリングレート1つ分進めます。
+     */
     moveFrameForward() {
         this.visualFmSynth.moveFrameForward();
         const modulatorOutputValue = this.visualFmSynth.modulator.output.value;
@@ -520,6 +536,9 @@ class FmSynthesisWaveformVisualizerApp {
             graphComponent.update();
         });
     }
+    /**
+     * ModulatorのVolumeをUIから取得し、`visualFmSynth`/`audioEngine`に適用させます。
+     */
     assignModulatorVolumeToSynth() {
         // UIから値を取得
         this.modulatorProgram.volumeParameter.uiValue = this.modulatorComponent.volumeInput.value;
@@ -530,6 +549,9 @@ class FmSynthesisWaveformVisualizerApp {
             this.audioEngine.setParameterValue(this.modulatorProgram.volumeParameter.name, this.modulatorProgram.volumeParameter.value);
         }
     }
+    /**
+     * ModulatorのRatioをUIから取得し、`visualFmSynth`/`audioEngine`に適用させます。
+     */
     assignModulatorRatioToSynth() {
         // UIから値を取得
         this.modulatorProgram.ratioParameter.uiValue = this.modulatorComponent.ratioInput.value;
@@ -540,6 +562,9 @@ class FmSynthesisWaveformVisualizerApp {
             this.audioEngine.setParameterValue(this.modulatorProgram.ratioParameter.name, this.modulatorProgram.ratioParameter.value);
         }
     }
+    /**
+     * `RangeInputComponent`にイベントリスナーを追加します。
+     */
     addEventListenerToRangeInputComponents() {
         this.modulatorComponent.volumeInput.addEventListener(() => {
             this.assignModulatorVolumeToSynth();
@@ -548,6 +573,9 @@ class FmSynthesisWaveformVisualizerApp {
             this.assignModulatorRatioToSynth();
         });
     }
+    /**
+     * `AudioButtonComponent`にイベントリスナーを追加します。
+     */
     addEventListenerToAudioButtons() {
         this.startAudioButtonComponent.addClickEventListener(() => {
             if (!this.audioEngine.isRunning) {
@@ -565,12 +593,18 @@ class FmSynthesisWaveformVisualizerApp {
             this.startAudioButtonComponent.show();
         });
     }
+    /**
+     * アプリが継続的に`moveFrameForward()`を呼び出すように設定します。
+     */
     setInterval() {
         const oneSecond_ms = 1000;
         let intervalId = setInterval(() => {
             this.moveFrameForward();
         }, oneSecond_ms / this.visualFmSynthProgram.samplingRate);
     }
+    /**
+     * アプリの動作を開始します。
+     */
     init() {
         this.applyJsStyle();
         this.assignModulatorVolumeToSynth();
