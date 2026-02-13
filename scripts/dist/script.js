@@ -154,9 +154,14 @@ class AudioEngine {
 }
 // -------- UI Components --------
 /**
+ * UIコンポーネントであることを表す基底クラスです。
+ */
+class UiComponent {
+}
+/**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
-class RangeInputComponent {
+class RangeInputComponent extends UiComponent {
     /**
      * `<input>`要素の値
      */
@@ -170,6 +175,7 @@ class RangeInputComponent {
      * @param initialValue `<input>`要素に設定する初期値
      */
     constructor(inputElement, valueLabelElement, initialValue) {
+        super();
         this.inputElement = inputElement;
         this.valueLabelElement = valueLabelElement;
         inputElement.value = initialValue.toString();
@@ -188,7 +194,7 @@ class RangeInputComponent {
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
-class GraphComponent {
+class GraphComponent extends UiComponent {
     /**
      * `<canvas>`要素の幅
      */
@@ -206,6 +212,7 @@ class GraphComponent {
      * @param element DOMで取得したCanvas要素
      */
     constructor(element) {
+        super();
         this.element = element;
         /**
          * グラフに描画する波形の上下の余白の大きさ
@@ -429,8 +436,9 @@ class WaveformGraphComponent extends GraphComponent {
         context.stroke();
     }
 }
-class ButtonComponent {
+class ButtonComponent extends UiComponent {
     constructor(element) {
+        super();
         this.element = element;
     }
     addClickEventListener(listener) {

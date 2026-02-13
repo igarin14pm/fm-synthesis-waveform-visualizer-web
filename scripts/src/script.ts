@@ -209,9 +209,14 @@ class AudioEngine {
 // -------- UI Components --------
 
 /**
+ * UIコンポーネントであることを表す基底クラスです。
+ */
+class UiComponent { }
+
+/**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
-class RangeInputComponent {
+class RangeInputComponent extends UiComponent {
 
   /**
    * `<input>`要素の値
@@ -231,6 +236,7 @@ class RangeInputComponent {
     public valueLabelElement: HTMLLabelElement,
     initialValue: number
   ) {
+    super();
     inputElement.value = initialValue.toString();
     valueLabelElement.textContent = initialValue.toString();
   }
@@ -250,7 +256,7 @@ class RangeInputComponent {
 /**
  * `<canvas>`要素にグラフを描画するための抽象クラスです
  */
-abstract class GraphComponent {
+abstract class GraphComponent extends UiComponent {
 
   /**
    * グラフに描画する波形の上下の余白の大きさ
@@ -275,7 +281,9 @@ abstract class GraphComponent {
    * Graphのインスタンスを生成します。
    * @param element DOMで取得したCanvas要素
    */
-  constructor(public element: HTMLCanvasElement) { }
+  constructor(public element: HTMLCanvasElement) {
+    super();
+  }
 
   /**
    * 波形の出力信号の値(-1.0〜1.0)をグラフのY座標に変換します
@@ -542,9 +550,11 @@ class WaveformGraphComponent extends GraphComponent {
 
 }
 
-class ButtonComponent {
+class ButtonComponent extends UiComponent {
 
-  constructor(public element: HTMLButtonElement) { }
+  constructor(public element: HTMLButtonElement) {
+    super();
+  }
 
   addClickEventListener(listener: () => void): void {
     this.element.addEventListener('click', listener);
