@@ -456,6 +456,76 @@ class AudioButtonComponent extends ButtonComponent {
         this.element.style.display = 'block';
     }
 }
+// -------- Casting HTML Elements --------
+/**
+ * 取得したHTML要素の型が正しくない時に発生するエラーです。
+ */
+class InvalidHtmlElementError extends TypeError {
+    /**
+     * `InvalidHtmlElementError`のインスタンスを生成します。
+     * @param message エラーメッセージ
+     */
+    constructor(message) {
+        super(message);
+        this.name = 'InvalidHtmlElementError';
+    }
+}
+/**
+ * `element`が`HTMLButtonElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLButtonElement`にキャストされた`element`
+ */
+function returnHTMLButtonElementOrError(element) {
+    if (element instanceof HTMLButtonElement) {
+        return element;
+    }
+    else {
+        throw new InvalidHtmlElementError(`${element} is not HTMLButtonElement`);
+    }
+}
+/**
+ * `element`が`HTMLCanvasElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLCanvasElement`にキャストされた`element`
+ */
+function returnHTMLCanvasElementOrError(element) {
+    if (element instanceof HTMLCanvasElement) {
+        return element;
+    }
+    else {
+        throw new InvalidHtmlElementError(`${element} is not HTMLCanvasElement`);
+    }
+}
+/**
+ * `element`が`HTMLInputElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLInputElement`にキャストされた`element`
+ */
+function returnHTMLInputElementOrError(element) {
+    if (element instanceof HTMLInputElement) {
+        return element;
+    }
+    else {
+        throw new InvalidHtmlElementError(`${element} is not HTMLInputElement`);
+    }
+}
+/**
+ * `element`が`HTMLLabelElement`である場合はその型にキャストして返し、
+ * そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element `document.querySelector()`で取得したHTML要素
+ * @returns `HTMLLabelElement`にキャストされた`element`
+ */
+function returnHTMLLabelElementOrError(element) {
+    if (element instanceof HTMLLabelElement) {
+        return element;
+    }
+    else {
+        throw new InvalidHtmlElementError(`${element} is not HTMLLabelElement`);
+    }
+}
 /**
  * "FM-Synthesis Waveform Visualizer"のアプリを表すクラスです。
  */
@@ -472,19 +542,13 @@ class FmSynthesisWaveformVisualizerApp {
         // Audio Engine
         this.audioEngine = new AudioEngine();
         // UI Components
-        // `index.html`上で`#modulator-volume-input`は`<input>`要素、`#modulator-volume-value-label`は`<label>`要素であり、
-        // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-        const modulatorVolumeInputElement = document.querySelector('#modulator-volume-input');
-        const modulatorVolumeValueLabelElement = document.querySelector('#modulator-volume-value-label');
-        // `index.html`上で`#modulator-ratio-input`は`<input>`要素、`#modulator-ratio-value-label`は`<label>`要素であり、
-        // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-        const modulatorRatioInputElement = document.querySelector('#modulator-ratio-input');
-        const modulatorRatioValueLabelElement = document.querySelector('#modulator-ratio-value-label');
-        // `index.html`上で`#modulator-phase-graph`・`#modulator-output-graph`、`#modulator-waveform-graph`はすべて`<canvas>`要素であり
-        // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-        const modulatorPhaseGraphElement = document.querySelector('#modulator-phase-graph');
-        const modulatorOutputGraphElement = document.querySelector('#modulator-output-graph');
-        const modulatorWaveformGraphElement = document.querySelector('#modulator-waveform-graph');
+        const modulatorVolumeInputElement = returnHTMLInputElementOrError(document.querySelector('#modulator-volume-input'));
+        const modulatorVolumeValueLabelElement = returnHTMLLabelElementOrError(document.querySelector('#modulator-volume-value-label'));
+        const modulatorRatioInputElement = returnHTMLInputElementOrError(document.querySelector('#modulator-ratio-input'));
+        const modulatorRatioValueLabelElement = returnHTMLLabelElementOrError(document.querySelector('#modulator-ratio-value-label'));
+        const modulatorPhaseGraphElement = returnHTMLCanvasElementOrError(document.querySelector('#modulator-phase-graph'));
+        const modulatorOutputGraphElement = returnHTMLCanvasElementOrError(document.querySelector('#modulator-output-graph'));
+        const modulatorWaveformGraphElement = returnHTMLCanvasElementOrError(document.querySelector('#modulator-waveform-graph'));
         this.modulatorComponent = {
             volumeInput: new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, this.modulatorProgram.volumeParameter.uiValue),
             ratioInput: new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, this.modulatorProgram.ratioParameter.uiValue),
@@ -492,20 +556,16 @@ class FmSynthesisWaveformVisualizerApp {
             outputGraph: new OutputGraphComponent(modulatorOutputGraphElement, this.visualFmSynth.modulator, true),
             waveformGraph: new WaveformGraphComponent(modulatorWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
         };
-        // `index.html`上で`#carrier-phase-graph`・`#carrier-output-graph`、`#carrier-waveform-graph`はすべて`<canvas>`要素であり
-        // 要素は動的に削除されず、これらのidが動的に要素に付与・削除されることはないため、この型キャストは成功する。
-        const carrierPhaseGraphElement = document.querySelector('#carrier-phase-graph');
-        const carrierOutputGraphElement = document.querySelector('#carrier-output-graph');
-        const carrierWaveformGraphElement = document.querySelector('#carrier-waveform-graph');
+        const carrierPhaseGraphElement = returnHTMLCanvasElementOrError(document.querySelector('#carrier-phase-graph'));
+        const carrierOutputGraphElement = returnHTMLCanvasElementOrError(document.querySelector('#carrier-output-graph'));
+        const carrierWaveformGraphElement = returnHTMLCanvasElementOrError(document.querySelector('#carrier-waveform-graph'));
         this.carrierComponent = {
             phaseGraph: new PhaseGraphComponent(carrierPhaseGraphElement, this.visualFmSynth.carrier),
             outputGraph: new OutputGraphComponent(carrierOutputGraphElement, this.visualFmSynth.carrier, false),
             waveformGraph: new WaveformGraphComponent(carrierWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
         };
-        // `index.html`内で`#start-audio-button`・`#stop-audio-button`は`<button>`要素であり、
-        // 要素は動的に削除されず、このidを動的に付与・削除されることもないため、この型キャストは成功する。
-        const startAudioButtonElement = document.querySelector('#start-audio-button');
-        const stopAudioButtonElement = document.querySelector('#stop-audio-button');
+        const startAudioButtonElement = returnHTMLButtonElementOrError(document.querySelector('#start-audio-button'));
+        const stopAudioButtonElement = returnHTMLButtonElementOrError(document.querySelector('#stop-audio-button'));
         this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
         this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
     }
@@ -616,6 +676,15 @@ class FmSynthesisWaveformVisualizerApp {
 }
 // -------- Script --------
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new FmSynthesisWaveformVisualizerApp();
-    app.init();
+    try {
+        const app = new FmSynthesisWaveformVisualizerApp();
+        app.init();
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            console.error(`${error.name}: ${error.message}`);
+        }
+        window.alert('アプリの内部でエラーが発生しました。\n' +
+            'アプリの設計上の不具合の可能性がありますので、開発者までお知らせください。');
+    }
 });
