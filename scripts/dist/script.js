@@ -536,16 +536,17 @@ function moveFrameForward() {
     });
 }
 /**
+ * `<html>`タグの`.no-js`を`.js`に置き換え、JavaScriptを使用する要素を表示させます。
+ */
+function applyJsStyles() {
+    document.documentElement.classList.replace('no-js', 'js');
+}
+/**
  * WebページのJavaScriptの動作を開始します。
  */
 function setUp() {
     // JavaScript無効時に非表示になっている要素を表示させる
-    // `index.html`内で`.div-working-with-javascript`が付与されている要素は全て`<div>`要素であり、
-    // これらの要素は動的に削除されず、classが動的に付与・削除されることがないため、この型キャストは成功する。
-    const divWorkingWithJavascript = document.querySelectorAll('.div-working-with-javascript');
-    for (let i = 0; i < divWorkingWithJavascript.length; i++) {
-        divWorkingWithJavascript[i].style.display = 'block';
-    }
+    applyJsStyles();
     /**
      * UIからモジュレーターのVolumeの値を取得し、FMSynthに適用します。
      */
