@@ -727,7 +727,7 @@ class FmSynthesisWaveformVisualizerApp {
 
   assignModulatorVolumeToSynth(): void {
     // UIから値を取得
-    this.modulatorProgram.volumeParameter.uiValue = this.modulatorComponent.volumeInput.value // modulatorVolumeInputComponent.value;
+    this.modulatorProgram.volumeParameter.uiValue = this.modulatorComponent.volumeInput.value;
 
     // グラフ用FMSynthに適用
     this.visualFmSynth.modulator.volume = this.modulatorProgram.volumeParameter.value;
@@ -743,7 +743,7 @@ class FmSynthesisWaveformVisualizerApp {
 
   assignModulatorRatioToSynth(): void {
     // UIから値を取得
-    this.modulatorProgram.ratioParameter.uiValue = this.modulatorComponent.ratioInput.value; // modulatorRatioInputComponent.value;
+    this.modulatorProgram.ratioParameter.uiValue = this.modulatorComponent.ratioInput.value;
 
     // グラフ用FMSynthに適用
     this.visualFmSynth.modulator.ratio = this.modulatorProgram.ratioParameter.value;
