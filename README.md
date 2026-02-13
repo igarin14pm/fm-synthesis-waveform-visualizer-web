@@ -2,7 +2,7 @@
 
 YAMAHA DX7に代表されるようなFMシンセサイザーがどのように波形を生成しているのかの学習に役立つWebアプリです。
 
-![FM-Synthesis Waveform Visualizer for Webのスクリーンショット](./images/readme-screenshot.png)
+![FM-Synthesis Waveform Visualizer for Webのスクリーンショット](./assets/images/readme-screenshot.png)
 
 ## GitHub Pages
 
