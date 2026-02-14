@@ -6,14 +6,14 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "esNext",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2020", "dom", "DOM.Iterable"], // "DOM.Iterable"を入れないと`AudioParamMap`のメンバが認識されない模様
     "sourceMap": false,
-    "outDir": "./scripts/dist",
-    "rootDir": "./scripts/src",
+    "outDir": "./assets/scripts/dist",
+    "rootDir": "./assets/scripts/src",
     "strict": true,
     "baseUrl": "src",
 
   },
-  "include": ["scripts/src/**/*"],
-  "exclude": ["scripts/dist"]
+  "include": ["assets/scripts/src/**/*"],
+  "exclude": ["assets/scripts/dist"]
 }
