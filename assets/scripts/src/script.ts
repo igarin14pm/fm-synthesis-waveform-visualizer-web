@@ -663,57 +663,41 @@ class InvalidHtmlElementError extends TypeError {
 }
 
 /**
- * `element`が`HTMLButtonElement`である場合はその型にキャストして返し、
- * そうでない場合は`InvalidHtmlElementError`を投げます。
- * @param element `document.querySelector()`で取得したHTML要素
- * @returns `HTMLButtonElement`にキャストされた`element`
+ * `element`の型が`HTMLButtonElement`かどうか判定し、そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element 判定する`document.querySelector()`で取得した要素
  */
-function returnHTMLButtonElementOrError(element: Element | null): HTMLButtonElement {
-  if (element instanceof HTMLButtonElement) {
-    return element;
-  } else {
+function assertIsHTMLButtonElement(element: Element | null): asserts element is HTMLButtonElement {
+  if (!(element instanceof HTMLButtonElement)) {
     throw new InvalidHtmlElementError(`${element} is not HTMLButtonElement`);
   }
 }
 
 /**
- * `element`が`HTMLCanvasElement`である場合はその型にキャストして返し、
- * そうでない場合は`InvalidHtmlElementError`を投げます。
- * @param element `document.querySelector()`で取得したHTML要素
- * @returns `HTMLCanvasElement`にキャストされた`element`
+ * `element`の型が`HTMLCanvasElement`かどうか判定し、そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element 判定する`document.querySelector()`で取得した要素
  */
-function returnHTMLCanvasElementOrError(element: Element | null): HTMLCanvasElement {
-  if (element instanceof HTMLCanvasElement) {
-    return element;
-  } else {
+function assertIsHTMLCanvasElement(element: Element | null): asserts element is HTMLCanvasElement {
+  if (!(element instanceof HTMLCanvasElement)) {
     throw new InvalidHtmlElementError(`${element} is not HTMLCanvasElement`);
   }
 }
 
 /**
- * `element`が`HTMLInputElement`である場合はその型にキャストして返し、
- * そうでない場合は`InvalidHtmlElementError`を投げます。
- * @param element `document.querySelector()`で取得したHTML要素
- * @returns `HTMLInputElement`にキャストされた`element`
+ * `element`の型が`HTMLInputElement`かどうか判定し、そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element 判定する`document.querySelector()`で取得した要素
  */
-function returnHTMLInputElementOrError(element: Element | null): HTMLInputElement {
-  if (element instanceof HTMLInputElement) {
-    return element;
-  } else {
+function assertIsHTMLInputElement(element: Element | null): asserts element is HTMLInputElement {
+  if (!(element instanceof HTMLInputElement)) {
     throw new InvalidHtmlElementError(`${element} is not HTMLInputElement`);
   }
 }
 
 /**
- * `element`が`HTMLLabelElement`である場合はその型にキャストして返し、
- * そうでない場合は`InvalidHtmlElementError`を投げます。
- * @param element `document.querySelector()`で取得したHTML要素
- * @returns `HTMLLabelElement`にキャストされた`element`
+ * `element`の型が`HTMLLabelElement`かどうか判定し、そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element 判定する`document.querySelector()`で取得した要素
  */
-function returnHTMLLabelElementOrError(element: Element | null): HTMLLabelElement {
-  if (element instanceof HTMLLabelElement) {
-    return element;
-  } else {
+function assertIsHTMLLabelElement(element: Element | null): asserts element is HTMLLabelElement {
+  if (!(element instanceof HTMLLabelElement)) {
     throw new InvalidHtmlElementError(`${element} is not HTMLLabelElement`);
   }
 }
@@ -841,27 +825,21 @@ class FmSynthesisWaveformVisualizerApp {
 
     // UI Components
 
-    const modulatorVolumeInputElement: HTMLInputElement = returnHTMLInputElementOrError(
-      document.querySelector('#modulator-volume-input')
-    );
-    const modulatorVolumeValueLabelElement = returnHTMLLabelElementOrError(
-      document.querySelector('#modulator-volume-value-label')
-    );
-    const modulatorRatioInputElement: HTMLInputElement = returnHTMLInputElementOrError(
-      document.querySelector('#modulator-ratio-input')
-    );
-    const modulatorRatioValueLabelElement: HTMLLabelElement = returnHTMLLabelElementOrError(
-      document.querySelector('#modulator-ratio-value-label')
-    );
-    const modulatorPhaseGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
-      document.querySelector('#modulator-phase-graph')
-    );
-    const modulatorOutputGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
-      document.querySelector('#modulator-output-graph')
-    );
-    const modulatorWaveformGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
-      document.querySelector('#modulator-waveform-graph')
-    );
+    const modulatorVolumeInputElement: Element | null = document.querySelector('#modulator-volume-input');
+    const modulatorVolumeValueLabelElement: Element | null = document.querySelector('#modulator-volume-value-label');
+    const modulatorRatioInputElement: Element | null = document.querySelector('#modulator-ratio-input');
+    const modulatorRatioValueLabelElement: Element | null = document.querySelector('#modulator-ratio-value-label');
+    const modulatorPhaseGraphElement: Element | null = document.querySelector('#modulator-phase-graph');
+    const modulatorOutputGraphElement: Element | null = document.querySelector('#modulator-output-graph');
+    const modulatorWaveformGraphElement: Element | null = document.querySelector('#modulator-waveform-graph');
+
+    assertIsHTMLInputElement(modulatorVolumeInputElement);
+    assertIsHTMLLabelElement(modulatorVolumeValueLabelElement);
+    assertIsHTMLInputElement(modulatorRatioInputElement);
+    assertIsHTMLLabelElement(modulatorRatioValueLabelElement);
+    assertIsHTMLCanvasElement(modulatorPhaseGraphElement);
+    assertIsHTMLCanvasElement(modulatorOutputGraphElement);
+    assertIsHTMLCanvasElement(modulatorWaveformGraphElement);
 
     this.modulatorComponent = {
       volumeInput: new RangeInputComponent(
@@ -889,16 +867,14 @@ class FmSynthesisWaveformVisualizerApp {
       )
     }
 
-    const carrierPhaseGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
-      document.querySelector('#carrier-phase-graph')
-    );
-    const carrierOutputGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
-      document.querySelector('#carrier-output-graph')
-    );
-    const carrierWaveformGraphElement: HTMLCanvasElement = returnHTMLCanvasElementOrError(
-      document.querySelector('#carrier-waveform-graph')
-    );
-    
+    const carrierPhaseGraphElement: Element | null = document.querySelector('#carrier-phase-graph');
+    const carrierOutputGraphElement: Element | null = document.querySelector('#carrier-output-graph');
+    const carrierWaveformGraphElement: Element | null = document.querySelector('#carrier-waveform-graph');
+
+    assertIsHTMLCanvasElement(carrierPhaseGraphElement);
+    assertIsHTMLCanvasElement(carrierOutputGraphElement);
+    assertIsHTMLCanvasElement(carrierWaveformGraphElement);
+
     this.carrierComponent = {
       phaseGraph: new PhaseGraphComponent(
         carrierPhaseGraphElement,
@@ -915,16 +891,15 @@ class FmSynthesisWaveformVisualizerApp {
       )
     }
 
-    const startAudioButtonElement: HTMLButtonElement = returnHTMLButtonElementOrError(
-      document.querySelector('#start-audio-button')
-    )
-    const stopAudioButtonElement: HTMLButtonElement = returnHTMLButtonElementOrError(
-      document.querySelector('#stop-audio-button')
-    )
+    const startAudioButtonElement: Element | null = document.querySelector('#start-audio-button');
+    const stopAudioButtonElement: Element | null = document.querySelector('#stop-audio-button');
+
+    assertIsHTMLButtonElement(startAudioButtonElement);
+    assertIsHTMLButtonElement(stopAudioButtonElement);
 
     this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
     this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
-    
+
   }
 
   /**
