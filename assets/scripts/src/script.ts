@@ -480,17 +480,12 @@ class OutputGraphComponent extends GraphComponent {
   }
 
   /**
-   * グラフを描画します。
+   * 変調を掛ける量を表す長方形を描画します。
    */
-  override draw(): void {
-    const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
-
-    const outputLineStartX = 0;
-    const outputLineEndX: number = this.width;
-    const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
-
-    // 変調を掛ける量を表す長方形を描画
-    if (this.showsModulatingAmount) {
+  private drawModulatingAmount(): void {
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
       const amountRectX: number = this.width / 3;
       const amountRectWidth: number = this.width / 3;
 
@@ -507,15 +502,34 @@ class OutputGraphComponent extends GraphComponent {
       context.fillStyle = '#00cdb944';
       context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
     }
+  }
 
-    // 出力を表す線分を描画
-    context.strokeStyle = '#888888';
-    context.lineWidth = 4;
-    context.beginPath();
-    context.moveTo(outputLineStartX, outputLineY);
-    context.lineTo(outputLineEndX, outputLineY);
-    context.stroke();
+  /**
+   * 出力を表す線分を描画します。
+   */
+  private drawOutputLine(): void {
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      const outputLineStartX = 0;
+      const outputLineEndX: number = this.width;
+      const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
+      context.strokeStyle = '#888888';
+      context.lineWidth = 4;
+      context.beginPath();
+      context.moveTo(outputLineStartX, outputLineY);
+      context.lineTo(outputLineEndX, outputLineY);
+      context.stroke();
+    }
+  }
 
+  /**
+   * グラフを描画します。
+   */
+  override draw(): void {
+    if (this.showsModulatingAmount) {
+      this.drawModulatingAmount();
+    }
+    this.drawOutputLine();
   }
 
 }
