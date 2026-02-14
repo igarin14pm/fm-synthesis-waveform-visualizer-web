@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Igarin
 // This software is released under the MIT License.
 // https://opensource.org
-import { FmSynth } from './fm-synth.js';
+import { FmSynth } from './modules/fm-synth.js';
 // -------- Program Class --------
 /**
  * プログラムのパラメータを表す抽象クラスです
@@ -136,7 +136,7 @@ class AudioEngine {
      */
     async start(modulatorProgram, callback) {
         this.audioContext = new AudioContext();
-        await this.audioContext.audioWorklet.addModule('./scripts/dist/fm-synth-audio-processor.js');
+        await this.audioContext.audioWorklet.addModule('./assets/scripts/dist/modules/fm-synth-audio-processor.js');
         this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'fm-synth-audio-processor');
         this.setParameterValue(modulatorProgram.volumeParameter.name, modulatorProgram.volumeParameter.value);
         this.setParameterValue(modulatorProgram.ratioParameter.name, modulatorProgram.ratioParameter.value);
