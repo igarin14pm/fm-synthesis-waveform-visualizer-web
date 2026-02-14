@@ -5,7 +5,7 @@
 /**
  * `AudioWorkletNode`上でカスタム`AudioParam`を作成するときに使用します
  */
-interface AudioParamDescriptor {
+export interface AudioParamDescriptor {
 
   /**
    * `AudioParam`の名前を表す文字列
@@ -36,7 +36,7 @@ interface AudioParamDescriptor {
 /**
  * `AudioWorkletNode`が用いる独自の音声処理コードを表します
  */
-declare class AudioWorkletProcessor {
+export declare class AudioWorkletProcessor {
 
   /**
    * `AudioWorkletNode`との双方向通信に用いる`MessagePort`を返します
@@ -62,7 +62,7 @@ declare class AudioWorkletProcessor {
  * @param name 登録する名前を表す文字列
  * @param processorCtor 登録する`AudioWorkletProcessor`から派生したクラスのコンストラクタ
  */
-declare function registerProcessor(
+export declare function registerProcessor(
   name: string,
   processorCtor: new (options?: any) => AudioWorkletProcessor
 ): void;
@@ -70,14 +70,14 @@ declare function registerProcessor(
 /**
  * サンプルレートの値
  */
-declare var sampleRate: number;
+export declare var sampleRate: number;
 
 /**
  * 処理中の音声ブロックの時刻を表す数値
  */
-declare var currentTime: number;
+export declare var currentTime: number;
 
 /**
  * 複数の`AudioParam`のセット
  */
-interface AudioParamMap extends ReadonlyMap<string, AudioParam> { }
+export interface AudioParamMap extends ReadonlyMap<string, AudioParam> { }
