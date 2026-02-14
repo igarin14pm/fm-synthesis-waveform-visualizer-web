@@ -457,35 +457,50 @@ class WaveformGraphComponent extends GraphComponent {
         this.values.splice(0, 0, value);
     }
     /**
+     * 波形を描画します。
+     */
+    drawWaveform() {
+        const context = this.element.getContext('2d');
+        if (context != null) {
+            context.strokeStyle = '#eeeeee';
+            context.lineWidth = 4;
+            context.beginPath();
+            for (const [index, value] of this.values.entries()) {
+                const waveX = (index / (this.values.length - 1)) * this.width;
+                const waveY = this.convertToCoordinateY(value);
+                if (index === 0) {
+                    context.moveTo(waveX, waveY);
+                }
+                else {
+                    context.lineTo(waveX, waveY);
+                }
+            }
+            context.stroke();
+        }
+    }
+    /**
+     * 左端に線分を描画します。
+     */
+    drawBorderLeft() {
+        const context = this.element.getContext('2d');
+        if (context != null) {
+            const borderLineX = 1;
+            const borderLineStartY = 0;
+            const borderLineEndY = this.height;
+            context.strokeStyle = '#888888';
+            context.lineWidth = 4;
+            context.beginPath();
+            context.moveTo(borderLineX, borderLineStartY);
+            context.lineTo(borderLineX, borderLineEndY);
+            context.stroke();
+        }
+    }
+    /**
      * グラフを描画します。
      */
     draw() {
-        let context = this.element.getContext('2d');
-        // 波形を描画
-        context.strokeStyle = '#eeeeee';
-        context.lineWidth = 4;
-        context.beginPath();
-        for (const [index, value] of this.values.entries()) {
-            const waveX = (index / (this.values.length - 1)) * this.width;
-            const waveY = this.convertToCoordinateY(value);
-            if (index === 0) {
-                context.moveTo(waveX, waveY);
-            }
-            else {
-                context.lineTo(waveX, waveY);
-            }
-        }
-        context.stroke();
-        // 左端のボーダーの線分を描画
-        const borderLineX = 1;
-        const borderLineStartY = 0;
-        const borderLineEndY = this.height;
-        context.strokeStyle = '#888888';
-        context.lineWidth = 4;
-        context.beginPath();
-        context.moveTo(borderLineX, borderLineStartY);
-        context.lineTo(borderLineX, borderLineEndY);
-        context.stroke();
+        this.drawWaveform();
+        this.drawBorderLeft();
     }
 }
 class ButtonComponent extends UiComponent {
