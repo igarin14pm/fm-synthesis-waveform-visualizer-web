@@ -179,7 +179,7 @@ class AudioEngine {
    */
   async start(modulatorProgram: OperatorProgram, callback: () => void) {
     this.audioContext = new AudioContext();
-    await this.audioContext.audioWorklet.addModule('./assets/scripts/dist/fm-synth-audio-processor.js');
+    await this.audioContext.audioWorklet.addModule('./assets/scripts/dist/modules/fm-synth-audio-processor.js');
     this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'fm-synth-audio-processor');
 
     this.setParameterValue(

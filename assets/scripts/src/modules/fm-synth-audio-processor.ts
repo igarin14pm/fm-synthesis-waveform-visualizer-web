@@ -3,12 +3,6 @@
 // https://opensource.org
 
 import { FmSynth } from './fm-synth.js';
-import {
-  AudioParamDescriptor,
-  AudioWorkletProcessor,
-  registerProcessor,
-  sampleRate
-} from '../types/audio-worklet.js';
 
 class FmSynthAudioProcessor extends AudioWorkletProcessor {
 
