@@ -384,15 +384,12 @@ class OutputGraphComponent extends GraphComponent {
         this.showsModulatingAmount = showsModulatingAmount;
     }
     /**
-     * グラフを描画します。
+     * 変調を掛ける量を表す長方形を描画します。
      */
-    draw() {
+    drawModulatingAmount() {
         const context = this.element.getContext('2d');
-        const outputLineStartX = 0;
-        const outputLineEndX = this.width;
-        const outputLineY = this.convertToCoordinateY(this.operator.output.value);
-        // 変調を掛ける量を表す長方形を描画
-        if (this.showsModulatingAmount) {
+        if (context != null) {
+            const outputLineY = this.convertToCoordinateY(this.operator.output.value);
             const amountRectX = this.width / 3;
             const amountRectWidth = this.width / 3;
             // 枠線を描画
@@ -407,13 +404,32 @@ class OutputGraphComponent extends GraphComponent {
             context.fillStyle = '#00cdb944';
             context.fillRect(amountRectX, amountRectFillY, amountRectWidth, amountRectFillHeight);
         }
-        // 出力を表す線分を描画
-        context.strokeStyle = '#888888';
-        context.lineWidth = 4;
-        context.beginPath();
-        context.moveTo(outputLineStartX, outputLineY);
-        context.lineTo(outputLineEndX, outputLineY);
-        context.stroke();
+    }
+    /**
+     * 出力を表す線分を描画します。
+     */
+    drawOutputLine() {
+        const context = this.element.getContext('2d');
+        if (context != null) {
+            const outputLineStartX = 0;
+            const outputLineEndX = this.width;
+            const outputLineY = this.convertToCoordinateY(this.operator.output.value);
+            context.strokeStyle = '#888888';
+            context.lineWidth = 4;
+            context.beginPath();
+            context.moveTo(outputLineStartX, outputLineY);
+            context.lineTo(outputLineEndX, outputLineY);
+            context.stroke();
+        }
+    }
+    /**
+     * グラフを描画します。
+     */
+    draw() {
+        if (this.showsModulatingAmount) {
+            this.drawModulatingAmount();
+        }
+        this.drawOutputLine();
     }
 }
 /**
