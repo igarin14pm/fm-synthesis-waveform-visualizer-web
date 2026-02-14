@@ -336,88 +336,125 @@ class PhaseGraphComponent extends GraphComponent {
   }
 
   /**
+   * モジュレーション量を描画します。
+   */
+  private drawModulatedAmount(): void {
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      context.fillStyle = '#00cdb944';
+
+      const phaseWithoutModX: number = this.width * this.operator.phase.valuesWithoutMod[0];
+      const modRectY = 0;
+      const modRectWidth: number = this.width * this.operator.phase.modulationValue;
+      const modRectHeight: number = this.height;
+      if (phaseWithoutModX + modRectWidth > this.width) { // 長方形がCanvas要素から右側にはみ出る場合
+
+        // 右端の長方形を描画
+        context.fillRect(phaseWithoutModX, modRectY, this.width - phaseWithoutModX, this.height);
+
+        // 左端の長方形を描画
+        context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.width, modRectHeight);
+
+      } else if (phaseWithoutModX + modRectWidth < 0) { // 図形がCanvas要素から左側にはみ出る場合
+
+        // 左端の長方形を描画
+        context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
+
+        // 右端の長方形を描画
+        context.fillRect(this.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
+
+      } else { // 長方形がCanvas要素からはみ出ない場合
+        context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
+      }
+    }
+  }
+
+  /**
+   * サイン波を描画します。
+   */
+  private drawSineWave(): void {
+    const sineWaveValueLength = 120 + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      context.strokeStyle = '#eeeeee';
+      context.lineWidth = 4;
+      context.beginPath();
+      for (let i = 0; i < sineWaveValueLength; i++) {
+        const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
+
+        const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
+        const sineWaveY: number = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
+
+        if (i === 0) {
+          context.moveTo(sineWaveX, sineWaveY);
+        } else {
+          context.lineTo(sineWaveX, sineWaveY);
+        }
+      }
+      context.stroke();
+    }
+  }
+
+  /**
+   * 位相を表す線分を描画します。
+   */
+  private drawPhaseLine(): void {
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      context.strokeStyle = '#00cdb9';
+      context.lineWidth = 8;
+      context.beginPath();
+      const phaseLineX: number = this.width * this.operator.phase.output.value;
+      const phaseLineStartY = 0;
+      const phaseLineEndY: number = this.height;
+      context.moveTo(phaseLineX, phaseLineStartY);
+      context.lineTo(phaseLineX, phaseLineEndY);
+      context.stroke();
+    }
+  }
+
+  /**
+   * 出力を表す線分を描画します。
+   */
+  private drawOutputLine(): void {
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      context.strokeStyle = '#888888';
+      context.lineWidth = 4;
+      context.beginPath();
+      const outputLineStartX: number = this.width * this.operator.phase.output.value;
+      const outputLineEndX: number = this.width;
+      const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
+      context.moveTo(outputLineStartX, outputLineY);
+      context.lineTo(outputLineEndX, outputLineY);
+      context.stroke();
+    }
+  }
+
+  /**
+   * サイン波と位相を表す線分の交点に円を描画します。
+   */
+  private drawValueCircle(): void {
+    const context: CanvasRenderingContext2D | null = this.element.getContext('2d');
+    if (context != null) {
+      context.fillStyle = '#00cdb9';
+      const valueCircleX: number = this.width * this.operator.phase.output.value; // phaseLineX;
+      const valueCircleY: number = this.convertToCoordinateY(this.operator.output.value); // outputLineY;
+      const valueCircleRadius = 12.5;
+      context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
+      context.fill();
+    }
+  }
+
+  /**
    * グラフを描画します。
    */
   override draw(): void {
-    const sineWaveValueLength = 120 + 1; // sin(x) = 0 の時の値が綺麗に描画されるように+1する(植木算の考えで)
-    const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
-
-    // モジュレーション量を描画
-    context.fillStyle = '#00cdb944';
-    const phaseWithoutModX: number = this.width * this.operator.phase.valuesWithoutMod[0];
-    const modRectY = 0;
-    const modRectWidth: number = this.width * this.operator.phase.modulationValue;
-    const modRectHeight: number = this.height;
-    if (phaseWithoutModX + modRectWidth > this.width) {
-      // 長方形がCanvas要素から右側にはみ出る場合
-
-      // 右端の長方形を描画
-      context.fillRect(phaseWithoutModX, modRectY, this.width - phaseWithoutModX, this.height);
-
-      // 左端の長方形を描画
-      context.fillRect(0, modRectY, phaseWithoutModX + modRectWidth - this.width, modRectHeight);
-      
-    } else if (phaseWithoutModX + modRectWidth < 0) {
-      // 図形がCanvas要素から左側にはみ出る場合
-
-      // 左端の長方形を描画
-      context.fillRect(phaseWithoutModX, modRectY, -1 * phaseWithoutModX, modRectHeight);
-
-      // 右端の長方形を描画
-      context.fillRect(this.width, modRectY, phaseWithoutModX + modRectWidth, modRectHeight);
-
-    } else {
-      // 長方形がCanvas要素からはみ出ない場合
-      context.fillRect(phaseWithoutModX, modRectY, modRectWidth, modRectHeight);
-    }
-
-    // サイン波を描画
-    context.strokeStyle = '#eeeeee';
-    context.lineWidth = 4;
-    context.beginPath();
-    for (let i = 0; i < sineWaveValueLength; i++) {
-      const sineWaveValue: number = Math.sin(2 * Math.PI * i / (sineWaveValueLength - 1));
-
-      const sineWaveX: number = this.width * i / (sineWaveValueLength - 1);
-      const sineWaveY: number = this.convertToCoordinateY(this.operator.volume * sineWaveValue);
-
-      if (i === 0) {
-        context.moveTo(sineWaveX, sineWaveY);
-      } else {
-        context.lineTo(sineWaveX, sineWaveY);
-      }
-    }
-    context.stroke();
-
-    // 位相を表す線分を描画
-    context.strokeStyle = '#00cdb9';
-    context.lineWidth = 8;
-    context.beginPath();
-    const phaseLineX: number = this.width * this.operator.phase.output.value;
-    const phaseLineStartY = 0;
-    const phaseLineEndY: number = this.height;
-    context.moveTo(phaseLineX, phaseLineStartY);
-    context.lineTo(phaseLineX, phaseLineEndY);
-    context.stroke();
-
-    // 値の出力を表す線分を描画
-    context.strokeStyle = '#888888';
-    context.lineWidth = 4;
-    context.beginPath();
-    const outputLineStartX: number = phaseLineX;
-    const outputLineEndX: number = this.width;
-    const outputLineY: number = this.convertToCoordinateY(this.operator.output.value);
-    context.moveTo(outputLineStartX, outputLineY);
-    context.lineTo(outputLineEndX, outputLineY);
-    context.stroke();
-
-    // 値を表す円を描画
-    context.fillStyle = '#00cdb9';
-    const valueCircleX: number = phaseLineX;
-    const valueCircleY: number = outputLineY;
-    const valueCircleRadius = 12.5;
-    context.arc(valueCircleX, valueCircleY, valueCircleRadius, 0, 2 * Math.PI);
-    context.fill();
+    this.drawModulatedAmount();
+    this.drawSineWave();
+    this.drawPhaseLine();
+    this.drawOutputLine();
+    this.drawValueCircle();
   }
 
 }
