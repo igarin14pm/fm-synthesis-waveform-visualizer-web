@@ -526,3 +526,51 @@ test(`Operator.moveFrameForward()`, () => {
   expect(operator1.output.value).toBe(operator1.process());
   expect(operator2.output.value).toBe(operator2.process());
 });
+
+// -------- FmSynth --------
+
+test('`FmSynth`コンストラクタ', () => {
+  const fmSynth1 = new fmSynthCode.FmSynth(48000, 440, 0.25);
+  const fmSynth2 = new fmSynthCode.FmSynth(120, 0.5, 1);
+
+  expect(fmSynth1.samplingRate).toBe(48000);
+  expect(fmSynth1.masterPhase.samplingRate).toBe(48000);
+  expect(fmSynth1.waveFrequency).toBe(440);
+  expect(fmSynth1.masterPhase.waveFrequency).toBe(440);
+  expect(fmSynth1.outputVolume).toBe(0.25);
+  expect(fmSynth2.samplingRate).toBe(120);
+  expect(fmSynth2.masterPhase.samplingRate).toBe(120);
+  expect(fmSynth2.waveFrequency).toBe(0.5);
+  expect(fmSynth2.masterPhase.waveFrequency).toBe(0.5);
+  expect(fmSynth2.outputVolume).toBe(1);
+});
+
+test('`FmSynth.process()`', () => {
+  const fmSynth1 = new fmSynthCode.FmSynth(48000, 440, 0.25);
+  const fmSynth2 = new fmSynthCode.FmSynth(120, 0.5, 1);
+
+  fmSynth1.moveFrameForward();
+  fmSynth2.moveFrameForward();
+
+  expect(fmSynth1.process()).toBeCloseTo(0.25 * Math.sin(2 * Math.PI * ((440 / 48000) + Math.sin(2 * Math.PI * (440 / 48000) * 0.25))));
+  expect(fmSynth2.process()).toBeCloseTo(1 * Math.sin(2 * Math.PI * ((0.5 / 120) + Math.sin(2 * Math.PI * (0.5 / 120) * 0.25))))
+});
+
+test('`FmSynth.moveFrameForward()`', () => {
+  const fmSynth = new fmSynthCode.FmSynth(48000, 440, 0.25);
+
+  expect(fmSynth.masterPhase.output.value).toBe(0);
+  expect(fmSynth.modulator.output.value).toBe(0);
+  expect(fmSynth.carrier.output.value).toBe(0);
+  expect(fmSynth.output.value).toBe(0);
+
+  fmSynth.moveFrameForward();
+
+  expect(fmSynth.masterPhase.output.value).not.toBe(0);
+  expect(fmSynth.modulator.output.value).not.toBe(0);
+  expect(fmSynth.carrier.output.value).not.toBe(0);
+  expect(fmSynth.masterPhase.output.value).toBeCloseTo(440 / 48000);
+  expect(fmSynth.modulator.output.value).toBe(fmSynth.modulator.process());
+  expect(fmSynth.carrier.output.value).toBe(fmSynth.carrier.process());
+  expect(fmSynth.output.value).toBe(fmSynth.process());
+});
