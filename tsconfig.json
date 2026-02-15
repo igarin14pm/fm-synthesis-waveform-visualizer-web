@@ -12,7 +12,7 @@
     "rootDir": "./assets/scripts/src",
     "strict": true,
     "baseUrl": "src",
-
+    "skipLibCheck": true
   },
   "include": ["assets/scripts/src/**/*"],
   "exclude": ["assets/scripts/dist"]
