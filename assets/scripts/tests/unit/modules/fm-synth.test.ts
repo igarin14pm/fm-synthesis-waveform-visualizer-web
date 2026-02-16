@@ -557,20 +557,33 @@ test('`FmSynth.process()`', () => {
 });
 
 test('`FmSynth.moveFrameForward()`', () => {
-  const fmSynth = new fmSynthCode.FmSynth(48000, 440, 0.25);
+  const fmSynth1 = new fmSynthCode.FmSynth(48000, 440, 0.25);
+  const fmSynth2 = new fmSynthCode.FmSynth(120, 0.5, 1);
 
-  expect(fmSynth.masterPhase.output.value).toBe(0);
-  expect(fmSynth.modulator.output.value).toBe(0);
-  expect(fmSynth.carrier.output.value).toBe(0);
-  expect(fmSynth.output.value).toBe(0);
+  expect(fmSynth1.masterPhase.output.value).toBe(0);
+  expect(fmSynth1.modulator.output.value).toBe(0);
+  expect(fmSynth1.carrier.output.value).toBe(0);
+  expect(fmSynth1.output.value).toBe(0);
+  expect(fmSynth2.masterPhase.output.value).toBe(0);
+  expect(fmSynth2.modulator.output.value).toBe(0);
+  expect(fmSynth2.carrier.output.value).toBe(0);
+  expect(fmSynth2.output.value).toBe(0);
 
-  fmSynth.moveFrameForward();
+  fmSynth1.moveFrameForward();
+  fmSynth2.moveFrameForward();
 
-  expect(fmSynth.masterPhase.output.value).not.toBe(0);
-  expect(fmSynth.modulator.output.value).not.toBe(0);
-  expect(fmSynth.carrier.output.value).not.toBe(0);
-  expect(fmSynth.masterPhase.output.value).toBeCloseTo(440 / 48000);
-  expect(fmSynth.modulator.output.value).toBe(fmSynth.modulator.process());
-  expect(fmSynth.carrier.output.value).toBe(fmSynth.carrier.process());
-  expect(fmSynth.output.value).toBe(fmSynth.process());
+  expect(fmSynth1.masterPhase.output.value).not.toBe(0);
+  expect(fmSynth1.modulator.output.value).not.toBe(0);
+  expect(fmSynth1.carrier.output.value).not.toBe(0);
+  expect(fmSynth1.masterPhase.output.value).toBeCloseTo(440 / 48000);
+  expect(fmSynth1.modulator.output.value).toBe(fmSynth1.modulator.process());
+  expect(fmSynth1.carrier.output.value).toBe(fmSynth1.carrier.process());
+  expect(fmSynth1.output.value).toBe(fmSynth1.process());
+  expect(fmSynth2.masterPhase.output.value).not.toBe(0);
+  expect(fmSynth2.modulator.output.value).not.toBe(0);
+  expect(fmSynth2.carrier.output.value).not.toBe(0);
+  expect(fmSynth2.masterPhase.output.value).toBeCloseTo(0.5 / 120);
+  expect(fmSynth2.modulator.output.value).toBe(fmSynth2.modulator.process());
+  expect(fmSynth2.carrier.output.value).toBe(fmSynth2.carrier.process());
+  expect(fmSynth2.output.value).toBe(fmSynth2.process());
 });
