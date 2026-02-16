@@ -34,3 +34,34 @@ test('`OperatorVolumeParameter.uiValue`: セッタ', () => {
   expect(operatorVolumeParameter1.value).toBe(0.1);
   expect(operatorVolumeParameter2.value).toBe(0.2);
 });
+
+// -------- `OperatorRatioParameter` --------
+
+test('`OperatorRatioParameter`コンストラクタ', () => {
+  const operatorRatioParameter1 = new programModule.OperatorRatioParameter('modulator-ratio', 1);
+  const operatorRatioParameter2 = new programModule.OperatorRatioParameter('carrier-ratio', 2);
+
+  expect(operatorRatioParameter1.name).toBe('modulator-ratio');
+  expect(operatorRatioParameter1.value).toBe(1);
+  expect(operatorRatioParameter2.name).toBe('carrier-ratio');
+  expect(operatorRatioParameter2.value).toBe(2);
+});
+
+test('`OperatorRatioParameter.uiValue`: ゲッタ', () => {
+  const operatorRatioParameter1 = new programModule.OperatorRatioParameter('modulator-ratio', 3);
+  const operatorRatioParameter2 = new programModule.OperatorRatioParameter('carrier-ratio', 4);
+
+  expect(operatorRatioParameter1.uiValue).toBe(3);
+  expect(operatorRatioParameter2.uiValue).toBe(4);
+});
+
+test('`OperatorRatioParameter.uiValue`: セッタ', () => {
+  const operatorRatioParameter1 = new programModule.OperatorRatioParameter('modulator-ratio', 5);
+  const operatorRatioParameter2 = new programModule.OperatorRatioParameter('carrier-ratio', 6);
+
+  operatorRatioParameter1.uiValue = 7;
+  operatorRatioParameter2.uiValue = 8;
+
+  expect(operatorRatioParameter1.value).toBe(7);
+  expect(operatorRatioParameter2.value).toBe(8);
+});
