@@ -6,6 +6,12 @@ import * as assertionModule from '../../../src/modules/assertion';
 import * as fmSynthModule from '../../../src/modules/fm-synth';
 import * as uiComponentModule from '../../../src/modules/ui-component';
 
+function getHTMLButtonElementByIdOrThrow(id: string): HTMLButtonElement {
+  const element: Element | null = document.querySelector(`#${id}`);
+  assertionModule.assertIsHTMLButtonElement(element);
+  return element;
+}
+
 function getHTMLCanvasElementByIdOrThrow(id: string): HTMLCanvasElement {
   const element: Element | null = document.querySelector(`#${id}`);
   assertionModule.assertIsHTMLCanvasElement(element);
@@ -328,3 +334,75 @@ test('`WaveformGraphElement.addValue`', () => {
 // 実装未定: `WaveformGraphElement.drawBorderLeft()`
 
 // 実装未定: `WaveformGraphElement.draw()`
+
+// -------- `ButtonComponent` --------
+
+const buttonComponentInnerHtml = 
+  '<button id="button1">ボタン1</button>' +
+  '<button id="button2">ボタン2</button>';
+
+test('`ButtonComponent`コンストラクタ', () => {
+  document.body.innerHTML = buttonComponentInnerHtml;
+  const buttonElement1: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('button1');
+  const buttonElement2: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('button2');
+
+  const buttonComponent1 = new uiComponentModule.ButtonComponent(buttonElement1);
+  const buttonComponent2 = new uiComponentModule.ButtonComponent(buttonElement2);
+
+  expect(buttonComponent1.element).toBe(buttonElement1);
+  expect(buttonComponent2.element).toBe(buttonElement2);
+});
+
+// 実装未定: `ButtonComponent.addClickEventListener`
+
+// -------- `AudioButtonComponent` --------
+
+const audioButtonComponentInnerHtml =
+  '<button id="start-audio-button" class="green-button">音声を再生する</button>' +
+  '<button id="stop-audio-button" class="red-button">音声を停止する</button>'
+
+test('`AudioButtonComponent`コンストラクタ', () => {
+  document.body.innerHTML = audioButtonComponentInnerHtml;
+  const startAudioButtonElement: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('start-audio-button');
+  const stopAudioButtonElement: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('stop-audio-button');
+
+  const startAudioButtonComponent = new uiComponentModule.AudioButtonComponent(startAudioButtonElement);
+  const stopAudioButtonComponent = new uiComponentModule.AudioButtonComponent(stopAudioButtonElement);
+
+  expect(startAudioButtonComponent.element).toBe(startAudioButtonElement);
+  expect(stopAudioButtonComponent.element).toBe(stopAudioButtonElement);
+});
+
+test('`AudioButtonComponent.hide()`', () => {
+  const startAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
+    getHTMLButtonElementByIdOrThrow('start-audio-button')
+  );
+  const stopAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
+    getHTMLButtonElementByIdOrThrow('stop-audio-button')
+  );
+  startAudioButtonComponent.element.style.display = 'block';
+  stopAudioButtonComponent.element.style.display = 'block';
+
+  startAudioButtonComponent.hide();
+  stopAudioButtonComponent.hide();
+
+  expect(startAudioButtonComponent.element.style.display).toBe('none');
+  expect(stopAudioButtonComponent.element.style.display).toBe('none');
+});
+
+test('`AudioButtonComponent.show()`', () => {
+  const startAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
+    getHTMLButtonElementByIdOrThrow('start-audio-button')
+  );
+  const stopAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
+    getHTMLButtonElementByIdOrThrow('stop-audio-button')
+  );
+  startAudioButtonComponent.element.style.display = 'none';
+  stopAudioButtonComponent.element.style.display = 'none';
+
+  startAudioButtonComponent.show();
+  stopAudioButtonComponent.show();
+
+  expect(startAudioButtonComponent.element.style.display).toBe('block');
+  expect(stopAudioButtonComponent.element.style.display).toBe('block');
+});
