@@ -215,3 +215,116 @@ test('`PhaseGraphComponent`コンストラクタ', () => {
 // 実装未定: `PhaseGraphComponent.drawValueCircle()`
 
 // 実装未定: `PhaseGraphComponent.draw()`
+
+// -------- `OutputGraphComponent` --------
+
+const outputGraphComponentInnerHtml = 
+  '<div class="graph">' +
+  '  <canvas id="modulator-output-graph" width="100" height="340"></canvas>' +
+  '</div>' +
+  '<div class="graph">' +
+  '  <canvas id="carrier-output-graph" width="50" height="170"></canvas>' +
+  '</div>';
+
+test('`OutputGraphComponent`コンストラクタ', () => {
+  document.body.innerHTML = outputGraphComponentInnerHtml;
+  const modulatorOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-output-graph');
+  const modulator = new fmSynthModule.Operator(1, 2, new fmSynthModule.Signal(0), null);
+  const carrierOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-output-graph');
+  const carrier = new fmSynthModule.Operator(0.25, 1, new fmSynthModule.Signal(0), modulator.output);
+
+  const modulatorOutputGraphComponent = new uiComponentModule.OutputGraphComponent(
+    modulatorOutputGraphElement,
+    modulator,
+    true
+  );
+  const carrierOutputGraphComponent = new uiComponentModule.OutputGraphComponent(
+    carrierOutputGraphElement,
+    carrier,
+    false
+  );
+
+  expect(modulatorOutputGraphComponent.element).toBe(modulatorOutputGraphElement);
+  expect(modulatorOutputGraphComponent.operator).toBe(modulator);
+  expect(modulatorOutputGraphComponent.showsModulatingAmount).toBe(true);
+  expect(carrierOutputGraphComponent.element).toBe(carrierOutputGraphElement);
+  expect(carrierOutputGraphComponent.operator).toBe(carrier);
+  expect(carrierOutputGraphComponent.showsModulatingAmount).toBe(false);
+});
+
+// 実装未定: `OutputGraphComponent.drawModulatingAmount()`
+
+// 実装未定: `OutputGraphComponent.drawOutputLine()`
+
+// 実装未定: `OutputGraphComponent.draw()`
+
+// -------- `WaveformGraphComponent` --------
+
+const waveformGraphComponentInnerHtml =
+  '<div class="graph">' +
+  '  <canvas id="modulator-waveform-graph" width="1032" height="340"></canvas>' +
+  '</div>' +
+  '<div class="graph">' +
+  '  <canvas id="carrier-waveform-graph" width="516" height="170"></canvas>' +
+  '</div>';
+
+test('`WaveformGraphComponent`コンストラクタ', () => {
+  document.body.innerHTML = waveformGraphComponentInnerHtml;
+  const modulatorWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-waveform-graph');
+  const carrierWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-waveform-graph');
+
+  const modulatorWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+    modulatorWaveformGraphElement,
+    120
+  );
+  const carrierWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+    carrierWaveformGraphElement,
+    240
+  );
+
+  expect(modulatorWaveformGraphComponent.element).toBe(modulatorWaveformGraphElement);
+  expect(modulatorWaveformGraphComponent.values).toHaveLength(481);
+  expect(modulatorWaveformGraphComponent.values.every((value) => value === 0)).toBe(true);
+  expect(carrierWaveformGraphComponent.element).toBe(carrierWaveformGraphElement);
+  expect(carrierWaveformGraphComponent.values).toHaveLength(961);
+  expect(carrierWaveformGraphComponent.values.every((value) => value === 0)).toBe(true);
+});
+
+test('`WaveformGraphElement.addValue`', () => {
+  document.body.innerHTML = waveformGraphComponentInnerHtml;
+  const modulatorWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-waveform-graph');
+  const carrierWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-waveform-graph');
+
+  const modulatorWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+    modulatorWaveformGraphElement,
+    120
+  );
+  const carrierWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+    carrierWaveformGraphElement,
+    240
+  );
+
+  modulatorWaveformGraphComponent.addValue(0.1);
+  carrierWaveformGraphComponent.addValue(-0.1);
+
+  expect(modulatorWaveformGraphComponent.values).toHaveLength(481);
+  expect(carrierWaveformGraphComponent.values).toHaveLength(961);
+  expect(modulatorWaveformGraphComponent.values[0]).toBe(0.1);
+  expect(carrierWaveformGraphComponent.values[0]).toBe(-0.1);
+
+  modulatorWaveformGraphComponent.addValue(0.2);
+  carrierWaveformGraphComponent.addValue(-0.2);
+
+  expect(modulatorWaveformGraphComponent.values).toHaveLength(481);
+  expect(carrierWaveformGraphComponent.values).toHaveLength(961);
+  expect(modulatorWaveformGraphComponent.values[0]).toBe(0.2);
+  expect(modulatorWaveformGraphComponent.values[1]).toBe(0.1);
+  expect(carrierWaveformGraphComponent.values[0]).toBe(-0.2);
+  expect(carrierWaveformGraphComponent.values[1]).toBe(-0.1);
+});
+
+// 実装未定: `WaveformGraphElement.drawWaveform()`
+
+// 実装未定: `WaveformGraphElement.drawBorderLeft()`
+
+// 実装未定: `WaveformGraphElement.draw()`
