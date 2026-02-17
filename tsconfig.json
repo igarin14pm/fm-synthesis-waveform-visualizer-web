@@ -15,5 +15,9 @@
     "skipLibCheck": true
   },
   "include": ["assets/scripts/src/**/*"],
-  "exclude": ["assets/scripts/dist"]
+  "exclude": [
+    "assets/scripts/dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }
