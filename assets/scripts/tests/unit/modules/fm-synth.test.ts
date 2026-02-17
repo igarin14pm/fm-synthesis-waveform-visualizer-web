@@ -91,34 +91,49 @@ test('`MasterPhase.moveFrameForward()`: 位相が一周した場合に位相が1
   let expectedValue1 = 0;
   let oldValue1 = 0;
   let newValue1 = 0;
+  let count1 = 0;
   while (oldValue1 <= newValue1) {
     expectedValue1 += 440 / 48000;
     oldValue1 = masterPhase1.output.value;
     masterPhase1.moveFrameForward();
     newValue1 = masterPhase1.output.value;
+    count1 += 1;
 
+    if (masterPhase1.output.value < 0) {
+      throw new Error('`MasterPhase.output.value` must not be less than 0');
+    }
     if (oldValue1 == 0 && newValue1 == 0) {
       throw new Error('`MasterPhase` does not output value');
     }
     if (masterPhase1.output.value > 1) {
       throw new Error('`MasterPhase.output.value` must not be greater than 1');
     }
+    if (count1 > (48000 / 440) * 2) {
+      throw new Error('`MasterPhase.moveFrameForward()` called too many times');
+    }
   }
   
   let expectedValue2 = 0;
   let oldValue2 = 0;
   let newValue2 = 0;
+  let count2 = 0;
   while (oldValue2 <= newValue2) {
     expectedValue2 += 0.5 / 120;
     oldValue2 = masterPhase2.output.value;
     masterPhase2.moveFrameForward();
     newValue2 = masterPhase2.output.value;
 
+    if (masterPhase2.output.value < 0) {
+      throw new Error('`MasterPhase.output.value` must not be less than 0');
+    }
     if (oldValue2 == 0 && newValue2 == 0) {
       throw new Error('`MasterPhase` does not output value');
     }
     if (masterPhase2.output.value > 1) {
       throw new Error('`MasterPhase.output.value` must not be greater than 1');
+    }
+    if (count2 > (120 / 0.5) * 2) {
+      throw new Error('`MasterPhase.moveFrameForward()` called too many times');
     }
   }
 
@@ -198,33 +213,49 @@ test('`Phase.isLooped`: 位相が一周したとき', () => {
 
   let oldValue1 = 0;
   let newValue1 = 0;
+  let count1 = 0;
   while (oldValue1 <= newValue1) {
     oldValue1 = phase1.output.value;
     masterPhase1.moveFrameForward();
     phase1.moveFrameForward();
     newValue1 = phase1.output.value;
+    count1 += 1;
 
+    if (phase1.output.value < 0) {
+      throw new Error('`Phase.output.value` must not be less than 0');
+    }
     if (oldValue1 == 0 && newValue1 == 0) {
       throw new Error('`Phase` does not output value');
     }
     if (phase1.output.value > 1) {
       throw new Error('`Phase.output.value` must not be greater than 1');
     }
+    if (count1 > (48000 / 440) * 2) {
+      throw new Error('`Phase.moveFrameForward()` called too many times');
+    }
   }
 
   let oldValue2 = 0;
   let newValue2 = 0;
+  let count2 = 0;
   while (oldValue2 <= newValue2) {
     oldValue2 = phase2.output.value;
     masterPhase2.moveFrameForward();
     phase2.moveFrameForward();
     newValue2 = phase2.output.value;
+    count2 += 1;
 
+    if (phase2.output.value < 0) {
+      throw new Error('`Phase.output.value` must not be less than 0');
+    }
     if (oldValue2 == 0 && newValue2 == 0) {
       throw new Error('`Phase` does not output value');
     }
     if (phase2.output.value > 1) {
       throw new Error('`Phase.output.value` must not be greater than 1');
+    }
+    if (count2 > (120 / 0.5) * 2) {
+      throw new Error('`Phase.moveFrameForward()` called too many times');
     }
   }
   expect(phase1.isLooped).toBe(true);
@@ -391,44 +422,56 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
   const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, null);
   const phase2 = new fmSynthModule.Phase(masterPhase2.output, 5, new fmSynthModule.Signal(-0.1));
 
-  let i1 = 0;
   let oldValue1 = 0;
   let newValue1 = 0;
+  let count1 = 0;
   while (oldValue1 <= newValue1) {
     oldValue1 = phase1.valuesWithoutMod[0];
     masterPhase1.moveFrameForward();
     phase1.moveFrameForward();
-    i1 += 1;
     newValue1 = phase1.valuesWithoutMod[0];
+    count1 += 1;
 
+    if (phase1.output.value < 0) {
+      throw new Error('`Phase.output.value` must not be less than 0');
+    }
     if (oldValue1 == 0 && newValue1 == 0) {
-      throw new Error('Phase does not output anything');
+      throw new Error('`Phase` does not output anything');
     }
     if (phase1.valuesWithoutMod[0] > 1) {
       throw new Error('`Phase.valuesWithoutMod[0]` must not be greater than 1');
     }
+    if (count1 > (48000 / 440) * 2) {
+      throw new Error('`Phase.moveFrameForward()` called too many times');
+    }
   }
 
-  let i2 = 0;
   let oldValue2 = 0;
   let newValue2 = 0;
+  let count2 = 0;
   while (oldValue2 <= newValue2) {
     oldValue2 = phase2.valuesWithoutMod[0];
     masterPhase2.moveFrameForward();
     phase2.moveFrameForward();
-    i2 += 1;
     newValue2 = phase2.valuesWithoutMod[0];
+    count2 += 1;
 
+    if (phase2.output.value < 0) {
+      throw new Error('`Phase.output.value` must not be less than 0');
+    }
     if (oldValue2 == 0 && newValue2 == 0) {
-      throw new Error('Phase does not output value');
+      throw new Error('`Phase` does not output value');
     }
     if (phase2.valuesWithoutMod[0] > 1) {
       throw new Error('`Phase.valuesWithoutMod[0]` must not be greater than 1');
     }
+    if (count2 > (120 / 0.5) * 2) {
+      throw new Error('`Phase.moveFrameForward()` called too many times');
+    }
   }
 
-  expect(phase1.valuesWithoutMod[0]).toBeCloseTo((440 / 48000) * i1 % 1);
-  expect(phase2.valuesWithoutMod[0]).toBeCloseTo(((0.5 * 5) / 120) * i2 % 1);
+  expect(phase1.valuesWithoutMod[0]).toBeCloseTo((440 / 48000) * count1 % 1);
+  expect(phase2.valuesWithoutMod[0]).toBeCloseTo(((0.5 * 5) / 120) * count2 % 1);
 });
 
 // -------- `Operator` --------
