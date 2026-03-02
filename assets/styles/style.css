@@ -93,6 +93,7 @@ td {
 
 button {
   border-radius: 8px;
+  border-style: solid;
   border-width: 2px;
   
   color: #eeeeee;
