@@ -221,7 +221,7 @@ export class FmSynth {
      * `FMSynth`の動作をサンプリングレート一つ分進めます。
      */
     moveFrameForward() {
-        let frameUpdateQueue = [this.masterPhase, this.modulator, this.carrier];
+        const frameUpdateQueue = [this.masterPhase, this.modulator, this.carrier];
         frameUpdateQueue.forEach(syncable => {
             syncable.moveFrameForward();
         });

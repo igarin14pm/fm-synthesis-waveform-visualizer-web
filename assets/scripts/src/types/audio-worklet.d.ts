@@ -66,7 +66,7 @@ declare global {
    */
   function registerProcessor(
     name: string,
-    processorCtor: new (options?: any) => AudioWorkletProcessor
+    processorCtor: new (options?: unknown) => AudioWorkletProcessor
   ): void;
 
   /**

@@ -64,7 +64,7 @@ export class FmSynthesisWaveformVisualizerApp {
     /**
      * `<html>`タグの`.no-js`クラスを`.js`に置き換え、JavaScriptが必要な要素の表示を切り替えます。
      */
-    applyJsStyle() {
+    static applyJsStyle() {
         document.documentElement.classList.replace('no-js', 'js');
     }
     /**
@@ -149,7 +149,7 @@ export class FmSynthesisWaveformVisualizerApp {
      */
     setInterval() {
         const oneSecond_ms = 1000;
-        let intervalId = window.setInterval(() => {
+        window.setInterval(() => {
             this.moveFrameForward();
         }, oneSecond_ms / this.visualFmSynthProgram.samplingRate);
     }
@@ -157,7 +157,7 @@ export class FmSynthesisWaveformVisualizerApp {
      * アプリの動作を開始します。
      */
     init() {
-        this.applyJsStyle();
+        FmSynthesisWaveformVisualizerApp.applyJsStyle();
         this.assignModulatorVolumeToSynth();
         this.assignModulatorRatioToSynth();
         this.addEventListenerToRangeInputComponents();

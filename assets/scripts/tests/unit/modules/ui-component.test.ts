@@ -114,6 +114,7 @@ class GraphComponentInpl extends uiComponentModule.GraphComponent {
     super(element);
   }
 
+  // eslint-disable-next-line class-methods-use-this, no-empty-function
   override draw(): void { }
 
 }
@@ -164,7 +165,7 @@ test('`GraphComponent.convertToCoordinateY()`', () => {
   const minusOneToCoordinateY1: number = graphComponent1.convertToCoordinateY(-1);
   const oneToCoordinateY2: number = graphComponent2.convertToCoordinateY(1);
   const zeroToCoordinateY2: number = graphComponent2.convertToCoordinateY(0);
-  const minusOneToCoordinateY2: number = graphComponent2.convertToCoordinateY(-1)
+  const minusOneToCoordinateY2: number = graphComponent2.convertToCoordinateY(-1);
 
   expect(oneToCoordinateY1).toBe(10);
   expect(zeroToCoordinateY1).toBe(50);
@@ -186,7 +187,7 @@ const phaseGraphComponentInnerHtml =
   '</div>' +
   '<div class="graph">' +
   '  <canvas id="carrier-phase-graph" width="258" height="170"></canvas>' +
-  '</div>'
+  '</div>';
 
 test('`PhaseGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = phaseGraphComponentInnerHtml;
@@ -359,7 +360,7 @@ test('`ButtonComponent`コンストラクタ', () => {
 
 const audioButtonComponentInnerHtml =
   '<button id="start-audio-button" class="green-button">音声を再生する</button>' +
-  '<button id="stop-audio-button" class="red-button">音声を停止する</button>'
+  '<button id="stop-audio-button" class="red-button">音声を停止する</button>';
 
 test('`AudioButtonComponent`コンストラクタ', () => {
   document.body.innerHTML = audioButtonComponentInnerHtml;

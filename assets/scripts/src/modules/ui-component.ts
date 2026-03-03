@@ -44,7 +44,7 @@ export class RangeInputComponent extends UiComponent {
     this.inputElement.addEventListener('input', () => {
       listener();
       this.valueLabelElement.textContent = this.inputElement.value;
-    })
+    });
   }
 
 }
@@ -99,7 +99,7 @@ export abstract class GraphComponent extends UiComponent {
    * グラフの描画をすべて削除します。
    */
   clear(): void {
-    let context: CanvasRenderingContext2D = this.element.getContext('2d')!;
+    const context: CanvasRenderingContext2D = this.element.getContext('2d')!;
     context.clearRect(0, 0, this.width, this.height);
   }
 
@@ -395,7 +395,7 @@ export class WaveformGraphComponent extends GraphComponent {
       const borderLineEndY: number = this.height;
       context.strokeStyle = '#888888';
       context.lineWidth = 4;
-      context.beginPath()
+      context.beginPath();
       context.moveTo(borderLineX, borderLineStartY);
       context.lineTo(borderLineX, borderLineEndY);
       context.stroke();

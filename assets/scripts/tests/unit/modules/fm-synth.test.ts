@@ -30,7 +30,7 @@ test('`Signal.clippedValue`: `Signal.value`が-1以上1以下の場合', () => {
   expect(minimumValueSignal.clippedValue).toBe(-1);
   expect(signal.clippedValue).toBe(0.25);
   expect(maximumValueSignal.clippedValue).toBe(1);
-})
+});
 
 test('`Signal.clippedValue`: `Signal.value`が1より大きい場合', () => {
   const signal1 = new fmSynthModule.Signal(2);
@@ -102,7 +102,7 @@ test('`MasterPhase.moveFrameForward()`: 位相が一周した場合に位相が1
     if (masterPhase1.output.value < 0) {
       throw new Error('`MasterPhase.output.value` must not be less than 0');
     }
-    if (oldValue1 == 0 && newValue1 == 0) {
+    if (oldValue1 === 0 && newValue1 === 0) {
       throw new Error('`MasterPhase` does not output value');
     }
     if (masterPhase1.output.value > 1) {
@@ -122,11 +122,12 @@ test('`MasterPhase.moveFrameForward()`: 位相が一周した場合に位相が1
     oldValue2 = masterPhase2.output.value;
     masterPhase2.moveFrameForward();
     newValue2 = masterPhase2.output.value;
+    count2 += 1;
 
     if (masterPhase2.output.value < 0) {
       throw new Error('`MasterPhase.output.value` must not be less than 0');
     }
-    if (oldValue2 == 0 && newValue2 == 0) {
+    if (oldValue2 === 0 && newValue2 === 0) {
       throw new Error('`MasterPhase` does not output value');
     }
     if (masterPhase2.output.value > 1) {
@@ -147,7 +148,7 @@ test('`Phase`コンストラクタ', () => {
   const masterPhaseSignal1 = new fmSynthModule.Signal(0.1);
   const masterPhaseSignal2 = new fmSynthModule.Signal(0.2);
   const modulatorSignal1 = new fmSynthModule.Signal(0.3);
-  const modulatorSignal2 = new fmSynthModule.Signal(-0.4)
+  const modulatorSignal2 = new fmSynthModule.Signal(-0.4);
 
   const phase1 = new fmSynthModule.Phase(masterPhaseSignal1, 1, modulatorSignal1);
   const phase2 = new fmSynthModule.Phase(masterPhaseSignal2, 10, modulatorSignal2);
@@ -206,7 +207,7 @@ test('`Phase.modulationValue`: `Phase.modulatorSignal == null`の場合', () => 
 
   expect(phase1.modulationValue).toBe(0);
   expect(phase2.modulationValue).toBe(0);
-})
+});
 
 test('`Phase.modulationValue`: `Phase.modulatorSignal != null`の場合', () => {
   const modulatorSignal1 = new fmSynthModule.Signal(0.3);
@@ -224,7 +225,7 @@ test('`Phase.process()`: `Phase.modulatorSignal == null`の場合', () => {
   phase1.valueWithoutMod = 0.25;
   phase2.valueWithoutMod = 0.6;
 
-  const result1: number = phase1.process()
+  const result1: number = phase1.process();
   const result2: number = phase2.process();
 
   expect(result1).toBe(0.25);
@@ -310,7 +311,7 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
     if (phase1.output.value < 0) {
       throw new Error('`Phase.output.value` must not be less than 0');
     }
-    if (oldValue1 == 0 && newValue1 == 0) {
+    if (oldValue1 === 0 && newValue1 === 0) {
       throw new Error('`Phase` does not output anything');
     }
     if (phase1.valueWithoutMod > 1) {
@@ -334,7 +335,7 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
     if (phase2.output.value < 0) {
       throw new Error('`Phase.output.value` must not be less than 0');
     }
-    if (oldValue2 == 0 && newValue2 == 0) {
+    if (oldValue2 === 0 && newValue2 === 0) {
       throw new Error('`Phase` does not output value');
     }
     if (phase2.valueWithoutMod > 1) {
@@ -377,7 +378,7 @@ test('`Operator.ratio`: ゲッタ', () => {
   const result2: number = operator2.ratio;
 
   expect(result1).toBe(4);
-  expect(result2).toBe(5)
+  expect(result2).toBe(5);
 });
 
 test('`Operator.ratio`: セッタ', () => {
@@ -393,7 +394,7 @@ test('`Operator.ratio`: セッタ', () => {
 
 test('`Operator.output`: 参照渡しによる`value`の伝達', () => {
   const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5)
+  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
   const operator1 = new fmSynthModule.Operator(1, 1, masterPhase1.output, null);
   const operator2 = new fmSynthModule.Operator(0.5, 2, masterPhase2.output, new fmSynthModule.Signal(-0.3));
   const output1: fmSynthModule.Signal = operator1.output;
@@ -425,7 +426,7 @@ test(`Operator.process()`, () => {
   const result1: number = operator1.process();
   const result2: number = operator2.process();
 
-  expect(result1).toBeCloseTo(1 * Math.sin(2 * Math.PI * 0.1));
+  expect(result1).toBeCloseTo(Math.sin(2 * Math.PI * 0.1));
   expect(result2).toBeCloseTo(0.2 * Math.sin(2 * Math.PI * (3 * 0.4 + (-0.5) * 0.25)) % 1);
 });
 
@@ -475,7 +476,7 @@ test('`FmSynth.process()`', () => {
   fmSynth2.moveFrameForward();
 
   expect(fmSynth1.process()).toBeCloseTo(0.25 * Math.sin(2 * Math.PI * ((440 / 48000) + Math.sin(2 * Math.PI * (440 / 48000) * 0.25))));
-  expect(fmSynth2.process()).toBeCloseTo(1 * Math.sin(2 * Math.PI * ((0.5 / 120) + Math.sin(2 * Math.PI * (0.5 / 120) * 0.25))))
+  expect(fmSynth2.process()).toBeCloseTo(Math.sin(2 * Math.PI * ((0.5 / 120) + Math.sin(2 * Math.PI * (0.5 / 120) * 0.25))));
 });
 
 test('`FmSynth.moveFrameForward()`', () => {

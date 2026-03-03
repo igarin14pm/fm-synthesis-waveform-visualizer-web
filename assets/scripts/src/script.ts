@@ -15,6 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.alert(
       'アプリの内部でエラーが発生しました。\n' +
       'アプリの設計上の不具合の可能性がありますので、開発者までお知らせください。'
-    )
+    );
   }
 });
