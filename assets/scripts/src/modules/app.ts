@@ -311,13 +311,12 @@ export class FmSynthesisWaveformVisualizerApp {
    * `AudioButtonComponent`にイベントリスナーを追加します。
    */
   addEventListenerToAudioButtons(): void {
-    this.startAudioButtonComponent.addClickEventListener(() => {
+    this.startAudioButtonComponent.addClickEventListener(async () => {
       if (!this.audioEngine.isRunning) {
-        this.audioEngine.start(this.modulatorProgram, () => {
-          this.startAudioButtonComponent.hide();
-          this.stopAudioButtonComponent.show();
-        });
+        await this.audioEngine.start(this.modulatorProgram);
       }
+      this.startAudioButtonComponent.hide();
+      this.stopAudioButtonComponent.show();
     });
     this.stopAudioButtonComponent.addClickEventListener(() => {
       if (this.audioEngine.isRunning) {
