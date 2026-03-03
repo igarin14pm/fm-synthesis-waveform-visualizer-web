@@ -43,7 +43,7 @@ export class AudioEngine {
    * @param modulatorValue モジュレーターの値を格納したOperatorValueのインスタンス
    * @param callback 再生を始める処理が完了した後に呼ばれる関数
    */
-  async start(modulatorProgram: OperatorProgram, callback: () => void) {
+  async start(modulatorProgram: OperatorProgram): Promise<void> {
     this.audioContext = new AudioContext();
     await this.audioContext.audioWorklet.addModule('./assets/scripts/dist/modules/fm-synth-audio-processor.js');
     this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'fm-synth-audio-processor');
@@ -58,8 +58,6 @@ export class AudioEngine {
     );
     
     this.audioWorkletNode.connect(this.audioContext.destination);
-
-    callback();
   }
 
   /**
