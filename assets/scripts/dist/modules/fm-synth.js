@@ -71,12 +71,6 @@ export class MasterPhase extends FmSynthModule {
  */
 export class Phase extends FmSynthModule {
     /**
-     * 位相が一周して (計算した位相の値 < 一つ前に計算した位相の値) となった時に`true`、そうでない時に`false`となります。
-     */
-    get isLooped() {
-        return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
-    }
-    /**
      * 出力信号
      */
     get output() {
