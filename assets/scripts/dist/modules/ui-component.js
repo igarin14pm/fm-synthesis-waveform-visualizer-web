@@ -302,7 +302,7 @@ export class WaveformGraphComponent extends GraphComponent {
      */
     addValue(value) {
         this.values.pop();
-        this.values.splice(0, 0, value);
+        this.values.unshift(value);
     }
     /**
      * 波形を描画します。
