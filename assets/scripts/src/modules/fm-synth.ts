@@ -147,9 +147,8 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
 
   /**
    * まだモジュレーションが掛かっていない位相の値
-   * [0]がその時点で最後に計算された値、[1]はその1つ前に計算された値です。
    */
-  valuesWithoutMod: number[] = [0.0, 0.0];
+  valueWithoutMod = 0.0;
 
   /**
    * 出力信号のインスタンス
@@ -200,7 +199,7 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
    * @returns 計算した出力信号の値
    */
   process(): number {
-    let value: number = this.valuesWithoutMod[0] + this.modulationValue;
+    let value: number = this.valueWithoutMod + this.modulationValue;
     value -= Math.floor(value);
     return value;
   }
@@ -209,9 +208,7 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
    * `Phase`の動作をサンプリングレート一つ分進めます。
    */
   moveFrameForward(): void {
-    const valueWithoutMod: number = this.input.value * this.operatorRatio % 1;
-    this.valuesWithoutMod.pop();
-    this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
+    this.valueWithoutMod = this.input.value * this.operatorRatio % 1;
 
     this._output.value = this.process();
   }

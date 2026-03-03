@@ -111,7 +111,7 @@ export class PhaseGraphComponent extends GraphComponent {
         const context = this.element.getContext('2d');
         if (context != null) {
             context.fillStyle = '#00cdb944';
-            const phaseWithoutModX = this.width * this.operator.phase.valuesWithoutMod[0];
+            const phaseWithoutModX = this.width * this.operator.phase.valueWithoutMod;
             const modRectY = 0;
             const modRectWidth = this.width * this.operator.phase.modulationValue;
             const modRectHeight = this.height;

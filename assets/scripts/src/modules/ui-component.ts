@@ -139,7 +139,7 @@ export class PhaseGraphComponent extends GraphComponent {
     if (context != null) {
       context.fillStyle = '#00cdb944';
 
-      const phaseWithoutModX: number = this.width * this.operator.phase.valuesWithoutMod[0];
+      const phaseWithoutModX: number = this.width * this.operator.phase.valueWithoutMod;
       const modRectY = 0;
       const modRectWidth: number = this.width * this.operator.phase.modulationValue;
       const modRectHeight: number = this.height;
