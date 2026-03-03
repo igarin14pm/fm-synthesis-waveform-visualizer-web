@@ -174,7 +174,7 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
     if (this.modulatorSignal != null) {
       return this.modulatorSignal.value * modulationCoefficient;
     } else {
-      return 0
+      return 0;
     }
     
   }
@@ -348,7 +348,7 @@ export class FmSynth implements Processing, Outputting, Syncable {
    * `FMSynth`の動作をサンプリングレート一つ分進めます。
    */
   moveFrameForward(): void {
-    let frameUpdateQueue: Syncable[] = [this.masterPhase, this.modulator, this.carrier];
+    const frameUpdateQueue: Syncable[] = [this.masterPhase, this.modulator, this.carrier];
     frameUpdateQueue.forEach(syncable => {
       syncable.moveFrameForward();
     });

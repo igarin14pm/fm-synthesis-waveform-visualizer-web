@@ -79,7 +79,7 @@ export class GraphComponent extends UiComponent {
      * グラフの描画をすべて削除します。
      */
     clear() {
-        let context = this.element.getContext('2d');
+        const context = this.element.getContext('2d');
         context.clearRect(0, 0, this.width, this.height);
     }
     /**

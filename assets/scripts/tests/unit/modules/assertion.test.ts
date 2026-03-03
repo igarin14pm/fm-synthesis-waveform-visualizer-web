@@ -21,7 +21,7 @@ test('`InvalidHtmlElementError`コンストラクタ', () => {
 test('`assertIsHTMLButtonElement()`: アサーション成功', () => {
   document.body.innerHTML =
     '<button id="start-audio-button">音声を再生する</button>' +
-    '<button id="stop-audio-button">音声を停止する</button>'
+    '<button id="stop-audio-button">音声を停止する</button>';
   const startAudioButtonElement: Element | null = document.querySelector('#start-audio-button');
   const stopAudioButtonElement: Element | null = document.querySelector('#stop-audio-button');
 
@@ -85,7 +85,7 @@ test('`assertIsHTMLCanvasElement()`: アサーション失敗', () => {
 test('`assertIsHTMLInputElement()`: アサーション成功', () => {
   document.body.innerHTML =
     '<input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />' +
-    '<input type="range" id="modulator-ratio-input" name="modulator-ratio-input" min="1" max="10" />'
+    '<input type="range" id="modulator-ratio-input" name="modulator-ratio-input" min="1" max="10" />';
   const modulatorVolumeInputElement: Element | null = document.querySelector('#modulator-volume-input');
   const modulatorRatioInputElement: Element | null = document.querySelector('#modulator-ratio-input');
 
@@ -117,7 +117,7 @@ test('`assertIsHTMLInputElement()`: アサーション失敗', () => {
 test('`assertIsHTMLLabelElement()`: アサーション成功', () => {
   document.body.innerHTML =
     '<label id="modulator-volume-value-label" for="modulator-volume-input"></label>' +
-    '<label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>'
+    '<label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>';
   const modulatorVolumeValueLabelElement: Element | null = document.querySelector('#modulator-volume-value-label');
   const modulatorRatioValueLabelElement: Element | null = document.querySelector('#modulator-ratio-value-label');
 
@@ -131,15 +131,15 @@ test('`assertIsHTMLLabelElement()`: アサーション成功', () => {
 
 test('`assertIsHTMLLabelElement()`: アサーション失敗', () => {
   document.body.innerHTML =
-    '<input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />'
+    '<input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />' +
     '<label id="modulator-volume-value-label" for="modulator-volume-input"></label>';
   const wrongElement: Element | null = document.querySelector('#modulator-volume-input');
   const wrongId: Element | null = document.querySelector('#moddulator-volume-value-label');
 
   expect(() => {
-    assertionModule.assertIsHTMLLabelElement(wrongElement)
+    assertionModule.assertIsHTMLLabelElement(wrongElement);
   }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLInputElement] is not HTMLLabelElement'));
   expect(() => {
-    assertionModule.assertIsHTMLLabelElement(wrongId)
+    assertionModule.assertIsHTMLLabelElement(wrongId);
   }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLLabelElement'));
 });

@@ -17,13 +17,13 @@ import {
   OutputGraphComponent,
   WaveformGraphComponent,
   AudioButtonComponent
-} from './ui-component.js'
+} from './ui-component.js';
 import {
   assertIsHTMLButtonElement,
   assertIsHTMLCanvasElement,
   assertIsHTMLInputElement,
   assertIsHTMLLabelElement
-} from './assertion.js'
+} from './assertion.js';
 
 /**
  * Modulatorに関連する`UiComponent`クラスのインスタンスをまとめたオブジェクトの型を定義するインターフェースです。
@@ -186,7 +186,7 @@ export class FmSynthesisWaveformVisualizerApp {
         modulatorWaveformGraphElement,
         this.visualFmSynthProgram.samplingRate
       )
-    }
+    };
 
     const carrierPhaseGraphElement: Element | null = document.querySelector('#carrier-phase-graph');
     const carrierOutputGraphElement: Element | null = document.querySelector('#carrier-output-graph');
@@ -210,7 +210,7 @@ export class FmSynthesisWaveformVisualizerApp {
         carrierWaveformGraphElement,
         this.visualFmSynthProgram.samplingRate
       )
-    }
+    };
 
     const startAudioButtonElement: Element | null = document.querySelector('#start-audio-button');
     const stopAudioButtonElement: Element | null = document.querySelector('#stop-audio-button');
@@ -226,7 +226,7 @@ export class FmSynthesisWaveformVisualizerApp {
   /**
    * `<html>`タグの`.no-js`クラスを`.js`に置き換え、JavaScriptが必要な要素の表示を切り替えます。
    */
-  applyJsStyle(): void {
+  static applyJsStyle(): void {
     document.documentElement.classList.replace('no-js', 'js');
   }
 
@@ -332,7 +332,7 @@ export class FmSynthesisWaveformVisualizerApp {
    */
   setInterval(): void {
     const oneSecond_ms = 1_000;
-    let intervalId: number = window.setInterval(() => {
+    window.setInterval(() => {
       this.moveFrameForward();
     }, oneSecond_ms / this.visualFmSynthProgram.samplingRate);
   }
@@ -341,7 +341,7 @@ export class FmSynthesisWaveformVisualizerApp {
    * アプリの動作を開始します。
    */
   init(): void {
-    this.applyJsStyle();
+    FmSynthesisWaveformVisualizerApp.applyJsStyle();
 
     this.assignModulatorVolumeToSynth();
     this.assignModulatorRatioToSynth();
