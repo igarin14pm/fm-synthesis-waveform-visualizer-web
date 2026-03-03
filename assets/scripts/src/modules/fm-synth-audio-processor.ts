@@ -47,8 +47,8 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
     outputs: Float32Array[][], 
     parameters: Record<string, Float32Array>
   ): boolean {
-    let output: Float32Array[] = outputs[0];
-    let channels: Float32Array = output[0];
+    const output: Float32Array[] = outputs[0];
+    const channels: Float32Array = output[0];
 
     /**
      * `AudioParamDescriptor`からパラメータの値を取得します
