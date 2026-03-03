@@ -174,7 +174,7 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
     if (this.modulatorSignal != null) {
       return this.modulatorSignal.value * modulationCoefficient;
     } else {
-      return 0
+      return 0;
     }
     
   }

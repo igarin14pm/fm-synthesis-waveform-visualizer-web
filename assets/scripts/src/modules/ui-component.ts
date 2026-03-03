@@ -44,7 +44,7 @@ export class RangeInputComponent extends UiComponent {
     this.inputElement.addEventListener('input', () => {
       listener();
       this.valueLabelElement.textContent = this.inputElement.value;
-    })
+    });
   }
 
 }
@@ -395,7 +395,7 @@ export class WaveformGraphComponent extends GraphComponent {
       const borderLineEndY: number = this.height;
       context.strokeStyle = '#888888';
       context.lineWidth = 4;
-      context.beginPath()
+      context.beginPath();
       context.moveTo(borderLineX, borderLineStartY);
       context.lineTo(borderLineX, borderLineEndY);
       context.stroke();
