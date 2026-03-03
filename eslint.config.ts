@@ -18,8 +18,8 @@ export default defineConfig([
   },
   tseslint.configs.recommended,
   {
+    files: ["**/*.ts"],
     rules: {
-      /*
       // Possible Problems
       "no-duplicate-imports": "warn",
       "no-self-compare": "error",
@@ -27,16 +27,15 @@ export default defineConfig([
       "no-unmodified-loop-condition": "warn",
       "no-unreachable-loop": "warn",
       // Suggestions
-      "camelcase": ["warn", { "properties": "never" }],
       "class-methods-use-this": "warn",
       "curly": "error",
       "default-case-last": "error",
       "default-param-last": "warn",
-      "dot-notation": ["warn", "smart"],
-      "eqeqeq": "error",
+      "dot-notation": "warn",
+      "eqeqeq": ["error", "smart"],
       "no-console": ["warn", { allow: ["warn", "error"] }],
       "no-empty": "error",
-      "no-empty-functions": [
+      "no-empty-function": [
         "error", 
         { "allow": ["constructors", "privateConstructors", "protectedConstructors"] }
       ],
@@ -56,9 +55,14 @@ export default defineConfig([
       "no-useless-rename": "warn",
       "no-var": "error",
       "no-warning-comments": "warn",
+      "prefer-arrow-callback": "error",
+      "prefer-const": "warn",
+      "prefer-exponentiation-operator": "warn",
+      "prefer-template": "warn",
+      "require-await": "error",
+      
       // TODO: 追加する
       "@stylistic/semi": ["warn", "always"]
-      */
     }
   }
 ]);
