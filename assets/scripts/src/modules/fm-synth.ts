@@ -348,7 +348,7 @@ export class FmSynth implements Processing, Outputting, Syncable {
    * `FMSynth`の動作をサンプリングレート一つ分進めます。
    */
   moveFrameForward(): void {
-    let frameUpdateQueue: Syncable[] = [this.masterPhase, this.modulator, this.carrier];
+    const frameUpdateQueue: Syncable[] = [this.masterPhase, this.modulator, this.carrier];
     frameUpdateQueue.forEach(syncable => {
       syncable.moveFrameForward();
     });

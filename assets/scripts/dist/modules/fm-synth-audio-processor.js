@@ -32,8 +32,8 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
         this.fmSynth = new FmSynth(sampleRate, waveFrequency, fmSynthVolume);
     }
     process(inputs, outputs, parameters) {
-        let output = outputs[0];
-        let channels = output[0];
+        const output = outputs[0];
+        const channels = output[0];
         /**
          * `AudioParamDescriptor`からパラメータの値を取得します
          * @param parameterName `AudioParamDescriptor.name`で指定した文字列

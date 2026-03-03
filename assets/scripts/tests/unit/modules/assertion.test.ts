@@ -131,7 +131,7 @@ test('`assertIsHTMLLabelElement()`: アサーション成功', () => {
 
 test('`assertIsHTMLLabelElement()`: アサーション失敗', () => {
   document.body.innerHTML =
-    '<input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />'
+    '<input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />' +
     '<label id="modulator-volume-value-label" for="modulator-volume-input"></label>';
   const wrongElement: Element | null = document.querySelector('#modulator-volume-input');
   const wrongId: Element | null = document.querySelector('#moddulator-volume-value-label');

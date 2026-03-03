@@ -10,8 +10,8 @@ export default defineConfig([
       "@stylistic": stylistic
     }
   },
-  { 
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], 
+  {
+    ignores: ["**/*.js", "**/*.mjs", "**/*.cjs"],
     plugins: { js }, 
     extends: ["js/recommended"], 
     languageOptions: { globals: globals.browser } 

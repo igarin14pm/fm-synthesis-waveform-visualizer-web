@@ -149,7 +149,7 @@ export class FmSynthesisWaveformVisualizerApp {
      */
     setInterval() {
         const oneSecond_ms = 1000;
-        let intervalId = window.setInterval(() => {
+        window.setInterval(() => {
             this.moveFrameForward();
         }, oneSecond_ms / this.visualFmSynthProgram.samplingRate);
     }

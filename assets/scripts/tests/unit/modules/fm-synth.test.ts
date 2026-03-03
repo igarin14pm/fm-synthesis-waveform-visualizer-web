@@ -122,6 +122,7 @@ test('`MasterPhase.moveFrameForward()`: 位相が一周した場合に位相が1
     oldValue2 = masterPhase2.output.value;
     masterPhase2.moveFrameForward();
     newValue2 = masterPhase2.output.value;
+    count2 += 1
 
     if (masterPhase2.output.value < 0) {
       throw new Error('`MasterPhase.output.value` must not be less than 0');
