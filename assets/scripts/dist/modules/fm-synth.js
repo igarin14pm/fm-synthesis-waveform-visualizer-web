@@ -102,9 +102,8 @@ export class Phase extends FmSynthModule {
         this.modulatorSignal = modulatorSignal;
         /**
          * まだモジュレーションが掛かっていない位相の値
-         * [0]がその時点で最後に計算された値、[1]はその1つ前に計算された値です。
          */
-        this.valuesWithoutMod = [0.0, 0.0];
+        this.valueWithoutMod = 0.0;
         /**
          * 出力信号のインスタンス
          */
@@ -116,7 +115,7 @@ export class Phase extends FmSynthModule {
      * @returns 計算した出力信号の値
      */
     process() {
-        let value = this.valuesWithoutMod[0] + this.modulationValue;
+        let value = this.valueWithoutMod + this.modulationValue;
         value -= Math.floor(value);
         return value;
     }
@@ -124,9 +123,7 @@ export class Phase extends FmSynthModule {
      * `Phase`の動作をサンプリングレート一つ分進めます。
      */
     moveFrameForward() {
-        const valueWithoutMod = this.input.value * this.operatorRatio % 1;
-        this.valuesWithoutMod.pop();
-        this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
+        this.valueWithoutMod = this.input.value * this.operatorRatio % 1;
         this._output.value = this.process();
     }
 }
