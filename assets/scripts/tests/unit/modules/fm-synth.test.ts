@@ -178,90 +178,6 @@ test('`Phase.input`: 参照渡しによる`Signal.value`の伝達', () => {
   expect(phase2.input.value).toBe(0.2);
 });
 
-test('`Phase.isLooped`: `Phase.moveFrameForward()`が一度も呼ばれていないとき', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, null);
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 10, new fmSynthModule.Signal(-0.5));
-
-  expect(phase1.isLooped).toBe(false);
-  expect(phase2.isLooped).toBe(false);
-});
-
-test('`Phase.isLooped`: `Phase.moveFrameForward()`が呼ばれたが位相が一周していないとき', () => {
-  // 一度の`moveFrameForward()`呼び出しで位相が一周しないことが自明
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, null);
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 2, new fmSynthModule.Signal(0.5));
-
-  masterPhase1.moveFrameForward();
-  masterPhase2.moveFrameForward();
-  phase1.moveFrameForward();
-  phase2.moveFrameForward();
-
-  expect(phase1.isLooped).toBe(false);
-  expect(phase2.isLooped).toBe(false);
-});
-
-test('`Phase.isLooped`: 位相が一周したとき', () => {
-  
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, null);
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 5, null);
-
-  let oldValue1 = 0;
-  let newValue1 = 0;
-  let count1 = 0;
-  while (oldValue1 <= newValue1) {
-    oldValue1 = phase1.output.value;
-    masterPhase1.moveFrameForward();
-    phase1.moveFrameForward();
-    newValue1 = phase1.output.value;
-    count1 += 1;
-
-    if (phase1.output.value < 0) {
-      throw new Error('`Phase.output.value` must not be less than 0');
-    }
-    if (oldValue1 == 0 && newValue1 == 0) {
-      throw new Error('`Phase` does not output value');
-    }
-    if (phase1.output.value > 1) {
-      throw new Error('`Phase.output.value` must not be greater than 1');
-    }
-    if (count1 > (48000 / 440) * 2) {
-      throw new Error('`Phase.moveFrameForward()` called too many times');
-    }
-  }
-
-  let oldValue2 = 0;
-  let newValue2 = 0;
-  let count2 = 0;
-  while (oldValue2 <= newValue2) {
-    oldValue2 = phase2.output.value;
-    masterPhase2.moveFrameForward();
-    phase2.moveFrameForward();
-    newValue2 = phase2.output.value;
-    count2 += 1;
-
-    if (phase2.output.value < 0) {
-      throw new Error('`Phase.output.value` must not be less than 0');
-    }
-    if (oldValue2 == 0 && newValue2 == 0) {
-      throw new Error('`Phase` does not output value');
-    }
-    if (phase2.output.value > 1) {
-      throw new Error('`Phase.output.value` must not be greater than 1');
-    }
-    if (count2 > (120 / 0.5) * 2) {
-      throw new Error('`Phase.moveFrameForward()` called too many times');
-    }
-  }
-  expect(phase1.isLooped).toBe(true);
-  expect(phase2.isLooped).toBe(true);
-});
-
 test('`Phase.output`: 参照渡しによる`Signal.value`の伝達', () => {
   const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
   const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
@@ -305,8 +221,8 @@ test('`Phase.modulationValue`: `Phase.modulatorSignal != null`の場合', () => 
 test('`Phase.process()`: `Phase.modulatorSignal == null`の場合', () => {
   const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, null);
   const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, null);
-  phase1.valuesWithoutMod[0] = 0.25;
-  phase2.valuesWithoutMod[0] = 0.6;
+  phase1.valueWithoutMod = 0.25;
+  phase2.valueWithoutMod = 0.6;
 
   const result1: number = phase1.process()
   const result2: number = phase2.process();
@@ -320,8 +236,8 @@ test('`Phase.process()`: `Phase.modulatorSignal != null`の場合', () => {
   const modulatorSignal2 = new fmSynthModule.Signal(-0.2);
   const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, modulatorSignal1);
   const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.3), 2, modulatorSignal2);
-  phase1.valuesWithoutMod[0] = 0.4;
-  phase2.valuesWithoutMod[0] = 0.5;
+  phase1.valueWithoutMod = 0.4;
+  phase2.valueWithoutMod = 0.5;
 
   const result1: number = phase1.process();
   const result2: number = phase2.process();
@@ -330,13 +246,13 @@ test('`Phase.process()`: `Phase.modulatorSignal != null`の場合', () => {
   expect(result2).toBeCloseTo(0.5 + (-0.2) * 0.25);
 });
 
-test('`Phase.process()`: `Phase.valuesWithoutMod[0] + Phase.modulationValue > 1`の場合', () => {
+test('`Phase.process()`: `Phase.valueWithoutMod + Phase.modulationValue > 1`の場合', () => {
   const modulatorSignal1 = new fmSynthModule.Signal(0.8);
   const modulatorSignal2 = new fmSynthModule.Signal(8);
   const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, modulatorSignal1);
   const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, modulatorSignal2);
-  phase1.valuesWithoutMod[0] = 0.9;
-  phase2.valuesWithoutMod[0] = 0.95;
+  phase1.valueWithoutMod = 0.9;
+  phase2.valueWithoutMod = 0.95;
   
   const result1: number = phase1.process();
   const result2: number = phase2.process();
@@ -345,60 +261,19 @@ test('`Phase.process()`: `Phase.valuesWithoutMod[0] + Phase.modulationValue > 1`
   expect(result2).toBeCloseTo(0.95 + 8 * 0.25 - 2);
 });
 
-test('`Phase.process()`: `Phase.valuesWithoutMod[0] + Phase.modulationValue < -1`の場合', () => {
+test('`Phase.process()`: `Phase.valueWithoutMod + Phase.modulationValue < -1`の場合', () => {
   const modulatorSignal1 = new fmSynthModule.Signal(-0.8);
   const modulatorSignal2 = new fmSynthModule.Signal(-8);
   const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, modulatorSignal1);
   const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, modulatorSignal2);
-  phase1.valuesWithoutMod[0] = 0.1;
-  phase2.valuesWithoutMod[0] = 0.05;
+  phase1.valueWithoutMod = 0.1;
+  phase2.valueWithoutMod = 0.05;
 
   const result1: number = phase1.process();
   const result2: number = phase2.process();
 
   expect(result1).toBeCloseTo(0.1 + (-0.8) * 0.25 + 1);
   expect(result2).toBeCloseTo(0.05 + (-8) * 0.25 + 2);
-});
-
-test('`Phase.moveFrameForward()`: `Phase.valuesWithoutMod`の長さが変化しない', () => {
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, null);
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 5, new fmSynthModule.Signal(-0.6));
-
-  expect(phase1.valuesWithoutMod.length).toBe(2);
-  expect(phase2.valuesWithoutMod.length).toBe(2);
-
-  phase1.moveFrameForward();
-  phase2.moveFrameForward();
-
-  expect(phase1.valuesWithoutMod.length).toBe(2);
-  expect(phase2.valuesWithoutMod.length).toBe(2);
-});
-
-test('`Phase.moveFrameForward()`: `Phase.valuesWithoutMod`の値が後ろに1つずつずれ動く', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, null);
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 1, new fmSynthModule.Signal(-0.1));
-
-  masterPhase1.moveFrameForward();
-  masterPhase2.moveFrameForward();
-  phase1.moveFrameForward();
-  phase2.moveFrameForward();
-
-  expect(phase1.valuesWithoutMod[0]).toBe(440 / 48000);
-  expect(phase1.valuesWithoutMod[1]).not.toBe(440 / 48000);
-  expect(phase2.valuesWithoutMod[0]).toBe(0.5 / 120);
-  expect(phase2.valuesWithoutMod[1]).not.toBe(0.5 / 120);
-
-  masterPhase1.moveFrameForward();
-  masterPhase2.moveFrameForward();
-  phase1.moveFrameForward();
-  phase2.moveFrameForward();
-
-  expect(phase1.valuesWithoutMod[0]).not.toBe(440 / 48000);
-  expect(phase1.valuesWithoutMod[1]).toBe(440 / 48000);
-  expect(phase2.valuesWithoutMod[0]).not.toBe(0.5/ 120);
-  expect(phase2.valuesWithoutMod[1]).toBe(0.5 / 120);
 });
 
 test('`Phase.moveFrameForward()`: `Phase.OperatorRatio`が正しく計算に含まれるか', () => {
@@ -412,8 +287,8 @@ test('`Phase.moveFrameForward()`: `Phase.OperatorRatio`が正しく計算に含�
   phase1.moveFrameForward();
   phase2.moveFrameForward();
 
-  expect(phase1.valuesWithoutMod[0]).toBe((440 * 2) / 48000);
-  expect(phase2.valuesWithoutMod[0]).toBe((0.5 * 3) / 120);
+  expect(phase1.valueWithoutMod).toBe((440 * 2) / 48000);
+  expect(phase2.valueWithoutMod).toBe((0.5 * 3) / 120);
 });
 
 test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
@@ -426,10 +301,10 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
   let newValue1 = 0;
   let count1 = 0;
   while (oldValue1 <= newValue1) {
-    oldValue1 = phase1.valuesWithoutMod[0];
+    oldValue1 = phase1.valueWithoutMod;
     masterPhase1.moveFrameForward();
     phase1.moveFrameForward();
-    newValue1 = phase1.valuesWithoutMod[0];
+    newValue1 = phase1.valueWithoutMod;
     count1 += 1;
 
     if (phase1.output.value < 0) {
@@ -438,7 +313,7 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
     if (oldValue1 == 0 && newValue1 == 0) {
       throw new Error('`Phase` does not output anything');
     }
-    if (phase1.valuesWithoutMod[0] > 1) {
+    if (phase1.valueWithoutMod > 1) {
       throw new Error('`Phase.valuesWithoutMod[0]` must not be greater than 1');
     }
     if (count1 > (48000 / 440) * 2) {
@@ -450,10 +325,10 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
   let newValue2 = 0;
   let count2 = 0;
   while (oldValue2 <= newValue2) {
-    oldValue2 = phase2.valuesWithoutMod[0];
+    oldValue2 = phase2.valueWithoutMod;
     masterPhase2.moveFrameForward();
     phase2.moveFrameForward();
-    newValue2 = phase2.valuesWithoutMod[0];
+    newValue2 = phase2.valueWithoutMod;
     count2 += 1;
 
     if (phase2.output.value < 0) {
@@ -462,7 +337,7 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
     if (oldValue2 == 0 && newValue2 == 0) {
       throw new Error('`Phase` does not output value');
     }
-    if (phase2.valuesWithoutMod[0] > 1) {
+    if (phase2.valueWithoutMod > 1) {
       throw new Error('`Phase.valuesWithoutMod[0]` must not be greater than 1');
     }
     if (count2 > (120 / 0.5) * 2) {
@@ -470,8 +345,8 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
     }
   }
 
-  expect(phase1.valuesWithoutMod[0]).toBeCloseTo((440 / 48000) * count1 % 1);
-  expect(phase2.valuesWithoutMod[0]).toBeCloseTo(((0.5 * 5) / 120) * count2 % 1);
+  expect(phase1.valueWithoutMod).toBeCloseTo((440 / 48000) * count1 % 1);
+  expect(phase2.valueWithoutMod).toBeCloseTo(((0.5 * 5) / 120) * count2 % 1);
 });
 
 // -------- `Operator` --------
