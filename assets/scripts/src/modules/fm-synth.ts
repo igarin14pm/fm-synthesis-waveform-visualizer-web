@@ -152,13 +152,6 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
   valuesWithoutMod: number[] = [0.0, 0.0];
 
   /**
-   * 位相が一周して (計算した位相の値 < 一つ前に計算した位相の値) となった時に`true`、そうでない時に`false`となります。
-   */
-  get isLooped(): boolean {
-    return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
-  }
-
-  /**
    * 出力信号のインスタンス
    */
   private _output = new Signal(0.0);
