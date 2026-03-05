@@ -192,9 +192,9 @@ const phaseGraphComponentInnerHtml =
 test('`PhaseGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = phaseGraphComponentInnerHtml;
   const modulatorPhaseGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-phase-graph');
-  const modulator = new fmSynthModule.Operator(1, 1, new fmSynthModule.Signal(0), null);
+  const modulator = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0), null);
   const carrierPhaseGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-phase-graph');
-  const carrier = new fmSynthModule.Operator(0.5, 2, new fmSynthModule.Signal(0), modulator.output);
+  const carrier = new fmSynthModule.Operator(0.5, 2, 0.3, new fmSynthModule.Signal(0), modulator.output);
 
   const modulatorPhaseGraphComponent = new uiComponentModule.PhaseGraphComponent(
     modulatorPhaseGraphElement,
@@ -236,9 +236,9 @@ const outputGraphComponentInnerHtml =
 test('`OutputGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = outputGraphComponentInnerHtml;
   const modulatorOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-output-graph');
-  const modulator = new fmSynthModule.Operator(1, 2, new fmSynthModule.Signal(0), null);
+  const modulator = new fmSynthModule.Operator(1, 2, 0.3, new fmSynthModule.Signal(0), null);
   const carrierOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-output-graph');
-  const carrier = new fmSynthModule.Operator(0.25, 1, new fmSynthModule.Signal(0), modulator.output);
+  const carrier = new fmSynthModule.Operator(0.25, 1, 0.5, new fmSynthModule.Signal(0), modulator.output);
 
   const modulatorOutputGraphComponent = new uiComponentModule.OutputGraphComponent(
     modulatorOutputGraphElement,
