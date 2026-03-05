@@ -29,13 +29,13 @@ export class CarrierAndModulatorMode extends Mode {
         // `AudioEngine`
         this.audioEngine = new AudioEngine();
         // `ModulatorComponent`
-        const modulatorVolumeInputElement = document.querySelector('#modulator-volume-input');
-        const modulatorVolumeValueLabelElement = document.querySelector('#modulator-volume-value-label');
-        const modulatorRatioInputElement = document.querySelector('#modulator-ratio-input');
-        const modulatorRatioValueLabelElement = document.querySelector('#modulator-ratio-value-label');
-        const modulatorPhaseGraphElement = document.querySelector('#modulator-phase-graph');
-        const modulatorOutputGraphElement = document.querySelector('#modulator-output-graph');
-        const modulatorWaveformGraphElement = document.querySelector('#modulator-waveform-graph');
+        const modulatorVolumeInputElement = document.querySelector('#cnm-modulator-volume-input');
+        const modulatorVolumeValueLabelElement = document.querySelector('#cnm-modulator-volume-value-label');
+        const modulatorRatioInputElement = document.querySelector('#cnm-modulator-ratio-input');
+        const modulatorRatioValueLabelElement = document.querySelector('#cnm-modulator-ratio-value-label');
+        const modulatorPhaseGraphElement = document.querySelector('#cnm-modulator-phase-graph');
+        const modulatorOutputGraphElement = document.querySelector('#cnm-modulator-output-graph');
+        const modulatorWaveformGraphElement = document.querySelector('#cnm-modulator-waveform-graph');
         assertIsHTMLInputElement(modulatorVolumeInputElement);
         assertIsHTMLLabelElement(modulatorVolumeValueLabelElement);
         assertIsHTMLInputElement(modulatorRatioInputElement);
@@ -51,9 +51,9 @@ export class CarrierAndModulatorMode extends Mode {
             waveformGraph: new WaveformGraphComponent(modulatorWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
         };
         // `CarrierComponent`
-        const carrierPhaseGraphElement = document.querySelector('#carrier-phase-graph');
-        const carrierOutputGraphElement = document.querySelector('#carrier-output-graph');
-        const carrierWaveformGraphElement = document.querySelector('#carrier-waveform-graph');
+        const carrierPhaseGraphElement = document.querySelector('#cnm-carrier-phase-graph');
+        const carrierOutputGraphElement = document.querySelector('#cnm-carrier-output-graph');
+        const carrierWaveformGraphElement = document.querySelector('#cnm-carrier-waveform-graph');
         assertIsHTMLCanvasElement(carrierPhaseGraphElement);
         assertIsHTMLCanvasElement(carrierOutputGraphElement);
         assertIsHTMLCanvasElement(carrierWaveformGraphElement);
@@ -63,11 +63,11 @@ export class CarrierAndModulatorMode extends Mode {
             waveformGraph: new WaveformGraphComponent(carrierWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
         };
         // "音声を再生する"ボタン
-        const startAudioButtonElement = document.querySelector('#start-audio-button');
+        const startAudioButtonElement = document.querySelector('#cnm-start-audio-button');
         assertIsHTMLButtonElement(startAudioButtonElement);
         this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
         // "音声を停止する"ボタン
-        const stopAudioButtonElement = document.querySelector('#stop-audio-button');
+        const stopAudioButtonElement = document.querySelector('#cnm-stop-audio-button');
         assertIsHTMLButtonElement(stopAudioButtonElement);
         this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
     }
