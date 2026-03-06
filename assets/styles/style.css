@@ -126,12 +126,12 @@ button {
   border-color: #fa817f;
 }
 
-#cnm-start-audio-button {
+#cnm-start-audio-button, #fb-start-audio-button {
   /* JavaScriptで制御 */
   display: block;
 }
 
-#cnm-stop-audio-button {
+#cnm-stop-audio-button, #fb-stop-audio-button {
   /* JavaScriptで制御 */
   display: none;
 }
