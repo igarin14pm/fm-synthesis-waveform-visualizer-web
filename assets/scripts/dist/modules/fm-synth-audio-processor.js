@@ -1,16 +1,14 @@
-/*
- * Copyright (c) 2026 Igarin
- * This software is released under the MIT License.
- * https://opensource.org
- */
-import { FMSynth } from './fm-synth.js';
-class AudioProcessor extends AudioWorkletProcessor {
+// Copyright (c) 2026 Igarin
+// This software is released under the MIT License.
+// https://opensource.org
+import { FmSynth } from './fm-synth.js';
+class FmSynthAudioProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
         return [
             {
                 // モジュレーターのVolumeパラメーター
                 name: 'modulatorVolume',
-                defaultValue: 1,
+                defaultValue: 0,
                 minValue: 0,
                 maxValue: 1,
                 automationRate: 'a-rate'
@@ -22,6 +20,14 @@ class AudioProcessor extends AudioWorkletProcessor {
                 minValue: 1,
                 maxValue: 10,
                 automationRate: 'a-rate'
+            },
+            {
+                // キャリアのFeedbackパラメータ
+                name: 'carrierFeedback',
+                defaultValue: 0,
+                minValue: 0,
+                maxValue: 1,
+                automationRate: 'a-rate'
             }
         ];
     }
@@ -31,11 +37,11 @@ class AudioProcessor extends AudioWorkletProcessor {
         const waveFrequency = 440;
         // ボリュームはこれくらいがちょうど良い
         const fmSynthVolume = 0.25;
-        this.fmSynth = new FMSynth(sampleRate, waveFrequency, fmSynthVolume);
+        this.fmSynth = new FmSynth(sampleRate, waveFrequency, fmSynthVolume);
     }
     process(inputs, outputs, parameters) {
-        let output = outputs[0];
-        let channels = output[0];
+        const output = outputs[0];
+        const channels = output[0];
         /**
          * `AudioParamDescriptor`からパラメータの値を取得します
          * @param parameterName `AudioParamDescriptor.name`で指定した文字列
@@ -55,6 +61,7 @@ class AudioProcessor extends AudioWorkletProcessor {
             // パラメーターの値を取得、FMシンセに設定する
             this.fmSynth.modulator.volume = getParameterValue('modulatorVolume', channelIndex);
             this.fmSynth.modulator.ratio = getParameterValue('modulatorRatio', channelIndex);
+            this.fmSynth.carrier.feedback = getParameterValue('carrierFeedback', channelIndex);
             // FMシンセの信号を出力する
             channels[channelIndex] = this.fmSynth.output.clippedValue;
             // FMシンセの動作をサンプリングレート一つ分進める
@@ -63,4 +70,4 @@ class AudioProcessor extends AudioWorkletProcessor {
         return true;
     }
 }
-registerProcessor('audio-processor', AudioProcessor);
+registerProcessor('fm-synth-audio-processor', FmSynthAudioProcessor);
