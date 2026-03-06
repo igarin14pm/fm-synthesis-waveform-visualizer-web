@@ -233,7 +233,7 @@ export class FmSynth {
          */
         this._output = new Signal(0.0);
         this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
-        this.modulator = new Operator(1, 1, 0, this.masterPhase.output, null);
+        this.modulator = new Operator(0, 1, 0, this.masterPhase.output, null);
         this.carrier = new Operator(1, 1, 0, this.masterPhase.output, this.modulator.output);
     }
     /**

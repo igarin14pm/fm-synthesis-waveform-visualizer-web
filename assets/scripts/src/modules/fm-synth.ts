@@ -362,7 +362,7 @@ export class FmSynth implements Processing, Outputting, Syncable {
     public outputVolume: number
   ) {
     this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
-    this.modulator = new Operator(1, 1, 0, this.masterPhase.output, null);
+    this.modulator = new Operator(0, 1, 0, this.masterPhase.output, null);
     this.carrier = new Operator(1, 1, 0, this.masterPhase.output, this.modulator.output);
   }
 

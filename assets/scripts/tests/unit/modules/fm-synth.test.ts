@@ -525,6 +525,8 @@ test('`FmSynth`コンストラクタ', () => {
 test('`FmSynth.process()`', () => {
   const fmSynth1 = new fmSynthModule.FmSynth(48000, 440, 0.25);
   const fmSynth2 = new fmSynthModule.FmSynth(120, 0.5, 1);
+  fmSynth1.modulator.volume = 1;
+  fmSynth2.modulator.volume = 1;
 
   fmSynth1.moveFrameForward();
   fmSynth2.moveFrameForward();
@@ -536,6 +538,8 @@ test('`FmSynth.process()`', () => {
 test('`FmSynth.moveFrameForward()`', () => {
   const fmSynth1 = new fmSynthModule.FmSynth(48000, 440, 0.25);
   const fmSynth2 = new fmSynthModule.FmSynth(120, 0.5, 1);
+  fmSynth1.modulator.volume = 1;
+  fmSynth2.modulator.volume = 1;
 
   expect(fmSynth1.masterPhase.output.value).toBe(0);
   expect(fmSynth1.modulator.output.value).toBe(0);

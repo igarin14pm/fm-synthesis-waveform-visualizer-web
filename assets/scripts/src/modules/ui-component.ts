@@ -141,7 +141,7 @@ export class PhaseGraphComponent extends GraphComponent {
 
       const phaseWithoutModX: number = this.width * this.operator.phase.valueWithoutMod;
       const modRectY = 0;
-      const modRectWidth: number = this.width * this.operator.phase.modulationValue;
+      const modRectWidth: number = this.width * (this.operator.phase.modulationValue + this.operator.phase.feedbackValue);
       const modRectHeight: number = this.height;
       if (phaseWithoutModX + modRectWidth > this.width) { // 長方形がCanvas要素から右側にはみ出る場合
 

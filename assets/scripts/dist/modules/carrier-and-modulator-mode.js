@@ -5,7 +5,7 @@ import { assertIsHTMLButtonElement, assertIsHTMLCanvasElement, assertIsHTMLInput
 import { AudioEngine } from "./audio-engine.js";
 import { FmSynth } from "./fm-synth.js";
 import { Mode } from "./mode.js";
-import { FmSynthProgram, OperatorProgram, OperatorRatioParameter, OperatorVolumeParameter } from "./program.js";
+import { FmSynthProgram, OperatorFeedbackParameter, OperatorProgram, OperatorRatioParameter, OperatorVolumeParameter } from "./program.js";
 import { AudioButtonComponent, OutputGraphComponent, PhaseGraphComponent, RangeInputComponent, WaveformGraphComponent } from "./ui-component.js";
 /**
  * "FM-Synthesis Waveform Visualizer"内で"Synthesis Mode"を"Carrier and Modulator"に
@@ -23,7 +23,7 @@ export class CarrierAndModulatorMode extends Mode {
         this.intervalId = null;
         // Program
         this.visualFmSynthProgram = new FmSynthProgram(120, 0.5, 1);
-        this.modulatorProgram = new OperatorProgram(new OperatorVolumeParameter('modulatorVolume', 1), new OperatorRatioParameter('modulatorRatio', 1));
+        this.modulatorProgram = new OperatorProgram(new OperatorVolumeParameter('modulatorVolume', 1), new OperatorRatioParameter('modulatorRatio', 1), new OperatorFeedbackParameter('', 0));
         // グラフ用の`FmSynth`
         this.visualFmSynth = new FmSynth(this.visualFmSynthProgram.samplingRate, this.visualFmSynthProgram.waveFrequency, this.visualFmSynthProgram.outputVolume);
         // `AudioEngine`

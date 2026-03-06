@@ -3,6 +3,7 @@
 // https://opensource.org
 
 import { CarrierAndModulatorMode } from "./carrier-and-modulator-mode.js";
+import { FeedbackMode } from "./feedback-mode.js";
 
 /**
  * "FM-Synthesis Waveform Visualizer"のアプリを表すクラスです。
@@ -13,6 +14,11 @@ export class FmSynthesisWaveformVisualizerApp {
    * "Carrier and Modulator"モードの動作を行う`CarrierAndModulatorMode`のインスタンス
    */
   carrierAndModulatorMode = new CarrierAndModulatorMode();
+
+  /**
+   * "Feedback"モードの動作を行う`FeedbackMode`のインスタンス
+   */
+  feedbackMode = new FeedbackMode();
 
   /**
    * `FmSynthesisWaveformVisualizerApp`のインスタンスを生成します。
@@ -33,8 +39,10 @@ export class FmSynthesisWaveformVisualizerApp {
     FmSynthesisWaveformVisualizerApp.applyJsStyle();
 
     this.carrierAndModulatorMode.init();
+    this.feedbackMode.init();
 
     this.carrierAndModulatorMode.start();
+    this.feedbackMode.start(); // 仮
   }
 
 }
