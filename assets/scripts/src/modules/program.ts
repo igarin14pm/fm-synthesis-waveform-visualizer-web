@@ -97,6 +97,36 @@ export class OperatorRatioParameter extends ProgramParameter {
 }
 
 /**
+ * `Operator`のFeedbackパラメータを表すクラスです。
+ */
+export class OperatorFeedbackParameter extends ProgramParameter {
+
+  /**
+   * UI上で表示するパラメータの値
+   */
+  override get uiValue(): number {
+    return this.value * 100;
+  }
+
+  /**
+   * UI上で表示するパラメータの値
+   */
+  override set uiValue(newValue: number) {
+    this.value = newValue / 100;
+  }
+
+  /**
+   * `OperatorFeedbackParameter`のインスタンスを生成します。
+   * @param name `AudioParam`で使用するパラメータ名
+   * @param initialValue パラメータの初期値
+   */
+  constructor(name: string, initialValue: number) {
+    super(name, initialValue);
+  }
+
+}
+
+/**
  * `Operator`のプログラムを表すクラスです
  */
 export class OperatorProgram {
@@ -108,7 +138,8 @@ export class OperatorProgram {
    */
   constructor(
     public volumeParameter: OperatorVolumeParameter,
-    public ratioParameter: OperatorRatioParameter
+    public ratioParameter: OperatorRatioParameter,
+    public feedbackParameter: OperatorFeedbackParameter
   ) { }
 
 }

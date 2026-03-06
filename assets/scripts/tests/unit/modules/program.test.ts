@@ -71,16 +71,20 @@ test('`OperatorRatioParameter.uiValue`: セッタ', () => {
 test('`OperatorProgram`コンストラクタ', () => {
   const operator1VolumeParameter = new programModule.OperatorVolumeParameter('modulator-volume', 1);
   const operator1RatioParameter = new programModule.OperatorRatioParameter('modulator-ratio', 2);
-  const operator2VolumeParameter = new programModule.OperatorVolumeParameter('carrier-volume', 0.3);
-  const operator2RatioParameter = new programModule.OperatorRatioParameter('carrier-ratio', 4);
+  const operator1FeedbackParameter = new programModule.OperatorFeedbackParameter('modulator-feedback', 0.3);
+  const operator2VolumeParameter = new programModule.OperatorVolumeParameter('carrier-volume', 0.4);
+  const operator2RatioParameter = new programModule.OperatorRatioParameter('carrier-ratio', 5);
+  const operator2FeedbackParameter = new programModule.OperatorFeedbackParameter('carrier-feedback', 0.6);
 
-  const operatorProgram1 = new programModule.OperatorProgram(operator1VolumeParameter, operator1RatioParameter);
-  const operatorProgram2 = new programModule.OperatorProgram(operator2VolumeParameter, operator2RatioParameter);
+  const operatorProgram1 = new programModule.OperatorProgram(operator1VolumeParameter, operator1RatioParameter, operator1FeedbackParameter);
+  const operatorProgram2 = new programModule.OperatorProgram(operator2VolumeParameter, operator2RatioParameter, operator2FeedbackParameter);
 
   expect(operatorProgram1.volumeParameter).toBe(operator1VolumeParameter);
   expect(operatorProgram1.ratioParameter).toBe(operator1RatioParameter);
+  expect(operatorProgram1.feedbackParameter).toBe(operator1FeedbackParameter);
   expect(operatorProgram2.volumeParameter).toBe(operator2VolumeParameter);
   expect(operatorProgram2.ratioParameter).toBe(operator2RatioParameter);
+  expect(operatorProgram2.feedbackParameter).toBe(operator2FeedbackParameter);
 });
 
 // -------- `FmSynthProgram` --------

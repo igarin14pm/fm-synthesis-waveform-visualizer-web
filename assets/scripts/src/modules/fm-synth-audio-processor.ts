@@ -11,7 +11,7 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
       {
         // モジュレーターのVolumeパラメーター
         name: 'modulatorVolume',
-        defaultValue: 1,
+        defaultValue: 0,
         minValue: 0,
         maxValue: 1,
         automationRate: 'a-rate'
@@ -22,6 +22,14 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
         defaultValue: 1,
         minValue: 1,
         maxValue: 10,
+        automationRate: 'a-rate'
+      },
+      {
+        // キャリアのFeedbackパラメータ
+        name: 'carrierFeedback',
+        defaultValue: 0,
+        minValue: 0,
+        maxValue: 1,
         automationRate: 'a-rate'
       }
     ];

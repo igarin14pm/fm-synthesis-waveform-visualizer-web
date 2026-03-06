@@ -2,6 +2,7 @@
 // This software is released under the MIT License.
 // https://opensource.org
 import { CarrierAndModulatorMode } from "./carrier-and-modulator-mode.js";
+import { FeedbackMode } from "./feedback-mode.js";
 /**
  * "FM-Synthesis Waveform Visualizer"のアプリを表すクラスです。
  */
@@ -14,6 +15,10 @@ export class FmSynthesisWaveformVisualizerApp {
          * "Carrier and Modulator"モードの動作を行う`CarrierAndModulatorMode`のインスタンス
          */
         this.carrierAndModulatorMode = new CarrierAndModulatorMode();
+        /**
+         * "Feedback"モードの動作を行う`FeedbackMode`のインスタンス
+         */
+        this.feedbackMode = new FeedbackMode();
     }
     /**
      * `<html>`タグの`.no-js`クラスを`.js`に置き換え、JavaScriptが必要な要素の表示を切り替えます。
@@ -27,6 +32,8 @@ export class FmSynthesisWaveformVisualizerApp {
     init() {
         FmSynthesisWaveformVisualizerApp.applyJsStyle();
         this.carrierAndModulatorMode.init();
+        this.feedbackMode.init();
         this.carrierAndModulatorMode.start();
+        this.feedbackMode.start(); // 仮
     }
 }

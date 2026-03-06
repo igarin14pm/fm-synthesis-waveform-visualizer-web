@@ -13,6 +13,7 @@ import { FmSynth } from "./fm-synth.js";
 import { Mode } from "./mode.js";
 import { 
   FmSynthProgram, 
+  OperatorFeedbackParameter, 
   OperatorProgram, 
   OperatorRatioParameter, 
   OperatorVolumeParameter 
@@ -142,7 +143,8 @@ export class CarrierAndModulatorMode extends Mode {
     this.visualFmSynthProgram = new FmSynthProgram(120, 0.5, 1);
     this.modulatorProgram = new OperatorProgram(
       new OperatorVolumeParameter('modulatorVolume', 1),
-      new OperatorRatioParameter('modulatorRatio', 1)
+      new OperatorRatioParameter('modulatorRatio', 1),
+      new OperatorFeedbackParameter('', 0)
     );
 
     // グラフ用の`FmSynth`
