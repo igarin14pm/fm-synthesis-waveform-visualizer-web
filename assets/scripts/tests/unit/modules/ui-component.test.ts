@@ -18,6 +18,12 @@ function getHTMLCanvasElementByIdOrThrow(id: string): HTMLCanvasElement {
   return element;
 }
 
+function getHTMLDivElementByIdOrThrow(id: string): HTMLDivElement {
+  const element: Element | null = document.querySelector(`#${id}`);
+  assertionModule.assertIsHTMLDivElement(element);
+  return element;
+}
+
 function getHTMLInputElementByIdOrThrow(id: string): HTMLInputElement {
   const element: Element | null = document.querySelector(`#${id}`);
   assertionModule.assertIsHTMLInputElement(element);
@@ -29,6 +35,108 @@ function getHTMLLabelElementByIdOrThrow(id: string): HTMLLabelElement {
   assertionModule.assertIsHTMLLabelElement(element);
   return element;
 }
+
+function getHTMLSelectElementByIdOrThrow(id: string): HTMLSelectElement {
+  const element: Element | null = document.querySelector(`#${id}`);
+  assertionModule.assertIsHTMLSelectElement(element);
+  return element;
+}
+
+// -------- `SelectComponent` --------
+
+const selectComponentInnerHtml =
+  '<select id="select1">' +
+  '  <option value="value-a">Value A</option>' +
+  '  <option value="value-b">Value B</option>' +
+  '</select>' +
+  '<select id="synthesis-mode-select">' +
+  '  <option value="carrier-and-modulator">Carrier and Modulator</option>' +
+  '  <option value="feedback">Feedback</option>' +
+  '</select>';
+
+test('`SelectComponent`コンストラクタ', () => {
+  document.body.innerHTML = selectComponentInnerHtml;
+  const selectElement1: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('select1');
+  const selectElement2: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('synthesis-mode-select');
+
+  const selectComponent1 = new uiComponentModule.SelectComponent(selectElement1);
+  const selectComponent2 = new uiComponentModule.SelectComponent(selectElement2);
+
+  expect(selectComponent1.element).toBe(selectElement1);
+  expect(selectComponent2.element).toBe(selectElement2);
+});
+
+test('`SelectComponent.value`', () => {
+  document.body.innerHTML = selectComponentInnerHtml;
+  const selectElement1: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('select1');
+  const selectElement2: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('synthesis-mode-select');
+  const selectComponent1 = new uiComponentModule.SelectComponent(selectElement1);
+  const selectComponent2 = new uiComponentModule.SelectComponent(selectElement2);
+
+  const result1: string = selectComponent1.value;
+  const result2: string = selectComponent2.value;
+
+  expect(result1).toBe('value-a');
+  expect(result2).toBe('carrier-and-modulator');
+});
+
+// 実装未定: `SelectComponent.addChangeEventListener()`
+
+// -------- `SynthesisModeDivComponent` --------
+
+const synthesisModeDivComponentInnerHtml =
+  '<div id="carrier-and-modulator-mode">' +
+  '  <p>Carrier and Modulator</p>' +
+  '</div>' +
+  '<div id="feedback-mode">' +
+  '  <p>Feedback</p>' +
+  '</div>';
+
+test('`SynthesisModeDivComponent`コンストラクタ', () => {
+  document.body.innerHTML = synthesisModeDivComponentInnerHtml;
+  const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
+  const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
+
+  const synthesisModeDivComponent1 = new uiComponentModule.SynthesisModeDivConponent(divElement1, false);
+  const synthesisModeDivComponent2 = new uiComponentModule.SynthesisModeDivConponent(divElement2, true);
+
+  expect(synthesisModeDivComponent1.element).toBe(divElement1);
+  expect(synthesisModeDivComponent1.isCollapsed).toBe(false);
+  expect(synthesisModeDivComponent1.element.classList).not.toContain('collapsed');
+  expect(synthesisModeDivComponent2.element).toBe(divElement2);
+  expect(synthesisModeDivComponent2.isCollapsed).toBe(true);
+  expect(synthesisModeDivComponent2.element.classList).toContain('collapsed');
+});
+
+test('`SynthesisModeDivComponent.isCollapsed`: ゲッタ', () => {
+  document.body.innerHTML = synthesisModeDivComponentInnerHtml;
+  const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
+  const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
+  const synthesisModeDivComponent1 = new uiComponentModule.SynthesisModeDivConponent(divElement1, false);
+  const synthesisModeDivComponent2 = new uiComponentModule.SynthesisModeDivConponent(divElement2, true);
+
+  const result1: boolean = synthesisModeDivComponent1.isCollapsed;
+  const result2: boolean = synthesisModeDivComponent2.isCollapsed;
+
+  expect(result1).toBe(false);
+  expect(result2).toBe(true);
+});
+
+test('`SynthesisModeDivComponent.isCollapsed`: セッタ', () => {
+  document.body.innerHTML = synthesisModeDivComponentInnerHtml;
+  const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
+  const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
+  const synthesisModeDivComponent1 = new uiComponentModule.SynthesisModeDivConponent(divElement1, false);
+  const synthesisModeDivComponent2 = new uiComponentModule.SynthesisModeDivConponent(divElement2, true);
+
+  synthesisModeDivComponent1.isCollapsed = true;
+  synthesisModeDivComponent2.isCollapsed = false;
+
+  expect(synthesisModeDivComponent1.isCollapsed).toBe(true);
+  expect(synthesisModeDivComponent1.element.classList).toContain('collapsed');
+  expect(synthesisModeDivComponent2.isCollapsed).toBe(false);
+  expect(synthesisModeDivComponent2.element.classList).not.toContain('collapsed');
+});
 
 // -------- `RangeInputComponent` --------
 
@@ -192,9 +300,9 @@ const phaseGraphComponentInnerHtml =
 test('`PhaseGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = phaseGraphComponentInnerHtml;
   const modulatorPhaseGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-phase-graph');
-  const modulator = new fmSynthModule.Operator(1, 1, new fmSynthModule.Signal(0), null);
+  const modulator = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0), null);
   const carrierPhaseGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-phase-graph');
-  const carrier = new fmSynthModule.Operator(0.5, 2, new fmSynthModule.Signal(0), modulator.output);
+  const carrier = new fmSynthModule.Operator(0.5, 2, 0.3, new fmSynthModule.Signal(0), modulator.output);
 
   const modulatorPhaseGraphComponent = new uiComponentModule.PhaseGraphComponent(
     modulatorPhaseGraphElement,
@@ -236,9 +344,9 @@ const outputGraphComponentInnerHtml =
 test('`OutputGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = outputGraphComponentInnerHtml;
   const modulatorOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-output-graph');
-  const modulator = new fmSynthModule.Operator(1, 2, new fmSynthModule.Signal(0), null);
+  const modulator = new fmSynthModule.Operator(1, 2, 0.3, new fmSynthModule.Signal(0), null);
   const carrierOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-output-graph');
-  const carrier = new fmSynthModule.Operator(0.25, 1, new fmSynthModule.Signal(0), modulator.output);
+  const carrier = new fmSynthModule.Operator(0.25, 1, 0.5, new fmSynthModule.Signal(0), modulator.output);
 
   const modulatorOutputGraphComponent = new uiComponentModule.OutputGraphComponent(
     modulatorOutputGraphElement,

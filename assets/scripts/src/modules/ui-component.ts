@@ -5,9 +5,94 @@
 import { Operator } from './fm-synth.js';
 
 /**
+ * UIコンポーネントが要素のCSSスタイル`display: none`を切り替え可能であることを表すインターフェースです。
+ */
+export interface Collapsible {
+  isCollapsed: boolean;
+}
+
+/**
  * UIコンポーネントであることを表す基底クラスです。
  */
 export class UiComponent { }
+
+/**
+ * `<select>`要素を扱うためのクラスです。
+ */
+export class SelectComponent extends UiComponent {
+
+  /**
+   * `<select>`要素で選択した`<option>`要素の`value`の値
+   */
+  get value(): string {
+    return this.element.value;
+  }
+
+  /**
+   * `SelectComponent`のインスタンスを生成します。
+   * @param element DOMで取得した`<select>`要素
+   */
+  constructor(public element: HTMLSelectElement) {
+    super();
+  }
+
+  /**
+   * `<select>`要素の値が変わった時に発生するイベントリスナーを設定します。
+   * @param listener 登録するリスナーのコールバック
+   */
+  addChangeEventListener(listener: () => void): void {
+    this.element.addEventListener('change', listener);
+  }
+
+}
+
+/**
+ * それぞれの"Syntheis Mode"のUIを含む`<div>`要素を扱うためのクラスです。
+ */
+export class SynthesisModeDivConponent extends UiComponent implements Collapsible {
+
+  /**
+   * `isCollapsed`のプライベートバッキングフィールド
+   */
+  private _isCollapsed: boolean;
+
+  /**
+   * 要素がCSS`display: none`によって非表示にされているかを表します。
+   */
+  get isCollapsed(): boolean {
+    return this._isCollapsed;
+  }
+
+  /**
+   * 要素がCSS`display: none`によって非表示にされているかを表します。
+   */
+  set isCollapsed(newValue: boolean) {
+    this._isCollapsed = newValue;
+
+    if (newValue) {
+      this.element.classList.add('collapsed');
+    } else {
+      this.element.classList.remove('collapsed');
+    }
+  }
+
+  /**
+   * `SynthesisModeDivComponent`のインスタンスを生成します。
+   * @param element DOMで取得した`<div>`要素
+   * @param isCollapsed `display: none`によって非表示にするかの初期値
+   */
+  constructor(public element: HTMLDivElement, isCollapsed: boolean) {
+    super();
+
+    this._isCollapsed = isCollapsed;
+    if (isCollapsed) {
+      this.element.classList.add('collapsed');
+    } else {
+      this.element.classList.remove('collapsed');
+    }
+  }
+
+}
 
 /**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
@@ -141,7 +226,7 @@ export class PhaseGraphComponent extends GraphComponent {
 
       const phaseWithoutModX: number = this.width * this.operator.phase.valueWithoutMod;
       const modRectY = 0;
-      const modRectWidth: number = this.width * this.operator.phase.modulationValue;
+      const modRectWidth: number = this.width * (this.operator.phase.modulationValue + this.operator.phase.feedbackValue);
       const modRectHeight: number = this.height;
       if (phaseWithoutModX + modRectWidth > this.width) { // 長方形がCanvas要素から右側にはみ出る場合
 
