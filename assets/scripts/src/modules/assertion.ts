@@ -39,6 +39,16 @@ export function assertIsHTMLCanvasElement(element: Element | null): asserts elem
 }
 
 /**
+ * `element`の型が`HTMLDivElement`かどうか判定し、そうでない場合は`InvalidHtmlElementError`を投げます。
+ * @param element 判定する`document.querySelector()`で取得した要素
+ */
+export function assertIsHTMLDivElement(element: Element | null): asserts element is HTMLDivElement {
+  if (!(element instanceof HTMLDivElement)) {
+    throw new InvalidHtmlElementError(`${element} is not HTMLDivElement`);
+  }
+}
+
+/**
  * `element`の型が`HTMLInputElement`かどうか判定し、そうでない場合は`InvalidHtmlElementError`を投げます。
  * @param element 判定する`document.querySelector()`で取得した要素
  */
@@ -55,5 +65,15 @@ export function assertIsHTMLInputElement(element: Element | null): asserts eleme
 export function assertIsHTMLLabelElement(element: Element | null): asserts element is HTMLLabelElement {
   if (!(element instanceof HTMLLabelElement)) {
     throw new InvalidHtmlElementError(`${element} is not HTMLLabelElement`);
+  }
+}
+
+/**
+ * `element`の型が`HTMLSelectElement`かどうか判定し、そうでない場合は`InvalidHTMLElementError`を投げます。
+ * @param element 判定する`document.querySelector()`で取得した要素
+ */
+export function assertIsHTMLSelectElement(element: Element | null): asserts element is HTMLSelectElement {
+  if (!(element instanceof HTMLSelectElement)) {
+    throw new InvalidHtmlElementError(`${element} is not HTMLSelectElement`);
   }
 }

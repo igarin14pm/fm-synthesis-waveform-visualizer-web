@@ -7,6 +7,71 @@
 export class UiComponent {
 }
 /**
+ * `<select>`要素を扱うためのクラスです。
+ */
+export class SelectComponent extends UiComponent {
+    /**
+     * `<select>`要素で選択した`<option>`要素の`value`の値
+     */
+    get value() {
+        return this.element.value;
+    }
+    /**
+     * `SelectComponent`のインスタンスを生成します。
+     * @param element DOMで取得した`<select>`要素
+     */
+    constructor(element) {
+        super();
+        this.element = element;
+    }
+    /**
+     * `<select>`要素の値が変わった時に発生するイベントリスナーを設定します。
+     * @param listener 登録するリスナーのコールバック
+     */
+    addChangeEventListener(listener) {
+        this.element.addEventListener('change', listener);
+    }
+}
+/**
+ * それぞれの"Syntheis Mode"のUIを含む`<div>`要素を扱うためのクラスです。
+ */
+export class SynthesisModeDivConponent extends UiComponent {
+    /**
+     * 要素がCSS`display: none`によって非表示にされているかを表します。
+     */
+    get isCollapsed() {
+        return this._isCollapsed;
+    }
+    /**
+     * 要素がCSS`display: none`によって非表示にされているかを表します。
+     */
+    set isCollapsed(newValue) {
+        this._isCollapsed = newValue;
+        if (newValue) {
+            this.element.classList.add('collapsed');
+        }
+        else {
+            this.element.classList.remove('collapsed');
+        }
+    }
+    /**
+     * `SynthesisModeDivComponent`のインスタンスを生成します。
+     * @param element DOMで取得した`<div>`要素
+     * @param isCollapsed `display: none`によって非表示にするかの初期値
+     */
+    constructor(element, isCollapsed) {
+        super();
+        this.element = element;
+        this._isCollapsed = isCollapsed;
+        if (isCollapsed) {
+            this.element.classList.add('collapsed');
+        }
+        else {
+            this.element.classList.remove('collapsed');
+        }
+    }
+}
+/**
  * パラメーターを変更する`<input>`要素を扱うためのクラスです。
  */
 export class RangeInputComponent extends UiComponent {
@@ -113,7 +178,7 @@ export class PhaseGraphComponent extends GraphComponent {
             context.fillStyle = '#00cdb944';
             const phaseWithoutModX = this.width * this.operator.phase.valueWithoutMod;
             const modRectY = 0;
-            const modRectWidth = this.width * this.operator.phase.modulationValue;
+            const modRectWidth = this.width * (this.operator.phase.modulationValue + this.operator.phase.feedbackValue);
             const modRectHeight = this.height;
             if (phaseWithoutModX + modRectWidth > this.width) { // 長方形がCanvas要素から右側にはみ出る場合
                 // 右端の長方形を描画

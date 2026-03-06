@@ -180,15 +180,27 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
   }
 
   /**
+   * フィードバックの信号から計算した、実際に変調で使うフィードバックの値
+   */
+  get feedbackValue(): number {
+    const feedbackCoefficient = 0.125;
+    return this.feedbackSignal.value * this.operatorFeedback * feedbackCoefficient;
+  }
+
+  /**
    * `Phase`のインスタンスを生成します。
    * @param masterPhaseSignal `MasterPhase`からの信号
    * @param operatorRatio `Operator`のRatioパラメーターの値
+   * @param operatorFeedback `Operator`のFeedbackパラメーターの値
    * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`となります
+   * @param feedbackSignal フィードバックに使用する`Operator`の出力信号
    */
   constructor(
     masterPhaseSignal: Signal,
     public operatorRatio: number,
-    public modulatorSignal: Signal | null
+    public operatorFeedback: number,
+    public modulatorSignal: Signal | null,
+    public feedbackSignal: Signal
   ) {
     super();
     this.input = masterPhaseSignal;
@@ -199,7 +211,7 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
    * @returns 計算した出力信号の値
    */
   process(): number {
-    let value: number = this.valueWithoutMod + this.modulationValue;
+    let value: number = this.valueWithoutMod + this.modulationValue + this.feedbackValue;
     value -= Math.floor(value);
     return value;
   }
@@ -242,6 +254,22 @@ export class Operator extends FmSynthModule implements Processing, Outputting, S
   }
 
   /**
+   * Feedbackパラメーター
+   * この`Operator`にFeedbackを掛ける量を表します
+   */
+  get feedback(): number {
+    return this.phase.operatorFeedback;
+  }
+
+  /**
+   * Feedbackパラメーター
+   * この`Operator`にフィードバックを掛ける量を表します
+   */
+  set feedback(newValue: number) {
+    this.phase.operatorFeedback = newValue;
+  }
+
+  /**
    * 出力信号のインスタンス
    */
   private _output = new Signal(0.0);
@@ -257,17 +285,19 @@ export class Operator extends FmSynthModule implements Processing, Outputting, S
    * `Operator`のインスタンスを生成します。
    * @param volume Volumeパラメーター キャリアの場合は音量、モジュレーターの場合はモジュレーション量になります
    * @param ratio Ratioパラメーター `MasterPhase`の周波数に対する周波数比
+   * @param feedback Feedbackパラメーター この`Operator`にフィードバックを掛ける量を表します
    * @param masterPhaseSignal `MasterPhase`からの信号
    * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`を渡してください
    */
   constructor(
     public volume: number,
     ratio: number,
+    feedback: number,
     masterPhaseSignal: Signal,
     modulatorSignal: Signal | null
   ) {
     super();
-    this.phase = new Phase(masterPhaseSignal, ratio, modulatorSignal);
+    this.phase = new Phase(masterPhaseSignal, ratio, feedback, modulatorSignal, this._output);
   }
 
   /**
@@ -332,8 +362,8 @@ export class FmSynth implements Processing, Outputting, Syncable {
     public outputVolume: number
   ) {
     this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
-    this.modulator = new Operator(1, 1, this.masterPhase.output, null);
-    this.carrier = new Operator(1, 1, this.masterPhase.output, this.modulator.output);
+    this.modulator = new Operator(0, 1, 0, this.masterPhase.output, null);
+    this.carrier = new Operator(1, 1, 0, this.masterPhase.output, this.modulator.output);
   }
 
   /**

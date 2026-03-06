@@ -38,50 +38,90 @@
         <h1>FM-Synthesis Waveform Visualizer</h1>
         
         <div class="app-content">
-                
-          <h2>Modulator</h2>
+
+          <h2>Synthesis Mode</h2>
+
+          <select id="synthesis-mode-select">
+            <option value="carrier-and-modulator">Carrier and Modulator</option>
+            <option value="feedback">Feedback</option>
+          </select>
+          
+          <div id="carrier-and-modulator-mode">
+
+            <h2>Modulator</h2>
         
-          <table>
-            <tr>
-              <th>
-                <label for="modulator-volume-input">Volume</label>
-              </th>
-              <td>
-                <input type="range" id="modulator-volume-input" name="modulator-volume-input" min="0" max="100" />
-              </td>
-              <td>
-                <label id="modulator-volume-value-label" for="modulator-volume-input"></label>
-              </td>
-            </tr>
-            <tr>
-              <th>
-                <label for="modulator-ratio-input">Ratio</label>
-              </th>
-              <td>
-                <input type="range" id="modulator-ratio-input" name="modulator-ratio-input" value="1" min="1" max="10" />
-              </td>
-              <td>
-                <label id="modulator-ratio-value-label" for="modulator-ratio-input"></label>
-              </td>
-            </tr>
-          </table>
-          
-          <div class="graph">
-            <canvas id="modulator-phase-graph" width="516" height="340"></canvas>
-            <canvas id="modulator-output-graph" width="100" height="340"></canvas>
-            <canvas id="modulator-waveform-graph" width="1032" height="340"></canvas>
+            <table>
+              <tr>
+                <th>
+                  <label for="cnm-modulator-volume-input">Volume</label>
+                </th>
+                <td>
+                  <input type="range" id="cnm-modulator-volume-input" name="cnm-modulator-volume-input" min="0" max="100" />
+                </td>
+                <td>
+                  <label id="cnm-modulator-volume-value-label" for="cnm-modulator-volume-input"></label>
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  <label for="cnm-modulator-ratio-input">Ratio</label>
+                </th>
+                <td>
+                  <input type="range" id="cnm-modulator-ratio-input" name="cnm-modulator-ratio-input" value="1" min="1" max="10" />
+                </td>
+                <td>
+                  <label id="cnm-modulator-ratio-value-label" for="cnm-modulator-ratio-input"></label>
+                </td>
+              </tr>
+            </table>
+            
+            <div class="graph">
+              <canvas id="cnm-modulator-phase-graph" width="516" height="340"></canvas>
+              <canvas id="cnm-modulator-output-graph" width="100" height="340"></canvas>
+              <canvas id="cnm-modulator-waveform-graph" width="1032" height="340"></canvas>
+            </div>
+            
+            <h2>Carrier</h2>
+        
+            <div class="graph">
+              <canvas id="cnm-carrier-phase-graph" width="516" height="340"></canvas>
+              <canvas id="cnm-carrier-output-graph" width="100" height="340"></canvas>
+              <canvas id="cnm-carrier-waveform-graph" width="1032" height="340"></canvas>
+            </div>
+            
+            <button id="cnm-start-audio-button" class="green-button">音声を再生する</button>
+            <button id="cnm-stop-audio-button" class="red-button">音声を停止する</button>
+
           </div>
-          
-          <h2>Carrier</h2>
-      
-          <div class="graph">
-            <canvas id="carrier-phase-graph" width="516" height="340"></canvas>
-            <canvas id="carrier-output-graph" width="100" height="340"></canvas>
-            <canvas id="carrier-waveform-graph" width="1032" height="340"></canvas>
+
+          <div id="feedback-mode">
+
+            <h2>Carrier with Feedback</h2>
+
+            <table>
+              <tr>
+                <th>
+                  <label for="fb-carrier-feedback-input">Feedback</label>
+                </th>
+                <td>
+                  <input type="range" id="fb-carrier-feedback-input" name="fb-carrier-feedback-input" value="100" min="0" max="100" />
+                </td>
+                <td>
+                  <label id="fb-carrier-feedback-value-label" for="fb-carrier-feedback-input"></label>
+                </td>
+              </tr>
+            </table>
+
+            <div class="graph">
+              <canvas id="fb-carrier-phase-graph" width="516" height="340"></canvas>
+              <canvas id="fb-carrier-output-graph" width="100" height="340"></canvas>
+              <canvas id="fb-carrier-waveform-graph" width="1032" height="340"></canvas>
+            </div>
+
+            <button id="fb-start-audio-button" class="green-button">音声を再生する</button>
+            <button id="fb-stop-audio-button" class="red-button">音声を停止する</button>
+
           </div>
-          
-          <button id="start-audio-button" class="green-button">音声を再生する</button>
-          <button id="stop-audio-button" class="red-button">音声を停止する</button>
           
         </div>
         

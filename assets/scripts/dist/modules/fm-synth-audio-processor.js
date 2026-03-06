@@ -8,7 +8,7 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
             {
                 // モジュレーターのVolumeパラメーター
                 name: 'modulatorVolume',
-                defaultValue: 1,
+                defaultValue: 0,
                 minValue: 0,
                 maxValue: 1,
                 automationRate: 'a-rate'
@@ -19,6 +19,14 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
                 defaultValue: 1,
                 minValue: 1,
                 maxValue: 10,
+                automationRate: 'a-rate'
+            },
+            {
+                // キャリアのFeedbackパラメータ
+                name: 'carrierFeedback',
+                defaultValue: 0,
+                minValue: 0,
+                maxValue: 1,
                 automationRate: 'a-rate'
             }
         ];
@@ -53,6 +61,7 @@ class FmSynthAudioProcessor extends AudioWorkletProcessor {
             // パラメーターの値を取得、FMシンセに設定する
             this.fmSynth.modulator.volume = getParameterValue('modulatorVolume', channelIndex);
             this.fmSynth.modulator.ratio = getParameterValue('modulatorRatio', channelIndex);
+            this.fmSynth.carrier.feedback = getParameterValue('carrierFeedback', channelIndex);
             // FMシンセの信号を出力する
             channels[channelIndex] = this.fmSynth.output.clippedValue;
             // FMシンセの動作をサンプリングレート一つ分進める
