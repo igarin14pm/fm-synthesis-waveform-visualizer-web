@@ -91,6 +91,20 @@
 
             <h2>Carrier with Feedback</h2>
 
+            <table>
+              <tr>
+                <th>
+                  <label for="fb-carrier-feedback-input">Feedback</label>
+                </th>
+                <td>
+                  <input type="range" id="fb-carrier-feedback-input" name="fb-carrier-feedback-input" value="100" min="0" max="100" />
+                </td>
+                <td>
+                  <label id="fb-carrier-feedback-value-label" for="fb-carrier-feedback-input"></label>
+                </td>
+              </tr>
+            </table>
+
             <div class="graph">
               <canvas id="fb-carrier-phase-graph" width="516" height="340"></canvas>
               <canvas id="fb-carrier-output-graph" width="100" height="340"></canvas>

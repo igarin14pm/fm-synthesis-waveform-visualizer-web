@@ -1,12 +1,12 @@
 // Copyright (c) 2026 Igarin
 // This software is released under the MIT License.
 // https://opensource.org
-import { assertIsHTMLButtonElement, assertIsHTMLCanvasElement } from './assertion.js';
+import { assertIsHTMLButtonElement, assertIsHTMLCanvasElement, assertIsHTMLInputElement, assertIsHTMLLabelElement } from './assertion.js';
 import { AudioEngine } from './audio-engine.js';
 import { FmSynth } from './fm-synth.js';
 import { Mode } from './mode.js';
 import { FmSynthProgram, OperatorFeedbackParameter, OperatorProgram, OperatorRatioParameter, OperatorVolumeParameter } from './program.js';
-import { AudioButtonComponent, OutputGraphComponent, PhaseGraphComponent, WaveformGraphComponent } from './ui-component.js';
+import { AudioButtonComponent, OutputGraphComponent, PhaseGraphComponent, RangeInputComponent, WaveformGraphComponent } from './ui-component.js';
 /**
  * "FM-Synthesis Waveform Visualizer"内で"Synthesis Mode"を"Feedback"に
  * した時の画面をコントロールするクラスです。
@@ -29,13 +29,18 @@ export class FeedbackMode extends Mode {
         // Audio Engine
         this.audioEngine = new AudioEngine();
         // `UiComponent`
+        const carrierFeedbackInputElement = document.querySelector('#fb-carrier-feedback-input');
+        const carrierFeedbackValueLabelElement = document.querySelector('#fb-carrier-feedback-value-label');
         const carrierPhaseGraphElement = document.querySelector('#fb-carrier-phase-graph');
         const carrierOutputGraphElement = document.querySelector('#fb-carrier-output-graph');
         const carrierWaveformGraphElement = document.querySelector('#fb-carrier-waveform-graph');
+        assertIsHTMLInputElement(carrierFeedbackInputElement);
+        assertIsHTMLLabelElement(carrierFeedbackValueLabelElement);
         assertIsHTMLCanvasElement(carrierPhaseGraphElement);
         assertIsHTMLCanvasElement(carrierOutputGraphElement);
         assertIsHTMLCanvasElement(carrierWaveformGraphElement);
         this.carrierComponent = {
+            feedbackInput: new RangeInputComponent(carrierFeedbackInputElement, carrierFeedbackValueLabelElement, this.carrierProgram.feedbackParameter.uiValue),
             phaseGraph: new PhaseGraphComponent(carrierPhaseGraphElement, this.visualFmSynth.carrier),
             outputGraph: new OutputGraphComponent(carrierOutputGraphElement, this.visualFmSynth.carrier, true),
             waveformGraph: new WaveformGraphComponent(carrierWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
@@ -68,7 +73,7 @@ export class FeedbackMode extends Mode {
      */
     assignCarrierFeedbackToSynth() {
         // UIから値を取得
-        this.carrierProgram.feedbackParameter.uiValue = 100; // this.carrierComponent.feedbackInput.value;
+        this.carrierProgram.feedbackParameter.uiValue = this.carrierComponent.feedbackInput.value;
         // グラフ用`FmSynth`に適用
         this.visualFmSynth.carrier.feedback = this.carrierProgram.feedbackParameter.value;
         // 音声用`FmSynth`に適用
@@ -76,7 +81,11 @@ export class FeedbackMode extends Mode {
             this.audioEngine.setParameterValue(this.carrierProgram.feedbackParameter.name, this.carrierProgram.feedbackParameter.value);
         }
     }
-    // addEventListenerToRangeInputComponent()
+    addEventListenerToRangeInputComponent() {
+        this.carrierComponent.feedbackInput.addEventListener(() => {
+            this.assignCarrierFeedbackToSynth();
+        });
+    }
     addEventListenerToAudioButtonComponents() {
         this.startAudioButtonComponent.addClickEventListener(async () => {
             if (!this.audioEngine.isRunning) {
@@ -132,7 +141,7 @@ export class FeedbackMode extends Mode {
      */
     init() {
         this.assignCarrierFeedbackToSynth();
-        // this.addEventListenerToRangeInputComponent();
+        this.addEventListenerToRangeInputComponent();
         this.addEventListenerToAudioButtonComponents();
     }
 }
