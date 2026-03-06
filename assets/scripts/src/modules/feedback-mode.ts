@@ -30,7 +30,7 @@ import {
 /**
  *  Carrierに関連する`UiComponent`クラスのインスタンスをまとめたオブジェクトの型を定義するインターフェースです。
  */
-export interface CarrierComponent {
+export interface CarrierComponentGroup {
 
   /**
    * CarrierのFeedbackを操作する`RangeInputComponent`のインスタンス
@@ -83,7 +83,7 @@ export class FeedbackMode extends Mode {
   /**
    * Carrier関連の`UiComponent`が格納されたオブジェクト
    */
-  carrierComponent: CarrierComponent;
+  carrierComponentGroup: CarrierComponentGroup;
 
   /**
    * "音声を再生する"ボタンを操作する`AudioButtonComponent`のインスタンス
@@ -136,7 +136,7 @@ export class FeedbackMode extends Mode {
     assertIsHTMLCanvasElement(carrierPhaseGraphElement);
     assertIsHTMLCanvasElement(carrierOutputGraphElement);
     assertIsHTMLCanvasElement(carrierWaveformGraphElement);
-    this.carrierComponent = {
+    this.carrierComponentGroup = {
       feedbackInput: new RangeInputComponent(
         carrierFeedbackInputElement,
         carrierFeedbackValueLabelElement,
@@ -177,12 +177,12 @@ export class FeedbackMode extends Mode {
     this.visualFmSynth.moveFrameForward();
 
     const carrierOutputValue: number = this.visualFmSynth.carrier.output.value;
-    this.carrierComponent.waveformGraph.addValue(carrierOutputValue);
+    this.carrierComponentGroup.waveformGraph.addValue(carrierOutputValue);
 
     const graphComponents: GraphComponent[] = [
-      this.carrierComponent.phaseGraph,
-      this.carrierComponent.outputGraph,
-      this.carrierComponent.waveformGraph
+      this.carrierComponentGroup.phaseGraph,
+      this.carrierComponentGroup.outputGraph,
+      this.carrierComponentGroup.waveformGraph
     ];
     graphComponents.forEach((graphComponent) => graphComponent.update());
 
@@ -194,7 +194,7 @@ export class FeedbackMode extends Mode {
   assignCarrierFeedbackToSynth(): void {
 
     // UIから値を取得
-    this.carrierProgram.feedbackParameter.uiValue = this.carrierComponent.feedbackInput.value;
+    this.carrierProgram.feedbackParameter.uiValue = this.carrierComponentGroup.feedbackInput.value;
 
     // グラフ用`FmSynth`に適用
     this.visualFmSynth.carrier.feedback = this.carrierProgram.feedbackParameter.value;
@@ -209,7 +209,7 @@ export class FeedbackMode extends Mode {
   }
 
   addEventListenerToRangeInputComponent(): void {
-    this.carrierComponent.feedbackInput.addEventListener(() => {
+    this.carrierComponentGroup.feedbackInput.addEventListener(() => {
       this.assignCarrierFeedbackToSynth();
     });
   }
