@@ -1,12 +1,12 @@
 // Copyright (c) 2026 Igarin
 // This software is released under the MIT License.
 // https://opensource.org
-import { assertIsHTMLCanvasElement } from './assertion.js';
+import { assertIsHTMLButtonElement, assertIsHTMLCanvasElement } from './assertion.js';
 import { AudioEngine } from './audio-engine.js';
 import { FmSynth } from './fm-synth.js';
 import { Mode } from './mode.js';
 import { FmSynthProgram, OperatorFeedbackParameter, OperatorProgram, OperatorRatioParameter, OperatorVolumeParameter } from './program.js';
-import { OutputGraphComponent, PhaseGraphComponent, WaveformGraphComponent } from './ui-component.js';
+import { AudioButtonComponent, OutputGraphComponent, PhaseGraphComponent, WaveformGraphComponent } from './ui-component.js';
 /**
  * "FM-Synthesis Waveform Visualizer"内で"Synthesis Mode"を"Feedback"に
  * した時の画面をコントロールするクラスです。
@@ -17,8 +17,9 @@ export class FeedbackMode extends Mode {
      */
     constructor() {
         super();
-        // startAudioButtonComponent
-        // stopAudioButtonComponent
+        /**
+         * `window.setInterval()`を呼び出した時の返り値
+         */
         this.intervalId = null;
         // Program
         this.visualFmSynthProgram = new FmSynthProgram(120, 0.5, 1);
@@ -39,6 +40,14 @@ export class FeedbackMode extends Mode {
             outputGraph: new OutputGraphComponent(carrierOutputGraphElement, this.visualFmSynth.carrier, true),
             waveformGraph: new WaveformGraphComponent(carrierWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
         };
+        // "音声を再生する"ボタン
+        const startAudioButtonElement = document.querySelector('#fb-start-audio-button');
+        assertIsHTMLButtonElement(startAudioButtonElement);
+        this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
+        // "音声を停止する"ボタン
+        const stopAudioButtonElement = document.querySelector('#fb-stop-audio-button');
+        assertIsHTMLButtonElement(stopAudioButtonElement);
+        this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
     }
     /**
      * アプリの動作を`visualFmSynth`のサンプリングレート1つ分進めます。
@@ -68,7 +77,22 @@ export class FeedbackMode extends Mode {
         }
     }
     // addEventListenerToRangeInputComponent()
-    // addEventListenerToAudioButtonComponents()
+    addEventListenerToAudioButtonComponents() {
+        this.startAudioButtonComponent.addClickEventListener(async () => {
+            if (!this.audioEngine.isRunning) {
+                await this.audioEngine.start(null, this.carrierProgram);
+            }
+            this.startAudioButtonComponent.hide();
+            this.stopAudioButtonComponent.show();
+        });
+        this.stopAudioButtonComponent.addClickEventListener(() => {
+            if (this.audioEngine.isRunning) {
+                this.audioEngine.stop();
+            }
+            this.stopAudioButtonComponent.hide();
+            this.startAudioButtonComponent.show();
+        });
+    }
     /**
      * `FeedbackMode`が継続的に`moveFrameForward()`を呼び出すように設定します。
      */
@@ -97,9 +121,11 @@ export class FeedbackMode extends Mode {
      */
     stop() {
         this.clearInterval();
-        this.audioEngine.stop();
-        // this.stopAudioButtonComponent.hide();
-        // this.startAudioButtonComponent.show();
+        if (this.audioEngine.isRunning) {
+            this.audioEngine.stop();
+        }
+        this.stopAudioButtonComponent.hide();
+        this.startAudioButtonComponent.show();
     }
     /**
      * アプリが読み込まれた時の動作です。
@@ -107,6 +133,6 @@ export class FeedbackMode extends Mode {
     init() {
         this.assignCarrierFeedbackToSynth();
         // this.addEventListenerToRangeInputComponent();
-        // this.addEventListenerToAudioButtonComponents();
+        this.addEventListenerToAudioButtonComponents();
     }
 }

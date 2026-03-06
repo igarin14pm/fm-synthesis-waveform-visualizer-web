@@ -318,7 +318,7 @@ export class CarrierAndModulatorMode extends Mode {
   addEventListenerToAudioButtonComponents(): void {
     this.startAudioButtonComponent.addClickEventListener(async () => {
       if (!this.audioEngine.isRunning) {
-        await this.audioEngine.start(this.modulatorProgram);
+        await this.audioEngine.start(this.modulatorProgram, null);
       }
       this.startAudioButtonComponent.hide();
       this.stopAudioButtonComponent.show();
@@ -364,7 +364,9 @@ export class CarrierAndModulatorMode extends Mode {
   override stop(): void {
     this.clearInterval();
 
-    this.audioEngine.stop();
+    if (this.audioEngine.isRunning) {
+      this.audioEngine.stop();
+    }
     this.stopAudioButtonComponent.hide();
     this.startAudioButtonComponent.show();
   }
