@@ -60,8 +60,6 @@ export default defineConfig([
       "prefer-exponentiation-operator": "warn",
       "prefer-template": "warn",
       "require-await": "error",
-      
-      // TODO: 追加する
       "@stylistic/semi": ["warn", "always"]
     }
   }
