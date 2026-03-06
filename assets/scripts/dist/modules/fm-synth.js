@@ -1,9 +1,7 @@
-/*
- * Copyright (c) 2026 Igarin
- * This software is released under the MIT License.
- * https://opensource.org
- */
-/* -------- Signal -------- */
+// Copyright (c) 2026 Igarin
+// This software is released under the MIT License.
+// https://opensource.org
+// -------- Signal --------
 /**
  * シンセサイザー内でやりとりされる信号を表します。
  */
@@ -30,11 +28,16 @@ export class Signal {
         this.value = value;
     }
 }
-/* -------- FM Synth Modules -------- */
+// -------- FM Synth Modules --------
+/**
+ * `FmSynth`のモジュールであることを表す基底クラスです。
+ */
+export class FmSynthModule {
+}
 /**
  * FMシンセ内ですべてのPhaseの同期元となるクラスです。
  */
-export class MasterPhase {
+export class MasterPhase extends FmSynthModule {
     /**
      * 出力信号
      */
@@ -47,12 +50,13 @@ export class MasterPhase {
      * @param waveFrequency 出力波形の周波数
      */
     constructor(samplingRate, waveFrequency) {
+        super();
+        this.samplingRate = samplingRate;
+        this.waveFrequency = waveFrequency;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
-        this.samplingRate = samplingRate;
-        this.waveFrequency = waveFrequency;
     }
     /**
      * `MasterPhase`の動作をサンプリングレート一つ分進めます。
@@ -65,13 +69,7 @@ export class MasterPhase {
 /**
  * `Operator`の位相を表すクラスです。
  */
-export class Phase {
-    /**
-     * 位相が一周して (計算した位相の値 < 一つ前に計算した位相の値) となった時に`true`、そうでない時に`false`となります。
-     */
-    get isLooped() {
-        return this.valuesWithoutMod[0] < this.valuesWithoutMod[1];
-    }
+export class Phase extends FmSynthModule {
     /**
      * 出力信号
      */
@@ -93,31 +91,42 @@ export class Phase {
         }
     }
     /**
+     * フィードバックの信号から計算した、実際に変調で使うフィードバックの値
+     */
+    get feedbackValue() {
+        const feedbackCoefficient = 0.125;
+        return this.feedbackSignal.value * this.operatorFeedback * feedbackCoefficient;
+    }
+    /**
      * `Phase`のインスタンスを生成します。
      * @param masterPhaseSignal `MasterPhase`からの信号
      * @param operatorRatio `Operator`のRatioパラメーターの値
-     * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`を渡してください
+     * @param operatorFeedback `Operator`のFeedbackパラメーターの値
+     * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`となります
+     * @param feedbackSignal フィードバックに使用する`Operator`の出力信号
      */
-    constructor(masterPhaseSignal, operatorRatio, modulatorSignal) {
+    constructor(masterPhaseSignal, operatorRatio, operatorFeedback, modulatorSignal, feedbackSignal) {
+        super();
+        this.operatorRatio = operatorRatio;
+        this.operatorFeedback = operatorFeedback;
+        this.modulatorSignal = modulatorSignal;
+        this.feedbackSignal = feedbackSignal;
         /**
          * まだモジュレーションが掛かっていない位相の値
-         * [0]がその時点で最後に計算された値、[1]はその1つ前に計算された値です。
          */
-        this.valuesWithoutMod = [0.0, 0.0];
+        this.valueWithoutMod = 0.0;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
         this.input = masterPhaseSignal;
-        this.operatorRatio = operatorRatio;
-        this.modulatorSignal = modulatorSignal;
     }
     /**
      * 信号を処理して出力信号の値を計算します。
      * @returns 計算した出力信号の値
      */
     process() {
-        let value = this.valuesWithoutMod[0] + this.modulationValue;
+        let value = this.valueWithoutMod + this.modulationValue + this.feedbackValue;
         value -= Math.floor(value);
         return value;
     }
@@ -125,16 +134,14 @@ export class Phase {
      * `Phase`の動作をサンプリングレート一つ分進めます。
      */
     moveFrameForward() {
-        const valueWithoutMod = this.input.value * this.operatorRatio % 1;
-        this.valuesWithoutMod.pop();
-        this.valuesWithoutMod.splice(0, 0, valueWithoutMod);
+        this.valueWithoutMod = this.input.value * this.operatorRatio % 1;
         this._output.value = this.process();
     }
 }
 /**
  * FMシンセサイザーで波形を生成するオペレーターを表すクラスです。
  */
-export class Operator {
+export class Operator extends FmSynthModule {
     /**
      * Ratioパラメーター
      * `MasterPhase`の周波数に対する周波数比
@@ -150,6 +157,20 @@ export class Operator {
         this.phase.operatorRatio = newValue;
     }
     /**
+     * Feedbackパラメーター
+     * この`Operator`にFeedbackを掛ける量を表します
+     */
+    get feedback() {
+        return this.phase.operatorFeedback;
+    }
+    /**
+     * Feedbackパラメーター
+     * この`Operator`にフィードバックを掛ける量を表します
+     */
+    set feedback(newValue) {
+        this.phase.operatorFeedback = newValue;
+    }
+    /**
      * 出力信号
      */
     get output() {
@@ -159,21 +180,18 @@ export class Operator {
      * `Operator`のインスタンスを生成します。
      * @param volume Volumeパラメーター キャリアの場合は音量、モジュレーターの場合はモジュレーション量になります
      * @param ratio Ratioパラメーター `MasterPhase`の周波数に対する周波数比
+     * @param feedback Feedbackパラメーター この`Operator`にフィードバックを掛ける量を表します
      * @param masterPhaseSignal `MasterPhase`からの信号
      * @param modulatorSignal モジュレーターとなる`Operator`からの信号 モジュレーション元がない場合は`null`を渡してください
      */
-    constructor(volume, ratio, masterPhaseSignal, modulatorSignal) {
-        /**
-         * Volumeパラメーター
-         * キャリアの場合は音量、モジュレーターの場合はモジュレーション量になります。
-         */
-        this.volume = 1.0;
+    constructor(volume, ratio, feedback, masterPhaseSignal, modulatorSignal) {
+        super();
+        this.volume = volume;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
-        this.volume = volume;
-        this.phase = new Phase(masterPhaseSignal, ratio, modulatorSignal);
+        this.phase = new Phase(masterPhaseSignal, ratio, feedback, modulatorSignal, this._output);
     }
     /**
      * 信号を処理して出力信号の値を計算します。
@@ -193,7 +211,7 @@ export class Operator {
 /**
  * FMシンセサイザーを表すクラスです。
  */
-export class FMSynth {
+export class FmSynth {
     /**
      * 出力信号
      */
@@ -207,16 +225,16 @@ export class FMSynth {
      * @param outputVolume 出力信号のボリューム
      */
     constructor(samplingRate, waveFrequency, outputVolume) {
+        this.samplingRate = samplingRate;
+        this.waveFrequency = waveFrequency;
+        this.outputVolume = outputVolume;
         /**
          * 出力信号のインスタンス
          */
         this._output = new Signal(0.0);
-        this.samplingRate = samplingRate;
-        this.waveFrequency = waveFrequency;
-        this.outputVolume = outputVolume;
         this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
-        this.modulator = new Operator(1, 1, this.masterPhase.output, null);
-        this.carrier = new Operator(1, 1, this.masterPhase.output, this.modulator.output);
+        this.modulator = new Operator(0, 1, 0, this.masterPhase.output, null);
+        this.carrier = new Operator(1, 1, 0, this.masterPhase.output, this.modulator.output);
     }
     /**
      * 信号を処理して出力信号の値を計算します。
@@ -229,7 +247,7 @@ export class FMSynth {
      * `FMSynth`の動作をサンプリングレート一つ分進めます。
      */
     moveFrameForward() {
-        let frameUpdateQueue = [this.masterPhase, this.modulator, this.carrier];
+        const frameUpdateQueue = [this.masterPhase, this.modulator, this.carrier];
         frameUpdateQueue.forEach(syncable => {
             syncable.moveFrameForward();
         });
