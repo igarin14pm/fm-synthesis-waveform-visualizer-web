@@ -39,7 +39,7 @@ export class FeedbackMode extends Mode {
         assertIsHTMLCanvasElement(carrierPhaseGraphElement);
         assertIsHTMLCanvasElement(carrierOutputGraphElement);
         assertIsHTMLCanvasElement(carrierWaveformGraphElement);
-        this.carrierComponent = {
+        this.carrierComponentGroup = {
             feedbackInput: new RangeInputComponent(carrierFeedbackInputElement, carrierFeedbackValueLabelElement, this.carrierProgram.feedbackParameter.uiValue),
             phaseGraph: new PhaseGraphComponent(carrierPhaseGraphElement, this.visualFmSynth.carrier),
             outputGraph: new OutputGraphComponent(carrierOutputGraphElement, this.visualFmSynth.carrier, true),
@@ -60,11 +60,11 @@ export class FeedbackMode extends Mode {
     moveFrameForward() {
         this.visualFmSynth.moveFrameForward();
         const carrierOutputValue = this.visualFmSynth.carrier.output.value;
-        this.carrierComponent.waveformGraph.addValue(carrierOutputValue);
+        this.carrierComponentGroup.waveformGraph.addValue(carrierOutputValue);
         const graphComponents = [
-            this.carrierComponent.phaseGraph,
-            this.carrierComponent.outputGraph,
-            this.carrierComponent.waveformGraph
+            this.carrierComponentGroup.phaseGraph,
+            this.carrierComponentGroup.outputGraph,
+            this.carrierComponentGroup.waveformGraph
         ];
         graphComponents.forEach((graphComponent) => graphComponent.update());
     }
@@ -73,7 +73,7 @@ export class FeedbackMode extends Mode {
      */
     assignCarrierFeedbackToSynth() {
         // UIから値を取得
-        this.carrierProgram.feedbackParameter.uiValue = this.carrierComponent.feedbackInput.value;
+        this.carrierProgram.feedbackParameter.uiValue = this.carrierComponentGroup.feedbackInput.value;
         // グラフ用`FmSynth`に適用
         this.visualFmSynth.carrier.feedback = this.carrierProgram.feedbackParameter.value;
         // 音声用`FmSynth`に適用
@@ -82,7 +82,7 @@ export class FeedbackMode extends Mode {
         }
     }
     addEventListenerToRangeInputComponent() {
-        this.carrierComponent.feedbackInput.addEventListener(() => {
+        this.carrierComponentGroup.feedbackInput.addEventListener(() => {
             this.assignCarrierFeedbackToSynth();
         });
     }

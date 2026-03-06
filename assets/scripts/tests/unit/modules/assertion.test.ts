@@ -80,6 +80,45 @@ test('`assertIsHTMLCanvasElement()`: アサーション失敗', () => {
   }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLCanvasElement'));
 });
 
+// -------- `assertIsHTMLDivElement()` --------
+
+test('`assertIsHTMLDivElement()`: アサーション成功', () => {
+  document.body.innerHTML =
+    '<div id="carrier-and-modulator-mode">' +
+    '  <p>Carrier and Modulator Mode</p>' +
+    '</div>' +
+    '<div id="feedback-mode">' +
+    '  <p>Feedback Mode</p>' +
+    '</div>';
+  const carrierAndModulatorModeDivElement: Element | null = document.querySelector('#carrier-and-modulator-mode');
+  const feedbackModeDivElement: Element | null = document.querySelector('#feedback-mode');
+
+  expect(() => {
+    assertionModule.assertIsHTMLDivElement(carrierAndModulatorModeDivElement);
+  }).not.toThrow();
+  expect(() => {
+    assertionModule.assertIsHTMLDivElement(feedbackModeDivElement);
+  }).not.toThrow();
+});
+
+test('`assertIsHTMLDivElement()`: アサーション失敗', () => {
+  document.body.innerHTML =
+    '<button id="start-audio-button">音声を再生する</button>' +
+    '<div id="feedback-mode">' +
+    '  <p>Feedback Mode</p>' +
+    '</div>';
+
+  const wrongElement: Element | null = document.querySelector('#start-audio-button');
+  const wrongId: Element | null = document.querySelector('#feeedback-mode');
+
+  expect(() => {
+    assertionModule.assertIsHTMLDivElement(wrongElement);
+  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLDivElement'));
+  expect(() => {
+    assertionModule.assertIsHTMLDivElement(wrongId);
+  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLDivElement'));
+});
+
 // -------- `assertIsHTMLInputElement()` --------
 
 test('`assertIsHTMLInputElement()`: アサーション成功', () => {
@@ -142,4 +181,45 @@ test('`assertIsHTMLLabelElement()`: アサーション失敗', () => {
   expect(() => {
     assertionModule.assertIsHTMLLabelElement(wrongId);
   }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLLabelElement'));
+});
+
+// -------- `assertIsHTMLSelectElement` --------
+
+test('`assertIsHTMLSelectElement()`: アサーション成功', () => {
+  document.body.innerHTML =
+    '<select id="select1">' +
+    '  <option value="value-a">Value A</option>' +
+    '  <option value="value-b">Value B</option>' +
+    '</select>' +
+    '<select id="synthesis-mode-select">' +
+    '  <option value="carrier-and-modulator">Carrier and Modulator</option>' +
+    '  <option value="feedback">Feedback</option>' +
+    '</select>';
+  const selectElement1: Element | null = document.querySelector('#select1');
+  const synthesisModeSelect: Element | null = document.querySelector('#synthesis-mode-select');
+
+  expect(() => {
+    assertionModule.assertIsHTMLSelectElement(selectElement1);
+  }).not.toThrow();
+  expect(() => {
+    assertionModule.assertIsHTMLSelectElement(synthesisModeSelect);
+  }).not.toThrow();
+});
+
+test('`assertIsHTMLSelectElement()`: アサーション失敗', () => {
+  document.body.innerHTML =
+    '<button id="start-audio-button">音声を再生</button>' +
+    '<select id="synthesis-mode-select">' +
+    '  <option value="carrier-and-modulator">Carrier and Modulator</option>' +
+    '  <option value="feedback">Feedback</option>' +
+    '</select>';
+  const wrongElement: Element | null = document.querySelector('#start-audio-button');
+  const wrongId: Element | null = document.querySelector('#synthesis-mmode-select');
+
+  expect(() => {
+    assertionModule.assertIsHTMLSelectElement(wrongElement);
+  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLSelectElement'));
+  expect(() => {
+    assertionModule.assertIsHTMLSelectElement(wrongId);
+  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLSelectElement'));
 });

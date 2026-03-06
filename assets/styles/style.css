@@ -60,6 +60,10 @@ td {
   line-height: 2rem;
 }
 
+.collapsed {
+  display: none;
+}
+
 .no-js .app-content {
   display: none;
 }

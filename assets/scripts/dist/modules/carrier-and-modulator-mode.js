@@ -43,7 +43,7 @@ export class CarrierAndModulatorMode extends Mode {
         assertIsHTMLCanvasElement(modulatorPhaseGraphElement);
         assertIsHTMLCanvasElement(modulatorOutputGraphElement);
         assertIsHTMLCanvasElement(modulatorWaveformGraphElement);
-        this.modulatorComponent = {
+        this.modulatorComponentGroup = {
             volumeInput: new RangeInputComponent(modulatorVolumeInputElement, modulatorVolumeValueLabelElement, this.modulatorProgram.volumeParameter.uiValue),
             ratioInput: new RangeInputComponent(modulatorRatioInputElement, modulatorRatioValueLabelElement, this.modulatorProgram.ratioParameter.uiValue),
             phaseGraph: new PhaseGraphComponent(modulatorPhaseGraphElement, this.visualFmSynth.modulator),
@@ -57,7 +57,7 @@ export class CarrierAndModulatorMode extends Mode {
         assertIsHTMLCanvasElement(carrierPhaseGraphElement);
         assertIsHTMLCanvasElement(carrierOutputGraphElement);
         assertIsHTMLCanvasElement(carrierWaveformGraphElement);
-        this.carrierComponent = {
+        this.carrierComponentGroup = {
             phaseGraph: new PhaseGraphComponent(carrierPhaseGraphElement, this.visualFmSynth.carrier),
             outputGraph: new OutputGraphComponent(carrierOutputGraphElement, this.visualFmSynth.carrier, false),
             waveformGraph: new WaveformGraphComponent(carrierWaveformGraphElement, this.visualFmSynthProgram.samplingRate)
@@ -77,16 +77,16 @@ export class CarrierAndModulatorMode extends Mode {
     moveFrameForward() {
         this.visualFmSynth.moveFrameForward();
         const modulatorOutputValue = this.visualFmSynth.modulator.output.value;
-        this.modulatorComponent.waveformGraph.addValue(modulatorOutputValue);
+        this.modulatorComponentGroup.waveformGraph.addValue(modulatorOutputValue);
         const carrierOutputValue = this.visualFmSynth.carrier.output.value;
-        this.carrierComponent.waveformGraph.addValue(carrierOutputValue);
+        this.carrierComponentGroup.waveformGraph.addValue(carrierOutputValue);
         const graphComponents = [
-            this.modulatorComponent.phaseGraph,
-            this.modulatorComponent.outputGraph,
-            this.modulatorComponent.waveformGraph,
-            this.carrierComponent.phaseGraph,
-            this.carrierComponent.outputGraph,
-            this.carrierComponent.waveformGraph
+            this.modulatorComponentGroup.phaseGraph,
+            this.modulatorComponentGroup.outputGraph,
+            this.modulatorComponentGroup.waveformGraph,
+            this.carrierComponentGroup.phaseGraph,
+            this.carrierComponentGroup.outputGraph,
+            this.carrierComponentGroup.waveformGraph
         ];
         graphComponents.forEach((graphComponent) => graphComponent.update());
     }
@@ -95,7 +95,7 @@ export class CarrierAndModulatorMode extends Mode {
      */
     assignModulatorVolumeToSynth() {
         // UIから値を取得
-        this.modulatorProgram.volumeParameter.uiValue = this.modulatorComponent.volumeInput.value;
+        this.modulatorProgram.volumeParameter.uiValue = this.modulatorComponentGroup.volumeInput.value;
         // グラフ用`FmSynth`に適用
         this.visualFmSynth.modulator.volume = this.modulatorProgram.volumeParameter.value;
         // 音声用`FmSynth`に適用
@@ -108,7 +108,7 @@ export class CarrierAndModulatorMode extends Mode {
      */
     assignModulatorRatioToSynth() {
         // UIから値を取得
-        this.modulatorProgram.ratioParameter.uiValue = this.modulatorComponent.ratioInput.value;
+        this.modulatorProgram.ratioParameter.uiValue = this.modulatorComponentGroup.ratioInput.value;
         // グラフ用`FmSynth`に適用
         this.visualFmSynth.modulator.ratio = this.modulatorProgram.ratioParameter.value;
         // 音声用`FmSynth`に適用
@@ -120,10 +120,10 @@ export class CarrierAndModulatorMode extends Mode {
      * `RangeInputComponent`にイベントリスナーを追加します。
      */
     addEventListenerToRangeInputComponents() {
-        this.modulatorComponent.volumeInput.addEventListener(() => {
+        this.modulatorComponentGroup.volumeInput.addEventListener(() => {
             this.assignModulatorVolumeToSynth();
         });
-        this.modulatorComponent.ratioInput.addEventListener(() => {
+        this.modulatorComponentGroup.ratioInput.addEventListener(() => {
             this.assignModulatorRatioToSynth();
         });
     }
