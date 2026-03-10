@@ -2,6 +2,7 @@
 // This software is released under the MIT License.
 // https://opensource.org
 
+import { expect, test } from 'vitest';
 import * as fmSynthModule from '../../../src/modules/fm-synth';
 
 // -------- `Signal` --------
