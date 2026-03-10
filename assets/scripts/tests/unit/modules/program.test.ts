@@ -73,7 +73,36 @@ test('`OperatorRatioParameter.uiValue`: セッタ', () => {
   expect(operatorRatioParameter2.value).toBe(8);
 });
 
-// TODO: OperatorFeedbackParameter
+// -------- `OperatorFeedbackParameter` --------
+
+test('`OperatorFeedbackParameter`コンストラクタ', () => {
+  const operatorFeedbackParameter1 = new OperatorFeedbackParameter('modulator-feedback', 0.1);
+  const operatorFeedbackParameter2 = new OperatorFeedbackParameter('carrier-feedback', 0.6);
+
+  expect(operatorFeedbackParameter1.name).toBe('modulator-feedback');
+  expect(operatorFeedbackParameter1.value).toBe(0.1);
+  expect(operatorFeedbackParameter2.name).toBe('carrier-feedback');
+  expect(operatorFeedbackParameter2.value).toBe(0.6);
+});
+
+test('`OperatorFeedbackParameter.uiValue`: ゲッタ', () => {
+  const operatorFeedbackParameter1 = new OperatorFeedbackParameter('modulator-feedback', 0.21);
+  const operatorFeedbackParameter2 = new OperatorFeedbackParameter('carrier-feedback', 0.72);
+
+  expect(operatorFeedbackParameter1.uiValue).toBe(21);
+  expect(operatorFeedbackParameter2.uiValue).toBe(72);
+});
+
+test('`OperatorFeedbackParameter.uiValue`: セッタ', () => {
+  const operatorFeedbackParameter1 = new OperatorFeedbackParameter('modulator-feedback', 0);
+  const operatorFeedbackParameter2 = new OperatorFeedbackParameter('carrier-feedback', 1);
+
+  operatorFeedbackParameter1.uiValue = 33;
+  operatorFeedbackParameter2.uiValue = 84;
+
+  expect(operatorFeedbackParameter1.value).toBe(0.33);
+  expect(operatorFeedbackParameter2.value).toBe(0.84);
+});
 
 // -------- `OperatorProgram` --------
 
