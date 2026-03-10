@@ -3,30 +3,36 @@
 // https://opensource.org
 
 import { expect, test } from 'vitest';
-import * as fmSynthModule from '../../../src/modules/fm-synth';
+import {
+  FmSynth,
+  MasterPhase,
+  Operator,
+  Phase,
+  Signal
+} from '../../../src/modules/fm-synth';
 
 // -------- `Signal` --------
 
 test('`Signal`コンストラクタ', () => {
-  const signal1 = new fmSynthModule.Signal(0.5);
-  const signal2 = new fmSynthModule.Signal(-0.6);
+  const signal1 = new Signal(0.5);
+  const signal2 = new Signal(-0.6);
 
   expect(signal1.value).toBe(0.5);
   expect(signal2.value).toBe(-0.6);
 });
 
 test('`Signal.clippedValue`: `Signal.value`が-1より小さい場合`', () => {
-  const signal1 = new fmSynthModule.Signal(-2);
-  const signal2 = new fmSynthModule.Signal(-100);
+  const signal1 = new Signal(-2);
+  const signal2 = new Signal(-100);
 
   expect(signal1.clippedValue).toBe(-1);
   expect(signal2.clippedValue).toBe(-1);
 });
 
 test('`Signal.clippedValue`: `Signal.value`が-1以上1以下の場合', () => {
-  const minimumValueSignal = new fmSynthModule.Signal(-1);
-  const signal = new fmSynthModule.Signal(0.25);
-  const maximumValueSignal = new fmSynthModule.Signal(1);
+  const minimumValueSignal = new Signal(-1);
+  const signal = new Signal(0.25);
+  const maximumValueSignal = new Signal(1);
 
   expect(minimumValueSignal.clippedValue).toBe(-1);
   expect(signal.clippedValue).toBe(0.25);
@@ -34,8 +40,8 @@ test('`Signal.clippedValue`: `Signal.value`が-1以上1以下の場合', () => {
 });
 
 test('`Signal.clippedValue`: `Signal.value`が1より大きい場合', () => {
-  const signal1 = new fmSynthModule.Signal(2);
-  const signal2 = new fmSynthModule.Signal(100);
+  const signal1 = new Signal(2);
+  const signal2 = new Signal(100);
 
   expect(signal1.clippedValue).toBe(1);
   expect(signal2.clippedValue).toBe(1);
@@ -44,8 +50,8 @@ test('`Signal.clippedValue`: `Signal.value`が1より大きい場合', () => {
 // -------- `MasterPhase` --------
 
 test('`MasterPhase`コンストラクタ', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
 
   expect(masterPhase1.samplingRate).toBe(48000);
   expect(masterPhase1.waveFrequency).toBe(440);
@@ -54,10 +60,10 @@ test('`MasterPhase`コンストラクタ', () => {
 });
 
 test('`MasterPhase.output`の参照渡しによる`Signal.value`の伝達', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const output1: fmSynthModule.Signal = masterPhase1.output;
-  const output2: fmSynthModule.Signal = masterPhase2.output;
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
+  const output1: Signal = masterPhase1.output;
+  const output2: Signal = masterPhase2.output;
 
   expect(output1.value).toBe(0);
   expect(output2.value).toBe(0);
@@ -72,8 +78,8 @@ test('`MasterPhase.output`の参照渡しによる`Signal.value`の伝達', () =
 });
 
 test('`MasterPhase.moveFrameForward()`: 1フレーム進めた場合', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
   
   expect(masterPhase1.output.value).toBe(0);
   expect(masterPhase2.output.value).toBe(0);
@@ -86,8 +92,8 @@ test('`MasterPhase.moveFrameForward()`: 1フレーム進めた場合', () => {
 });
 
 test('`MasterPhase.moveFrameForward()`: 位相が一周した場合に位相が1の剰余の値になっているか', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
 
   let expectedValue1 = 0;
   let oldValue1 = 0;
@@ -146,16 +152,16 @@ test('`MasterPhase.moveFrameForward()`: 位相が一周した場合に位相が1
 // -------- `Phase` --------
 
 test('`Phase`コンストラクタ', () => {
-  const masterPhaseSignal1 = new fmSynthModule.Signal(0.1);
-  const masterPhaseSignal2 = new fmSynthModule.Signal(0.2);
-  const modulatorSignal1 = new fmSynthModule.Signal(0.3);
-  const modulatorSignal2 = new fmSynthModule.Signal(-0.4);
-  const feedbackSignal1 = new fmSynthModule.Signal(0);
-  const feedbackSignal2 = new fmSynthModule.Signal(1);
+  const masterPhaseSignal1 = new Signal(0.1);
+  const masterPhaseSignal2 = new Signal(0.2);
+  const modulatorSignal1 = new Signal(0.3);
+  const modulatorSignal2 = new Signal(-0.4);
+  const feedbackSignal1 = new Signal(0);
+  const feedbackSignal2 = new Signal(1);
 
-  const phase1 = new fmSynthModule.Phase(masterPhaseSignal1, 1, 0, modulatorSignal1, feedbackSignal1);
-  const phase2 = new fmSynthModule.Phase(masterPhaseSignal2, 10, 1, modulatorSignal2, feedbackSignal2);
-  const noModulatorPhase = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 1, 0.5, null, new fmSynthModule.Signal(0));
+  const phase1 = new Phase(masterPhaseSignal1, 1, 0, modulatorSignal1, feedbackSignal1);
+  const phase2 = new Phase(masterPhaseSignal2, 10, 1, modulatorSignal2, feedbackSignal2);
+  const noModulatorPhase = new Phase(new Signal(0.5), 1, 0.5, null, new Signal(0));
 
   expect(phase1.input).toBe(masterPhaseSignal1);
   expect(phase1.operatorRatio).toBe(1);
@@ -171,10 +177,10 @@ test('`Phase`コンストラクタ', () => {
 });
 
 test('`Phase.input`: 参照渡しによる`Signal.value`の伝達', () => {
-  const masterPhaseSignal1 = new fmSynthModule.Signal(0);
-  const phase1 = new fmSynthModule.Phase(masterPhaseSignal1, 1, 0, null, new fmSynthModule.Signal(0));
-  const masterPhaseSignal2 = new fmSynthModule.Signal(0);
-  const phase2 = new fmSynthModule.Phase(masterPhaseSignal2, 5, 1, new fmSynthModule.Signal(-0.5), new fmSynthModule.Signal(1));
+  const masterPhaseSignal1 = new Signal(0);
+  const phase1 = new Phase(masterPhaseSignal1, 1, 0, null, new Signal(0));
+  const masterPhaseSignal2 = new Signal(0);
+  const phase2 = new Phase(masterPhaseSignal2, 5, 1, new Signal(-0.5), new Signal(1));
 
   expect(phase1.input.value).toBe(0);
   expect(phase2.input.value).toBe(0);
@@ -187,12 +193,12 @@ test('`Phase.input`: 参照渡しによる`Signal.value`の伝達', () => {
 });
 
 test('`Phase.output`: 参照渡しによる`Signal.value`の伝達', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, 0, null, new fmSynthModule.Signal(0));
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 1, 1, new fmSynthModule.Signal(0.5), new fmSynthModule.Signal(0.5));
-  const output1: fmSynthModule.Signal = phase1.output;
-  const output2: fmSynthModule.Signal = phase2.output;
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
+  const phase1 = new Phase(masterPhase1.output, 1, 0, null, new Signal(0));
+  const phase2 = new Phase(masterPhase2.output, 1, 1, new Signal(0.5), new Signal(0.5));
+  const output1: Signal = phase1.output;
+  const output2: Signal = phase2.output;
 
   expect(output1.value).toBe(0);
   expect(output2.value).toBe(0);
@@ -209,26 +215,26 @@ test('`Phase.output`: 参照渡しによる`Signal.value`の伝達', () => {
 });
 
 test('`Phase.modulationValue`: `Phase.modulatorSignal == null`の場合', () => {
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, null, new fmSynthModule.Signal(0));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, 1, null, new fmSynthModule.Signal(0.7));
+  const phase1 = new Phase(new Signal(0), 1, 0, null, new Signal(0));
+  const phase2 = new Phase(new Signal(0.5), 2, 1, null, new Signal(0.7));
 
   expect(phase1.modulationValue).toBe(0);
   expect(phase2.modulationValue).toBe(0);
 });
 
 test('`Phase.modulationValue`: `Phase.modulatorSignal != null`の場合', () => {
-  const modulatorSignal1 = new fmSynthModule.Signal(0.3);
-  const modulatorSignal2 = new fmSynthModule.Signal(-0.4);
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, modulatorSignal1, new fmSynthModule.Signal(0.3));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.8), 2, 1, modulatorSignal2, new fmSynthModule.Signal(0.4));
+  const modulatorSignal1 = new Signal(0.3);
+  const modulatorSignal2 = new Signal(-0.4);
+  const phase1 = new Phase(new Signal(0), 1, 0, modulatorSignal1, new Signal(0.3));
+  const phase2 = new Phase(new Signal(0.8), 2, 1, modulatorSignal2, new Signal(0.4));
 
   expect(phase1.modulationValue).toBe(0.3 * 0.25);
   expect(phase2.modulationValue).toBe(-0.4 * 0.25);
 });
 
 test('`Phase.feedbackValue`', () => {
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, new fmSynthModule.Signal(0), new fmSynthModule.Signal(1));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(1), 2, 0.5, new fmSynthModule.Signal(0.2), new fmSynthModule.Signal(0.2));
+  const phase1 = new Phase(new Signal(0), 1, 0, new Signal(0), new Signal(1));
+  const phase2 = new Phase(new Signal(1), 2, 0.5, new Signal(0.2), new Signal(0.2));
   
   const result1 = phase1.feedbackValue;
   const result2 = phase2.feedbackValue;
@@ -238,8 +244,8 @@ test('`Phase.feedbackValue`', () => {
 });
 
 test('`Phase.process()`: `Phase.modulatorSignal == null`の場合', () => {
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, null, new fmSynthModule.Signal(0));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, 0, null, new fmSynthModule.Signal(0.5));
+  const phase1 = new Phase(new Signal(0), 1, 0, null, new Signal(0));
+  const phase2 = new Phase(new Signal(0.5), 2, 0, null, new Signal(0.5));
   phase1.valueWithoutMod = 0.25;
   phase2.valueWithoutMod = 0.6;
 
@@ -251,10 +257,10 @@ test('`Phase.process()`: `Phase.modulatorSignal == null`の場合', () => {
 });
 
 test('`Phase.process()`: `Phase.modulatorSignal != null`の場合', () => {
-  const modulatorSignal1 = new fmSynthModule.Signal(0.1);
-  const modulatorSignal2 = new fmSynthModule.Signal(-0.2);
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, modulatorSignal1, new fmSynthModule.Signal(0.2));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.3), 2, 0, modulatorSignal2, new fmSynthModule.Signal(0.4));
+  const modulatorSignal1 = new Signal(0.1);
+  const modulatorSignal2 = new Signal(-0.2);
+  const phase1 = new Phase(new Signal(0), 1, 0, modulatorSignal1, new Signal(0.2));
+  const phase2 = new Phase(new Signal(0.3), 2, 0, modulatorSignal2, new Signal(0.4));
   phase1.valueWithoutMod = 0.4;
   phase2.valueWithoutMod = 0.5;
 
@@ -266,10 +272,10 @@ test('`Phase.process()`: `Phase.modulatorSignal != null`の場合', () => {
 });
 
 test('`Phase.process()`: `Phase.valueWithoutMod + Phase.modulationValue > 1`の場合', () => {
-  const modulatorSignal1 = new fmSynthModule.Signal(0.8);
-  const modulatorSignal2 = new fmSynthModule.Signal(8);
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, modulatorSignal1, new fmSynthModule.Signal(0.2));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, 0, modulatorSignal2, new fmSynthModule.Signal(0.4));
+  const modulatorSignal1 = new Signal(0.8);
+  const modulatorSignal2 = new Signal(8);
+  const phase1 = new Phase(new Signal(0), 1, 0, modulatorSignal1, new Signal(0.2));
+  const phase2 = new Phase(new Signal(0.5), 2, 0, modulatorSignal2, new Signal(0.4));
   phase1.valueWithoutMod = 0.9;
   phase2.valueWithoutMod = 0.95;
   
@@ -281,10 +287,10 @@ test('`Phase.process()`: `Phase.valueWithoutMod + Phase.modulationValue > 1`の�
 });
 
 test('`Phase.process()`: `Phase.valueWithoutMod + Phase.modulationValue < -1`の場合', () => {
-  const modulatorSignal1 = new fmSynthModule.Signal(-0.8);
-  const modulatorSignal2 = new fmSynthModule.Signal(-8);
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 0, modulatorSignal1, new fmSynthModule.Signal(0.6));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.5), 2, 0, modulatorSignal2, new fmSynthModule.Signal(0.8));
+  const modulatorSignal1 = new Signal(-0.8);
+  const modulatorSignal2 = new Signal(-8);
+  const phase1 = new Phase(new Signal(0), 1, 0, modulatorSignal1, new Signal(0.6));
+  const phase2 = new Phase(new Signal(0.5), 2, 0, modulatorSignal2, new Signal(0.8));
   phase1.valueWithoutMod = 0.1;
   phase2.valueWithoutMod = 0.05;
 
@@ -296,8 +302,8 @@ test('`Phase.process()`: `Phase.valueWithoutMod + Phase.modulationValue < -1`の
 });
 
 test('`Phase.process()`: フィードバック', () => {
-  const phase1 = new fmSynthModule.Phase(new fmSynthModule.Signal(0), 1, 1, null, new fmSynthModule.Signal(1));
-  const phase2 = new fmSynthModule.Phase(new fmSynthModule.Signal(0.1), 2, 0.3, new fmSynthModule.Signal(-0.4), new fmSynthModule.Signal(0.5));
+  const phase1 = new Phase(new Signal(0), 1, 1, null, new Signal(1));
+  const phase2 = new Phase(new Signal(0.1), 2, 0.3, new Signal(-0.4), new Signal(0.5));
   phase1.valueWithoutMod = 0;
   phase2.valueWithoutMod = 0.6;
 
@@ -309,10 +315,10 @@ test('`Phase.process()`: フィードバック', () => {
 });
 
 test('`Phase.moveFrameForward()`: `Phase.OperatorRatio`が正しく計算に含まれるか', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 2, 0, null, new fmSynthModule.Signal(0.2));
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 3, 0, new fmSynthModule.Signal(0.5), new fmSynthModule.Signal(0.4));
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
+  const phase1 = new Phase(masterPhase1.output, 2, 0, null, new Signal(0.2));
+  const phase2 = new Phase(masterPhase2.output, 3, 0, new Signal(0.5), new Signal(0.4));
 
   masterPhase1.moveFrameForward();
   masterPhase2.moveFrameForward();
@@ -324,10 +330,10 @@ test('`Phase.moveFrameForward()`: `Phase.OperatorRatio`が正しく計算に含�
 });
 
 test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const phase1 = new fmSynthModule.Phase(masterPhase1.output, 1, 0, null, new fmSynthModule.Signal(0.6));
-  const phase2 = new fmSynthModule.Phase(masterPhase2.output, 5, 0, new fmSynthModule.Signal(-0.1), new fmSynthModule.Signal(0.8));
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
+  const phase1 = new Phase(masterPhase1.output, 1, 0, null, new Signal(0.6));
+  const phase2 = new Phase(masterPhase2.output, 5, 0, new Signal(-0.1), new Signal(0.8));
 
   let oldValue1 = 0;
   let newValue1 = 0;
@@ -384,12 +390,12 @@ test('`Phase.moveFrameForward()`: 位相が一周した場合', () => {
 // -------- `Operator` --------
 
 test('`Operator`コンストラクタ', () => {
-  const masterPhaseSignal1 = new fmSynthModule.Signal(0);
-  const masterPhaseSignal2 = new fmSynthModule.Signal(0.3);
-  const modulatorSignal2 = new fmSynthModule.Signal(-0.4);
+  const masterPhaseSignal1 = new Signal(0);
+  const masterPhaseSignal2 = new Signal(0.3);
+  const modulatorSignal2 = new Signal(-0.4);
 
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, masterPhaseSignal1, null);
-  const operator2 = new fmSynthModule.Operator(0.1, 2, 0.3, masterPhaseSignal2, modulatorSignal2);
+  const operator1 = new Operator(1, 1, 1, masterPhaseSignal1, null);
+  const operator2 = new Operator(0.1, 2, 0.3, masterPhaseSignal2, modulatorSignal2);
 
   expect(operator1.volume).toBe(1);
   expect(operator1.phase.operatorRatio).toBe(1);
@@ -404,8 +410,8 @@ test('`Operator`コンストラクタ', () => {
 });
 
 test('`Operator.ratio`: ゲッタ', () => {
-  const operator1 = new fmSynthModule.Operator(1, 4, 1, new fmSynthModule.Signal(0), null);
-  const operator2 = new fmSynthModule.Operator(0.5, 5, 0.1, new fmSynthModule.Signal(0.5), new fmSynthModule.Signal(-0.3));
+  const operator1 = new Operator(1, 4, 1, new Signal(0), null);
+  const operator2 = new Operator(0.5, 5, 0.1, new Signal(0.5), new Signal(-0.3));
 
   const result1: number = operator1.ratio;
   const result2: number = operator2.ratio;
@@ -415,8 +421,8 @@ test('`Operator.ratio`: ゲッタ', () => {
 });
 
 test('`Operator.ratio`: セッタ', () => {
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0), null);
-  const operator2 = new fmSynthModule.Operator(0.5, 2, 0.2, new fmSynthModule.Signal(0.5), new fmSynthModule.Signal(-0.3));
+  const operator1 = new Operator(1, 1, 1, new Signal(0), null);
+  const operator2 = new Operator(0.5, 2, 0.2, new Signal(0.5), new Signal(-0.3));
 
   operator1.ratio = 8;
   operator2.ratio = 9;
@@ -426,8 +432,8 @@ test('`Operator.ratio`: セッタ', () => {
 });
 
 test('`Operator.feedback`: ゲッタ', () => {
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0), null);
-  const operator2 = new fmSynthModule.Operator(0.1, 2, 0.3, new fmSynthModule.Signal(0.4), new fmSynthModule.Signal(0.5));
+  const operator1 = new Operator(1, 1, 1, new Signal(0), null);
+  const operator2 = new Operator(0.1, 2, 0.3, new Signal(0.4), new Signal(0.5));
 
   const result1: number = operator1.phase.operatorFeedback;
   const result2: number = operator2.phase.operatorFeedback;
@@ -437,8 +443,8 @@ test('`Operator.feedback`: ゲッタ', () => {
 });
 
 test('`Operator.feedback`: セッタ', () => {
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0), null);
-  const operator2 = new fmSynthModule.Operator(0.1, 2, 0.3, new fmSynthModule.Signal(0.4), new fmSynthModule.Signal(0.5));
+  const operator1 = new Operator(1, 1, 1, new Signal(0), null);
+  const operator2 = new Operator(0.1, 2, 0.3, new Signal(0.4), new Signal(0.5));
 
   operator1.feedback = 0.1;
   operator2.feedback = 0.2;
@@ -448,12 +454,12 @@ test('`Operator.feedback`: セッタ', () => {
 });
 
 test('`Operator.output`: 参照渡しによる`value`の伝達', () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, masterPhase1.output, null);
-  const operator2 = new fmSynthModule.Operator(0.5, 2, 0.3, masterPhase2.output, new fmSynthModule.Signal(-0.3));
-  const output1: fmSynthModule.Signal = operator1.output;
-  const output2: fmSynthModule.Signal = operator2.output;
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
+  const operator1 = new Operator(1, 1, 1, masterPhase1.output, null);
+  const operator2 = new Operator(0.5, 2, 0.3, masterPhase2.output, new Signal(-0.3));
+  const output1: Signal = operator1.output;
+  const output2: Signal = operator2.output;
 
   expect(output1.value).toBe(0);
   expect(output2.value).toBe(0);
@@ -470,8 +476,8 @@ test('`Operator.output`: 参照渡しによる`value`の伝達', () => {
 });
 
 test(`Operator.process()`, () => {
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0.1), null);
-  const operator2 = new fmSynthModule.Operator(0.2, 3, 0.4, new fmSynthModule.Signal(0.4), new fmSynthModule.Signal(-0.5));
+  const operator1 = new Operator(1, 1, 1, new Signal(0.1), null);
+  const operator2 = new Operator(0.2, 3, 0.4, new Signal(0.4), new Signal(-0.5));
 
   // TODO: これを呼ばなくてもいいように`FmSynth`, `FmSynthModule`のコンストラクタで
   // `process()`と同じ処理をするようにする
@@ -486,10 +492,10 @@ test(`Operator.process()`, () => {
 });
 
 test(`Operator.moveFrameForward()`, () => {
-  const masterPhase1 = new fmSynthModule.MasterPhase(48000, 440);
-  const masterPhase2 = new fmSynthModule.MasterPhase(120, 0.5);
-  const operator1 = new fmSynthModule.Operator(1, 1, 1, masterPhase1.output, null);
-  const operator2 = new fmSynthModule.Operator(0.2, 3, 0.5, masterPhase2.output, new fmSynthModule.Signal(-0.5));
+  const masterPhase1 = new MasterPhase(48000, 440);
+  const masterPhase2 = new MasterPhase(120, 0.5);
+  const operator1 = new Operator(1, 1, 1, masterPhase1.output, null);
+  const operator2 = new Operator(0.2, 3, 0.5, masterPhase2.output, new Signal(-0.5));
   
   expect(operator1.output.value).toBe(0);
   expect(operator2.output.value).toBe(0);
@@ -508,8 +514,8 @@ test(`Operator.moveFrameForward()`, () => {
 // -------- `FmSynth` --------
 
 test('`FmSynth`コンストラクタ', () => {
-  const fmSynth1 = new fmSynthModule.FmSynth(48000, 440, 0.25);
-  const fmSynth2 = new fmSynthModule.FmSynth(120, 0.5, 1);
+  const fmSynth1 = new FmSynth(48000, 440, 0.25);
+  const fmSynth2 = new FmSynth(120, 0.5, 1);
 
   expect(fmSynth1.samplingRate).toBe(48000);
   expect(fmSynth1.masterPhase.samplingRate).toBe(48000);
@@ -524,8 +530,8 @@ test('`FmSynth`コンストラクタ', () => {
 });
 
 test('`FmSynth.process()`', () => {
-  const fmSynth1 = new fmSynthModule.FmSynth(48000, 440, 0.25);
-  const fmSynth2 = new fmSynthModule.FmSynth(120, 0.5, 1);
+  const fmSynth1 = new FmSynth(48000, 440, 0.25);
+  const fmSynth2 = new FmSynth(120, 0.5, 1);
   fmSynth1.modulator.volume = 1;
   fmSynth2.modulator.volume = 1;
 
@@ -537,8 +543,8 @@ test('`FmSynth.process()`', () => {
 });
 
 test('`FmSynth.moveFrameForward()`', () => {
-  const fmSynth1 = new fmSynthModule.FmSynth(48000, 440, 0.25);
-  const fmSynth2 = new fmSynthModule.FmSynth(120, 0.5, 1);
+  const fmSynth1 = new FmSynth(48000, 440, 0.25);
+  const fmSynth2 = new FmSynth(120, 0.5, 1);
   fmSynth1.modulator.volume = 1;
   fmSynth2.modulator.volume = 1;
 
