@@ -2,6 +2,7 @@
 // This software is released under the MIT License.
 // https://opensource.org
 
+import { expect, test } from 'vitest';
 import * as assertionModule from '../../../src/modules/assertion';
 
 // -------- `InvalidHtmlElementError` --------
