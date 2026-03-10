@@ -3,13 +3,21 @@
 // https://opensource.org
 
 import { expect, test } from 'vitest';
-import * as assertionModule from '../../../src/modules/assertion';
+import {
+  assertIsHTMLButtonElement,
+  assertIsHTMLCanvasElement,
+  assertIsHTMLDivElement,
+  assertIsHTMLInputElement,
+  assertIsHTMLLabelElement,
+  assertIsHTMLSelectElement,
+  InvalidHtmlElementError
+} from '../../../src/modules/assertion';
 
 // -------- `InvalidHtmlElementError` --------
 
 test('`InvalidHtmlElementError`コンストラクタ', () => {
-  const invalidHtmlElementError1 = new assertionModule.InvalidHtmlElementError('HTMLButtonElement is not HTMLCanvasElement');
-  const invalidHtmlElementError2 = new assertionModule.InvalidHtmlElementError('null is not HTMLInputElement');
+  const invalidHtmlElementError1 = new InvalidHtmlElementError('HTMLButtonElement is not HTMLCanvasElement');
+  const invalidHtmlElementError2 = new InvalidHtmlElementError('null is not HTMLInputElement');
 
   expect(invalidHtmlElementError1.name).toBe('InvalidHtmlElementError');
   expect(invalidHtmlElementError1.message).toBe('HTMLButtonElement is not HTMLCanvasElement');
@@ -27,10 +35,10 @@ test('`assertIsHTMLButtonElement()`: アサーション成功', () => {
   const stopAudioButtonElement: Element | null = document.querySelector('#stop-audio-button');
 
   expect(() => {
-    assertionModule.assertIsHTMLButtonElement(startAudioButtonElement);
+    assertIsHTMLButtonElement(startAudioButtonElement);
   }).not.toThrow();
   expect(() => {
-    assertionModule.assertIsHTMLButtonElement(stopAudioButtonElement);
+    assertIsHTMLButtonElement(stopAudioButtonElement);
   }).not.toThrow();
 });
 
@@ -42,11 +50,11 @@ test('`assertIsHTMLButtonElement()`: アサーション失敗', () => {
   const wrongId: Element | null = document.querySelector('#staart-audio-button');
 
   expect(() => {
-    assertionModule.assertIsHTMLButtonElement(wrongElement);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLCanvasElement] is not HTMLButtonElement'));
+    assertIsHTMLButtonElement(wrongElement);
+  }).toThrow(new InvalidHtmlElementError('[object HTMLCanvasElement] is not HTMLButtonElement'));
   expect(() => {
-    assertionModule.assertIsHTMLButtonElement(wrongId);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLButtonElement'));
+    assertIsHTMLButtonElement(wrongId);
+  }).toThrow(new InvalidHtmlElementError('null is not HTMLButtonElement'));
 });
 
 // -------- `assertIsHTMLCanvasElement()` --------
@@ -59,10 +67,10 @@ test('`assertIsHTMLCanvasElement()`: アサーション成功', () => {
   const modulatorWaveformGraphElement: Element | null = document.querySelector('#modulator-waveform-graph');
 
   expect(() => {
-    assertionModule.assertIsHTMLCanvasElement(modulatorPhaseGraphElement);
+    assertIsHTMLCanvasElement(modulatorPhaseGraphElement);
   }).not.toThrow();
   expect(() => {
-    assertionModule.assertIsHTMLCanvasElement(modulatorWaveformGraphElement);
+    assertIsHTMLCanvasElement(modulatorWaveformGraphElement);
   }).not.toThrow();
 });
 
@@ -74,11 +82,11 @@ test('`assertIsHTMLCanvasElement()`: アサーション失敗', () => {
   const wrongId: Element | null = document.querySelector('#modulatorr-phase-graph');
 
   expect(() => {
-    assertionModule.assertIsHTMLCanvasElement(wrongElement);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLCanvasElement'));
+    assertIsHTMLCanvasElement(wrongElement);
+  }).toThrow(new InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLCanvasElement'));
   expect(() => {
-    assertionModule.assertIsHTMLCanvasElement(wrongId);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLCanvasElement'));
+    assertIsHTMLCanvasElement(wrongId);
+  }).toThrow(new InvalidHtmlElementError('null is not HTMLCanvasElement'));
 });
 
 // -------- `assertIsHTMLDivElement()` --------
@@ -95,10 +103,10 @@ test('`assertIsHTMLDivElement()`: アサーション成功', () => {
   const feedbackModeDivElement: Element | null = document.querySelector('#feedback-mode');
 
   expect(() => {
-    assertionModule.assertIsHTMLDivElement(carrierAndModulatorModeDivElement);
+    assertIsHTMLDivElement(carrierAndModulatorModeDivElement);
   }).not.toThrow();
   expect(() => {
-    assertionModule.assertIsHTMLDivElement(feedbackModeDivElement);
+    assertIsHTMLDivElement(feedbackModeDivElement);
   }).not.toThrow();
 });
 
@@ -113,11 +121,11 @@ test('`assertIsHTMLDivElement()`: アサーション失敗', () => {
   const wrongId: Element | null = document.querySelector('#feeedback-mode');
 
   expect(() => {
-    assertionModule.assertIsHTMLDivElement(wrongElement);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLDivElement'));
+    assertIsHTMLDivElement(wrongElement);
+  }).toThrow(new InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLDivElement'));
   expect(() => {
-    assertionModule.assertIsHTMLDivElement(wrongId);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLDivElement'));
+    assertIsHTMLDivElement(wrongId);
+  }).toThrow(new InvalidHtmlElementError('null is not HTMLDivElement'));
 });
 
 // -------- `assertIsHTMLInputElement()` --------
@@ -130,10 +138,10 @@ test('`assertIsHTMLInputElement()`: アサーション成功', () => {
   const modulatorRatioInputElement: Element | null = document.querySelector('#modulator-ratio-input');
 
   expect(() => {
-    assertionModule.assertIsHTMLInputElement(modulatorVolumeInputElement);
+    assertIsHTMLInputElement(modulatorVolumeInputElement);
   }).not.toThrow();
   expect(() => {
-    assertionModule.assertIsHTMLInputElement(modulatorRatioInputElement);
+    assertIsHTMLInputElement(modulatorRatioInputElement);
   }).not.toThrow();
 });
 
@@ -145,11 +153,11 @@ test('`assertIsHTMLInputElement()`: アサーション失敗', () => {
   const wrongId: Element | null = document.querySelector('#modulatorr-volume-input');
 
   expect(() => {
-    assertionModule.assertIsHTMLInputElement(wrongElement);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLLabelElement] is not HTMLInputElement'));
+    assertIsHTMLInputElement(wrongElement);
+  }).toThrow(new InvalidHtmlElementError('[object HTMLLabelElement] is not HTMLInputElement'));
   expect(() => {
-    assertionModule.assertIsHTMLInputElement(wrongId);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLInputElement'));
+    assertIsHTMLInputElement(wrongId);
+  }).toThrow(new InvalidHtmlElementError('null is not HTMLInputElement'));
 });
 
 // -------- `assertIsHTMLLabelElement()` --------
@@ -162,10 +170,10 @@ test('`assertIsHTMLLabelElement()`: アサーション成功', () => {
   const modulatorRatioValueLabelElement: Element | null = document.querySelector('#modulator-ratio-value-label');
 
   expect(() => {
-    assertionModule.assertIsHTMLLabelElement(modulatorVolumeValueLabelElement);
+    assertIsHTMLLabelElement(modulatorVolumeValueLabelElement);
   }).not.toThrow();
   expect(() => {
-    assertionModule.assertIsHTMLLabelElement(modulatorRatioValueLabelElement);
+    assertIsHTMLLabelElement(modulatorRatioValueLabelElement);
   }).not.toThrow();
 });
 
@@ -177,11 +185,11 @@ test('`assertIsHTMLLabelElement()`: アサーション失敗', () => {
   const wrongId: Element | null = document.querySelector('#moddulator-volume-value-label');
 
   expect(() => {
-    assertionModule.assertIsHTMLLabelElement(wrongElement);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLInputElement] is not HTMLLabelElement'));
+    assertIsHTMLLabelElement(wrongElement);
+  }).toThrow(new InvalidHtmlElementError('[object HTMLInputElement] is not HTMLLabelElement'));
   expect(() => {
-    assertionModule.assertIsHTMLLabelElement(wrongId);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLLabelElement'));
+    assertIsHTMLLabelElement(wrongId);
+  }).toThrow(new InvalidHtmlElementError('null is not HTMLLabelElement'));
 });
 
 // -------- `assertIsHTMLSelectElement` --------
@@ -200,10 +208,10 @@ test('`assertIsHTMLSelectElement()`: アサーション成功', () => {
   const synthesisModeSelect: Element | null = document.querySelector('#synthesis-mode-select');
 
   expect(() => {
-    assertionModule.assertIsHTMLSelectElement(selectElement1);
+    assertIsHTMLSelectElement(selectElement1);
   }).not.toThrow();
   expect(() => {
-    assertionModule.assertIsHTMLSelectElement(synthesisModeSelect);
+    assertIsHTMLSelectElement(synthesisModeSelect);
   }).not.toThrow();
 });
 
@@ -218,9 +226,9 @@ test('`assertIsHTMLSelectElement()`: アサーション失敗', () => {
   const wrongId: Element | null = document.querySelector('#synthesis-mmode-select');
 
   expect(() => {
-    assertionModule.assertIsHTMLSelectElement(wrongElement);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLSelectElement'));
+    assertIsHTMLSelectElement(wrongElement);
+  }).toThrow(new InvalidHtmlElementError('[object HTMLButtonElement] is not HTMLSelectElement'));
   expect(() => {
-    assertionModule.assertIsHTMLSelectElement(wrongId);
-  }).toThrow(new assertionModule.InvalidHtmlElementError('null is not HTMLSelectElement'));
+    assertIsHTMLSelectElement(wrongId);
+  }).toThrow(new InvalidHtmlElementError('null is not HTMLSelectElement'));
 });
