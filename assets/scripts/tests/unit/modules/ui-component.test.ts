@@ -16,8 +16,8 @@ import {
   Signal
 } from '../../../src/modules/fm-synth';
 import {
-  AudioButtonComponent,
   ButtonComponent,
+  CollapsibleButtonComponent,
   GraphComponent,
   OutputGraphComponent,
   PhaseGraphComponent,
@@ -479,54 +479,52 @@ test('`ButtonComponent`コンストラクタ', () => {
 
 // 実装未定: `ButtonComponent.addClickEventListener`
 
-// -------- `AudioButtonComponent` --------
+// -------- `CollapsibleButtonComponent` --------
 
-const audioButtonComponentInnerHtml =
+const collapsibleButtonComponentInnerHtml =
   '<button id="start-audio-button" class="green-button">音声を再生する</button>' +
   '<button id="stop-audio-button" class="red-button">音声を停止する</button>';
 
-test('`AudioButtonComponent`コンストラクタ', () => {
-  document.body.innerHTML = audioButtonComponentInnerHtml;
+test('`CollapsibleButtonComponent`コンストラクタ', () => {
+  document.body.innerHTML = collapsibleButtonComponentInnerHtml;
   const startAudioButtonElement: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('start-audio-button');
   const stopAudioButtonElement: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('stop-audio-button');
 
-  const startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
-  const stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
+  const startAudioButtonComponent = new CollapsibleButtonComponent(startAudioButtonElement);
+  const stopAudioButtonComponent = new CollapsibleButtonComponent(stopAudioButtonElement);
 
   expect(startAudioButtonComponent.element).toBe(startAudioButtonElement);
   expect(stopAudioButtonComponent.element).toBe(stopAudioButtonElement);
 });
 
-test('`AudioButtonComponent.hide()`', () => {
-  const startAudioButtonComponent = new AudioButtonComponent(
+test('`CollapsibleButtonComponent.isCollapsed`: ゲッタ', () => {
+  document.body.innerHTML = collapsibleButtonComponentInnerHtml;
+  const startAudioButtonComponent = new CollapsibleButtonComponent(
     getHTMLButtonElementByIdOrThrow('start-audio-button')
   );
-  const stopAudioButtonComponent = new AudioButtonComponent(
+  const stopAudioButtonComponent = new CollapsibleButtonComponent(
     getHTMLButtonElementByIdOrThrow('stop-audio-button')
   );
+
   startAudioButtonComponent.element.style.display = 'block';
-  stopAudioButtonComponent.element.style.display = 'block';
-
-  startAudioButtonComponent.hide();
-  stopAudioButtonComponent.hide();
-
-  expect(startAudioButtonComponent.element.style.display).toBe('none');
-  expect(stopAudioButtonComponent.element.style.display).toBe('none');
-});
-
-test('`AudioButtonComponent.show()`', () => {
-  const startAudioButtonComponent = new AudioButtonComponent(
-    getHTMLButtonElementByIdOrThrow('start-audio-button')
-  );
-  const stopAudioButtonComponent = new AudioButtonComponent(
-    getHTMLButtonElementByIdOrThrow('stop-audio-button')
-  );
-  startAudioButtonComponent.element.style.display = 'none';
   stopAudioButtonComponent.element.style.display = 'none';
 
-  startAudioButtonComponent.show();
-  stopAudioButtonComponent.show();
+  expect(startAudioButtonComponent.isCollapsed).toBe(false);
+  expect(stopAudioButtonComponent.isCollapsed).toBe(true);
+});
+
+test('`CollapsibleButtonComponent.isCollapsed`: セッタ', () => {
+  document.body.innerHTML = collapsibleButtonComponentInnerHtml;
+  const startAudioButtonComponent = new CollapsibleButtonComponent(
+    getHTMLButtonElementByIdOrThrow('start-audio-button')
+  );
+  const stopAudioButtonComponent = new CollapsibleButtonComponent(
+    getHTMLButtonElementByIdOrThrow('stop-audio-button')
+  );
+
+  startAudioButtonComponent.isCollapsed = false;
+  stopAudioButtonComponent.isCollapsed = true;
 
   expect(startAudioButtonComponent.element.style.display).toBe('block');
-  expect(stopAudioButtonComponent.element.style.display).toBe('block');
+  expect(stopAudioButtonComponent.element.style.display).toBe('none');
 });

@@ -19,7 +19,7 @@ import {
   OperatorVolumeParameter 
 } from './program.js';
 import { 
-  AudioButtonComponent,
+  CollapsibleButtonComponent,
   GraphComponent, 
   OutputGraphComponent, 
   PhaseGraphComponent, 
@@ -88,12 +88,12 @@ export class FeedbackMode extends Mode {
   /**
    * "音声を再生する"ボタンを操作する`AudioButtonComponent`のインスタンス
    */
-  startAudioButtonComponent: AudioButtonComponent;
+  startAudioButtonComponent: CollapsibleButtonComponent;
 
   /**
    * "音声を停止する"ボタンを操作する`AudioButtonComponent`のインスタンス
    */
-  stopAudioButtonComponent: AudioButtonComponent;
+  stopAudioButtonComponent: CollapsibleButtonComponent;
 
   /**
    * `window.setInterval()`を呼び出した時の返り値
@@ -160,12 +160,12 @@ export class FeedbackMode extends Mode {
     // "音声を再生する"ボタン
     const startAudioButtonElement: Element | null = document.querySelector('#fb-start-audio-button');
     assertIsHTMLButtonElement(startAudioButtonElement);
-    this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
+    this.startAudioButtonComponent = new CollapsibleButtonComponent(startAudioButtonElement);
 
     // "音声を停止する"ボタン
     const stopAudioButtonElement: Element | null = document.querySelector('#fb-stop-audio-button');
     assertIsHTMLButtonElement(stopAudioButtonElement);
-    this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
+    this.stopAudioButtonComponent = new CollapsibleButtonComponent(stopAudioButtonElement);
 
   }
 
@@ -219,15 +219,15 @@ export class FeedbackMode extends Mode {
       if (!this.audioEngine.isRunning) {
         await this.audioEngine.start(null, this.carrierProgram);
       }
-      this.startAudioButtonComponent.hide();
-      this.stopAudioButtonComponent.show();
+      this.startAudioButtonComponent.isCollapsed = true;
+      this.stopAudioButtonComponent.isCollapsed = false;
     });
     this.stopAudioButtonComponent.addClickEventListener(() => {
       if (this.audioEngine.isRunning) {
         this.audioEngine.stop();
       }
-      this.stopAudioButtonComponent.hide();
-      this.startAudioButtonComponent.show();
+      this.stopAudioButtonComponent.isCollapsed = true;
+      this.startAudioButtonComponent.isCollapsed = false;
     });
   }
 
@@ -266,8 +266,8 @@ export class FeedbackMode extends Mode {
     if (this.audioEngine.isRunning) {
       this.audioEngine.stop();
     }
-    this.stopAudioButtonComponent.hide();
-    this.startAudioButtonComponent.show();
+    this.stopAudioButtonComponent.isCollapsed = true;
+    this.startAudioButtonComponent.isCollapsed = false;
   }
 
   /**
