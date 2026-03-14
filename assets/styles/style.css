@@ -60,16 +60,22 @@ td {
   line-height: 2rem;
 }
 
-.collapsed {
-  display: none;
-}
-
 .no-js .app-content {
   display: none;
 }
 
 .js .app-content {
   display: block;
+}
+
+#carrier-and-modulator-mode {
+  /* JavaScript で制御 */
+  display: block;
+}
+
+#feedback-mode {
+  /* JavaScript で制御 */
+  display: none;
 }
 
 .graph {

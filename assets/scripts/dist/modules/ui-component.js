@@ -37,38 +37,24 @@ export class SelectComponent extends UiComponent {
  */
 export class SynthesisModeDivConponent extends UiComponent {
     /**
-     * 要素がCSS`display: none`によって非表示にされているかを表します。
+     * 要素が CSS `display: none` によって非表示にされているかを表します。
      */
     get isCollapsed() {
-        return this._isCollapsed;
+        return this.element.style.display === 'none';
     }
     /**
-     * 要素がCSS`display: none`によって非表示にされているかを表します。
-     */
+    * 要素が CSS `display: none` によって非表示にされているかを表します。
+    */
     set isCollapsed(newValue) {
-        this._isCollapsed = newValue;
-        if (newValue) {
-            this.element.classList.add('collapsed');
-        }
-        else {
-            this.element.classList.remove('collapsed');
-        }
+        this.element.style.display = newValue ? 'none' : 'block';
     }
     /**
      * `SynthesisModeDivComponent`のインスタンスを生成します。
      * @param element DOMで取得した`<div>`要素
-     * @param isCollapsed `display: none`によって非表示にするかの初期値
      */
-    constructor(element, isCollapsed) {
+    constructor(element) {
         super();
         this.element = element;
-        this._isCollapsed = isCollapsed;
-        if (isCollapsed) {
-            this.element.classList.add('collapsed');
-        }
-        else {
-            this.element.classList.remove('collapsed');
-        }
     }
 }
 /**

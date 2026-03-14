@@ -118,45 +118,39 @@ test('`SynthesisModeDivComponent`コンストラクタ', () => {
   const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
   const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
 
-  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1, false);
-  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2, true);
+  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1);
+  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2);
 
   expect(synthesisModeDivComponent1.element).toBe(divElement1);
-  expect(synthesisModeDivComponent1.isCollapsed).toBe(false);
-  expect(synthesisModeDivComponent1.element.classList).not.toContain('collapsed');
   expect(synthesisModeDivComponent2.element).toBe(divElement2);
-  expect(synthesisModeDivComponent2.isCollapsed).toBe(true);
-  expect(synthesisModeDivComponent2.element.classList).toContain('collapsed');
 });
 
 test('`SynthesisModeDivComponent.isCollapsed`: ゲッタ', () => {
   document.body.innerHTML = synthesisModeDivComponentInnerHtml;
   const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
   const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
-  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1, false);
-  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2, true);
+  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1);
+  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2);
 
-  const result1: boolean = synthesisModeDivComponent1.isCollapsed;
-  const result2: boolean = synthesisModeDivComponent2.isCollapsed;
+  synthesisModeDivComponent1.element.style.display = 'block';
+  synthesisModeDivComponent2.element.style.display = 'none';
 
-  expect(result1).toBe(false);
-  expect(result2).toBe(true);
+  expect(synthesisModeDivComponent1.isCollapsed).toBe(false);
+  expect(synthesisModeDivComponent2.isCollapsed).toBe(true);
 });
 
 test('`SynthesisModeDivComponent.isCollapsed`: セッタ', () => {
   document.body.innerHTML = synthesisModeDivComponentInnerHtml;
   const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
   const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
-  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1, false);
-  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2, true);
+  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1);
+  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2);
 
   synthesisModeDivComponent1.isCollapsed = true;
   synthesisModeDivComponent2.isCollapsed = false;
 
-  expect(synthesisModeDivComponent1.isCollapsed).toBe(true);
-  expect(synthesisModeDivComponent1.element.classList).toContain('collapsed');
-  expect(synthesisModeDivComponent2.isCollapsed).toBe(false);
-  expect(synthesisModeDivComponent2.element.classList).not.toContain('collapsed');
+  expect(synthesisModeDivComponent1.element.style.display).toBe('none');
+  expect(synthesisModeDivComponent2.element.style.display).toBe('block');
 });
 
 // -------- `RangeInputComponent` --------
