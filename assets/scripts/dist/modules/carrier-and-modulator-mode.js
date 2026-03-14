@@ -6,7 +6,7 @@ import { AudioEngine } from "./audio-engine.js";
 import { FmSynth } from "./fm-synth.js";
 import { Mode } from "./mode.js";
 import { FmSynthProgram, OperatorFeedbackParameter, OperatorProgram, OperatorRatioParameter, OperatorVolumeParameter } from "./program.js";
-import { AudioButtonComponent, OutputGraphComponent, PhaseGraphComponent, RangeInputComponent, WaveformGraphComponent } from "./ui-component.js";
+import { CollapsibleButtonComponent, OutputGraphComponent, PhaseGraphComponent, RangeInputComponent, WaveformGraphComponent } from "./ui-component.js";
 /**
  * "FM-Synthesis Waveform Visualizer"内で"Synthesis Mode"を"Carrier and Modulator"に
  * した時の画面をコントロールするクラスです。
@@ -65,11 +65,11 @@ export class CarrierAndModulatorMode extends Mode {
         // "音声を再生する"ボタン
         const startAudioButtonElement = document.querySelector('#cnm-start-audio-button');
         assertIsHTMLButtonElement(startAudioButtonElement);
-        this.startAudioButtonComponent = new AudioButtonComponent(startAudioButtonElement);
+        this.startAudioButtonComponent = new CollapsibleButtonComponent(startAudioButtonElement);
         // "音声を停止する"ボタン
         const stopAudioButtonElement = document.querySelector('#cnm-stop-audio-button');
         assertIsHTMLButtonElement(stopAudioButtonElement);
-        this.stopAudioButtonComponent = new AudioButtonComponent(stopAudioButtonElement);
+        this.stopAudioButtonComponent = new CollapsibleButtonComponent(stopAudioButtonElement);
     }
     /**
      * アプリの動作を`visualFmSynth`のサンプリングレート1つ分進めます。
@@ -135,15 +135,15 @@ export class CarrierAndModulatorMode extends Mode {
             if (!this.audioEngine.isRunning) {
                 await this.audioEngine.start(this.modulatorProgram, null);
             }
-            this.startAudioButtonComponent.hide();
-            this.stopAudioButtonComponent.show();
+            this.startAudioButtonComponent.isCollapsed = true;
+            this.stopAudioButtonComponent.isCollapsed = false;
         });
         this.stopAudioButtonComponent.addClickEventListener(() => {
             if (this.audioEngine.isRunning) {
                 this.audioEngine.stop();
             }
-            this.stopAudioButtonComponent.hide();
-            this.startAudioButtonComponent.show();
+            this.stopAudioButtonComponent.isCollapsed = true;
+            this.startAudioButtonComponent.isCollapsed = false;
         });
     }
     /**
@@ -177,8 +177,8 @@ export class CarrierAndModulatorMode extends Mode {
         if (this.audioEngine.isRunning) {
             this.audioEngine.stop();
         }
-        this.stopAudioButtonComponent.hide();
-        this.startAudioButtonComponent.show();
+        this.stopAudioButtonComponent.isCollapsed = true;
+        this.startAudioButtonComponent.isCollapsed = false;
     }
     /**
      * アプリが読み込まれた時の動作です
