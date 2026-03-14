@@ -52,44 +52,25 @@ export class SelectComponent extends UiComponent {
 export class SynthesisModeDivConponent extends UiComponent implements Collapsible {
 
   /**
-   * `isCollapsed`のプライベートバッキングフィールド
-   */
-  private _isCollapsed: boolean;
-
-  /**
-   * 要素がCSS`display: none`によって非表示にされているかを表します。
+   * 要素が CSS `display: none` によって非表示にされているかを表します。
    */
   get isCollapsed(): boolean {
-    return this._isCollapsed;
+    return this.element.style.display === 'none';
   }
 
-  /**
-   * 要素がCSS`display: none`によって非表示にされているかを表します。
+   /**
+   * 要素が CSS `display: none` によって非表示にされているかを表します。
    */
   set isCollapsed(newValue: boolean) {
-    this._isCollapsed = newValue;
-
-    if (newValue) {
-      this.element.classList.add('collapsed');
-    } else {
-      this.element.classList.remove('collapsed');
-    }
+    this.element.style.display = newValue ? 'none' : 'block';
   }
 
   /**
    * `SynthesisModeDivComponent`のインスタンスを生成します。
    * @param element DOMで取得した`<div>`要素
-   * @param isCollapsed `display: none`によって非表示にするかの初期値
    */
-  constructor(public element: HTMLDivElement, isCollapsed: boolean) {
+  constructor(public element: HTMLDivElement) {
     super();
-
-    this._isCollapsed = isCollapsed;
-    if (isCollapsed) {
-      this.element.classList.add('collapsed');
-    } else {
-      this.element.classList.remove('collapsed');
-    }
   }
 
 }
