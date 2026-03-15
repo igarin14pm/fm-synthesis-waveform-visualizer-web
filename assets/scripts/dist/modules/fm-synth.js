@@ -120,6 +120,8 @@ export class Phase extends FmSynthModule {
          */
         this._output = new Signal(0.0);
         this.input = masterPhaseSignal;
+        this.valueWithoutMod = this.input.value * this.operatorRatio % 1;
+        this._output.value = this.process();
     }
     /**
      * 信号を処理して出力信号の値を計算します。
@@ -192,6 +194,7 @@ export class Operator extends FmSynthModule {
          */
         this._output = new Signal(0.0);
         this.phase = new Phase(masterPhaseSignal, ratio, feedback, modulatorSignal, this._output);
+        this._output.value = this.process();
     }
     /**
      * 信号を処理して出力信号の値を計算します。
@@ -235,6 +238,7 @@ export class FmSynth {
         this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
         this.modulator = new Operator(0, 1, 0, this.masterPhase.output, null);
         this.carrier = new Operator(1, 1, 0, this.masterPhase.output, this.modulator.output);
+        this._output.value = this.process();
     }
     /**
      * 信号を処理して出力信号の値を計算します。
