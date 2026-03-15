@@ -2,13 +2,20 @@
 // This software is released under the MIT License.
 // https://opensource.org
 
-import * as programModule from '../../../src/modules/program';
+import { expect, test } from 'vitest';
+import {
+  FmSynthProgram,
+  OperatorFeedbackParameter,
+  OperatorProgram,
+  OperatorRatioParameter,
+  OperatorVolumeParameter
+} from '../../../src/modules/program';
 
 // -------- `OperatorVolumeParameter` --------
 
 test('`OperatorVolumeParameter`コンストラクタ', () => {
-  const operatorVolumeParameter1 = new programModule.OperatorVolumeParameter('modulator-volume', 1);
-  const operatorVolumeParameter2 = new programModule.OperatorVolumeParameter('carrier-volume', 0.5);
+  const operatorVolumeParameter1 = new OperatorVolumeParameter('modulator-volume', 1);
+  const operatorVolumeParameter2 = new OperatorVolumeParameter('carrier-volume', 0.5);
 
   expect(operatorVolumeParameter1.name).toBe('modulator-volume');
   expect(operatorVolumeParameter1.value).toBe(1);
@@ -17,16 +24,16 @@ test('`OperatorVolumeParameter`コンストラクタ', () => {
 });
 
 test('`OperatorVolumeParameter.uiValue`: ゲッタ', () => {
-  const operatorVolumeParameter1 = new programModule.OperatorVolumeParameter('modulator-volume', 1);
-  const operatorVolumeParameter2 = new programModule.OperatorVolumeParameter('carrier-volume', 0.5);
+  const operatorVolumeParameter1 = new OperatorVolumeParameter('modulator-volume', 1);
+  const operatorVolumeParameter2 = new OperatorVolumeParameter('carrier-volume', 0.5);
 
   expect(operatorVolumeParameter1.uiValue).toBe(100);
   expect(operatorVolumeParameter2.uiValue).toBe(50);
 });
 
 test('`OperatorVolumeParameter.uiValue`: セッタ', () => {
-  const operatorVolumeParameter1 = new programModule.OperatorVolumeParameter('modulator-volume', 1);
-  const operatorVolumeParameter2 = new programModule.OperatorVolumeParameter('carrier-volume', 0.5);
+  const operatorVolumeParameter1 = new OperatorVolumeParameter('modulator-volume', 1);
+  const operatorVolumeParameter2 = new OperatorVolumeParameter('carrier-volume', 0.5);
 
   operatorVolumeParameter1.uiValue = 10;
   operatorVolumeParameter2.uiValue = 20;
@@ -38,8 +45,8 @@ test('`OperatorVolumeParameter.uiValue`: セッタ', () => {
 // -------- `OperatorRatioParameter` --------
 
 test('`OperatorRatioParameter`コンストラクタ', () => {
-  const operatorRatioParameter1 = new programModule.OperatorRatioParameter('modulator-ratio', 1);
-  const operatorRatioParameter2 = new programModule.OperatorRatioParameter('carrier-ratio', 2);
+  const operatorRatioParameter1 = new OperatorRatioParameter('modulator-ratio', 1);
+  const operatorRatioParameter2 = new OperatorRatioParameter('carrier-ratio', 2);
 
   expect(operatorRatioParameter1.name).toBe('modulator-ratio');
   expect(operatorRatioParameter1.value).toBe(1);
@@ -48,16 +55,16 @@ test('`OperatorRatioParameter`コンストラクタ', () => {
 });
 
 test('`OperatorRatioParameter.uiValue`: ゲッタ', () => {
-  const operatorRatioParameter1 = new programModule.OperatorRatioParameter('modulator-ratio', 3);
-  const operatorRatioParameter2 = new programModule.OperatorRatioParameter('carrier-ratio', 4);
+  const operatorRatioParameter1 = new OperatorRatioParameter('modulator-ratio', 3);
+  const operatorRatioParameter2 = new OperatorRatioParameter('carrier-ratio', 4);
 
   expect(operatorRatioParameter1.uiValue).toBe(3);
   expect(operatorRatioParameter2.uiValue).toBe(4);
 });
 
 test('`OperatorRatioParameter.uiValue`: セッタ', () => {
-  const operatorRatioParameter1 = new programModule.OperatorRatioParameter('modulator-ratio', 5);
-  const operatorRatioParameter2 = new programModule.OperatorRatioParameter('carrier-ratio', 6);
+  const operatorRatioParameter1 = new OperatorRatioParameter('modulator-ratio', 5);
+  const operatorRatioParameter2 = new OperatorRatioParameter('carrier-ratio', 6);
 
   operatorRatioParameter1.uiValue = 7;
   operatorRatioParameter2.uiValue = 8;
@@ -66,18 +73,49 @@ test('`OperatorRatioParameter.uiValue`: セッタ', () => {
   expect(operatorRatioParameter2.value).toBe(8);
 });
 
+// -------- `OperatorFeedbackParameter` --------
+
+test('`OperatorFeedbackParameter`コンストラクタ', () => {
+  const operatorFeedbackParameter1 = new OperatorFeedbackParameter('modulator-feedback', 0.1);
+  const operatorFeedbackParameter2 = new OperatorFeedbackParameter('carrier-feedback', 0.6);
+
+  expect(operatorFeedbackParameter1.name).toBe('modulator-feedback');
+  expect(operatorFeedbackParameter1.value).toBe(0.1);
+  expect(operatorFeedbackParameter2.name).toBe('carrier-feedback');
+  expect(operatorFeedbackParameter2.value).toBe(0.6);
+});
+
+test('`OperatorFeedbackParameter.uiValue`: ゲッタ', () => {
+  const operatorFeedbackParameter1 = new OperatorFeedbackParameter('modulator-feedback', 0.21);
+  const operatorFeedbackParameter2 = new OperatorFeedbackParameter('carrier-feedback', 0.72);
+
+  expect(operatorFeedbackParameter1.uiValue).toBe(21);
+  expect(operatorFeedbackParameter2.uiValue).toBe(72);
+});
+
+test('`OperatorFeedbackParameter.uiValue`: セッタ', () => {
+  const operatorFeedbackParameter1 = new OperatorFeedbackParameter('modulator-feedback', 0);
+  const operatorFeedbackParameter2 = new OperatorFeedbackParameter('carrier-feedback', 1);
+
+  operatorFeedbackParameter1.uiValue = 33;
+  operatorFeedbackParameter2.uiValue = 84;
+
+  expect(operatorFeedbackParameter1.value).toBe(0.33);
+  expect(operatorFeedbackParameter2.value).toBe(0.84);
+});
+
 // -------- `OperatorProgram` --------
 
 test('`OperatorProgram`コンストラクタ', () => {
-  const operator1VolumeParameter = new programModule.OperatorVolumeParameter('modulator-volume', 1);
-  const operator1RatioParameter = new programModule.OperatorRatioParameter('modulator-ratio', 2);
-  const operator1FeedbackParameter = new programModule.OperatorFeedbackParameter('modulator-feedback', 0.3);
-  const operator2VolumeParameter = new programModule.OperatorVolumeParameter('carrier-volume', 0.4);
-  const operator2RatioParameter = new programModule.OperatorRatioParameter('carrier-ratio', 5);
-  const operator2FeedbackParameter = new programModule.OperatorFeedbackParameter('carrier-feedback', 0.6);
+  const operator1VolumeParameter = new OperatorVolumeParameter('modulator-volume', 1);
+  const operator1RatioParameter = new OperatorRatioParameter('modulator-ratio', 2);
+  const operator1FeedbackParameter = new OperatorFeedbackParameter('modulator-feedback', 0.3);
+  const operator2VolumeParameter = new OperatorVolumeParameter('carrier-volume', 0.4);
+  const operator2RatioParameter = new OperatorRatioParameter('carrier-ratio', 5);
+  const operator2FeedbackParameter = new OperatorFeedbackParameter('carrier-feedback', 0.6);
 
-  const operatorProgram1 = new programModule.OperatorProgram(operator1VolumeParameter, operator1RatioParameter, operator1FeedbackParameter);
-  const operatorProgram2 = new programModule.OperatorProgram(operator2VolumeParameter, operator2RatioParameter, operator2FeedbackParameter);
+  const operatorProgram1 = new OperatorProgram(operator1VolumeParameter, operator1RatioParameter, operator1FeedbackParameter);
+  const operatorProgram2 = new OperatorProgram(operator2VolumeParameter, operator2RatioParameter, operator2FeedbackParameter);
 
   expect(operatorProgram1.volumeParameter).toBe(operator1VolumeParameter);
   expect(operatorProgram1.ratioParameter).toBe(operator1RatioParameter);
@@ -90,8 +128,8 @@ test('`OperatorProgram`コンストラクタ', () => {
 // -------- `FmSynthProgram` --------
 
 test('`FmSynthProgram`コンストラクタ', () => {
-  const fmSynthProgram1 = new programModule.FmSynthProgram(48000, 440, 0.25);
-  const fmSynthProgram2 = new programModule.FmSynthProgram(120, 0.5, 1);
+  const fmSynthProgram1 = new FmSynthProgram(48000, 440, 0.25);
+  const fmSynthProgram2 = new FmSynthProgram(120, 0.5, 1);
 
   expect(fmSynthProgram1.samplingRate).toBe(48000);
   expect(fmSynthProgram1.waveFrequency).toBe(440);

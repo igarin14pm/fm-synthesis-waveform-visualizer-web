@@ -52,44 +52,25 @@ export class SelectComponent extends UiComponent {
 export class SynthesisModeDivConponent extends UiComponent implements Collapsible {
 
   /**
-   * `isCollapsed`のプライベートバッキングフィールド
-   */
-  private _isCollapsed: boolean;
-
-  /**
-   * 要素がCSS`display: none`によって非表示にされているかを表します。
+   * 要素が CSS `display: none` によって非表示にされているかを表します。
    */
   get isCollapsed(): boolean {
-    return this._isCollapsed;
+    return this.element.style.display === 'none';
   }
 
   /**
-   * 要素がCSS`display: none`によって非表示にされているかを表します。
+   * 要素が CSS `display: none` によって非表示にされているかを表します。
    */
   set isCollapsed(newValue: boolean) {
-    this._isCollapsed = newValue;
-
-    if (newValue) {
-      this.element.classList.add('collapsed');
-    } else {
-      this.element.classList.remove('collapsed');
-    }
+    this.element.style.display = newValue ? 'none' : 'block';
   }
 
   /**
    * `SynthesisModeDivComponent`のインスタンスを生成します。
    * @param element DOMで取得した`<div>`要素
-   * @param isCollapsed `display: none`によって非表示にするかの初期値
    */
-  constructor(public element: HTMLDivElement, isCollapsed: boolean) {
+  constructor(public element: HTMLDivElement) {
     super();
-
-    this._isCollapsed = isCollapsed;
-    if (isCollapsed) {
-      this.element.classList.add('collapsed');
-    } else {
-      this.element.classList.remove('collapsed');
-    }
   }
 
 }
@@ -497,30 +478,55 @@ export class WaveformGraphComponent extends GraphComponent {
 
 }
 
+/**
+ * `<button>` 要素を制御するためのクラスです。
+ */
 export class ButtonComponent extends UiComponent {
 
+  /**
+   * `ButtonComponent` のインスタンスを生成します。
+   * @param element DOMで取得した `<button>` 要素
+   */
   constructor(public element: HTMLButtonElement) {
     super();
   }
 
+  /**
+   * `<button>` 要素にクリック時のイベントリスナーを追加します。
+   * @param listener イベントが発生した時に呼び出されるコールバック
+   */
   addClickEventListener(listener: () => void): void {
     this.element.addEventListener('click', listener);
   }
 
 }
 
-export class AudioButtonComponent extends ButtonComponent {
+/**
+ * `ButtonComponent` に `Collapsible` を実装し、
+ * CSS `display: none` による表示・非表示を切り替えられるようにしたクラスです。
+ */
+export class CollapsibleButtonComponent extends ButtonComponent implements Collapsible {
 
+  /**
+   * `CollapsibleButtonComponent` のインスタンスを生成します。
+   * @param element DOMで取得した `<button>` 要素
+   */
   constructor(element: HTMLButtonElement) {
     super(element);
   }
 
-  hide(): void {
-    this.element.style.display = 'none';
+  /**
+   * 要素が CSS `display: none` によって非表示にされているかを表します。
+   */
+  get isCollapsed(): boolean {
+    return this.element.style.display === 'none';
   }
 
-  show(): void {
-    this.element.style.display = 'block';
+  /**
+   * 要素が CSS `display: none` によって非表示にされているかを表します。
+   */
+  set isCollapsed(newValue: boolean) {
+    this.element.style.display = newValue ? 'none' : 'block';
   }
 
 }

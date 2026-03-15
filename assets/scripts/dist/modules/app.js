@@ -35,8 +35,8 @@ export class FmSynthesisWaveformVisualizerApp extends App {
         assertIsHTMLDivElement(carrierAndModulatorModeDivElement);
         assertIsHTMLDivElement(feedbackModeDivElement);
         this.synthesisModeComponentGroup = {
-            carrierAndModulatorDiv: new SynthesisModeDivConponent(carrierAndModulatorModeDivElement, false),
-            feedbackDiv: new SynthesisModeDivConponent(feedbackModeDivElement, true)
+            carrierAndModulatorDiv: new SynthesisModeDivConponent(carrierAndModulatorModeDivElement),
+            feedbackDiv: new SynthesisModeDivConponent(feedbackModeDivElement)
         };
     }
     /**

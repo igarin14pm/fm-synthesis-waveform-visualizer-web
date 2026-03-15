@@ -2,43 +2,64 @@
 // This software is released under the MIT License.
 // https://opensource.org
 
-import * as assertionModule from '../../../src/modules/assertion';
-import * as fmSynthModule from '../../../src/modules/fm-synth';
-import * as uiComponentModule from '../../../src/modules/ui-component';
+import { expect, test } from 'vitest';
+import {
+  assertIsHTMLButtonElement,
+  assertIsHTMLCanvasElement,
+  assertIsHTMLDivElement,
+  assertIsHTMLInputElement,
+  assertIsHTMLLabelElement,
+  assertIsHTMLSelectElement
+} from '../../../src/modules/assertion';
+import {
+  Operator,
+  Signal
+} from '../../../src/modules/fm-synth';
+import {
+  ButtonComponent,
+  CollapsibleButtonComponent,
+  GraphComponent,
+  OutputGraphComponent,
+  PhaseGraphComponent,
+  RangeInputComponent,
+  SelectComponent,
+  SynthesisModeDivConponent,
+  WaveformGraphComponent
+} from '../../../src/modules/ui-component';
 
 function getHTMLButtonElementByIdOrThrow(id: string): HTMLButtonElement {
   const element: Element | null = document.querySelector(`#${id}`);
-  assertionModule.assertIsHTMLButtonElement(element);
+  assertIsHTMLButtonElement(element);
   return element;
 }
 
 function getHTMLCanvasElementByIdOrThrow(id: string): HTMLCanvasElement {
   const element: Element | null = document.querySelector(`#${id}`);
-  assertionModule.assertIsHTMLCanvasElement(element);
+  assertIsHTMLCanvasElement(element);
   return element;
 }
 
 function getHTMLDivElementByIdOrThrow(id: string): HTMLDivElement {
   const element: Element | null = document.querySelector(`#${id}`);
-  assertionModule.assertIsHTMLDivElement(element);
+  assertIsHTMLDivElement(element);
   return element;
 }
 
 function getHTMLInputElementByIdOrThrow(id: string): HTMLInputElement {
   const element: Element | null = document.querySelector(`#${id}`);
-  assertionModule.assertIsHTMLInputElement(element);
+  assertIsHTMLInputElement(element);
   return element;
 }
 
 function getHTMLLabelElementByIdOrThrow(id: string): HTMLLabelElement {
   const element: Element | null = document.querySelector(`#${id}`);
-  assertionModule.assertIsHTMLLabelElement(element);
+  assertIsHTMLLabelElement(element);
   return element;
 }
 
 function getHTMLSelectElementByIdOrThrow(id: string): HTMLSelectElement {
   const element: Element | null = document.querySelector(`#${id}`);
-  assertionModule.assertIsHTMLSelectElement(element);
+  assertIsHTMLSelectElement(element);
   return element;
 }
 
@@ -59,8 +80,8 @@ test('`SelectComponent`コンストラクタ', () => {
   const selectElement1: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('select1');
   const selectElement2: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('synthesis-mode-select');
 
-  const selectComponent1 = new uiComponentModule.SelectComponent(selectElement1);
-  const selectComponent2 = new uiComponentModule.SelectComponent(selectElement2);
+  const selectComponent1 = new SelectComponent(selectElement1);
+  const selectComponent2 = new SelectComponent(selectElement2);
 
   expect(selectComponent1.element).toBe(selectElement1);
   expect(selectComponent2.element).toBe(selectElement2);
@@ -70,8 +91,8 @@ test('`SelectComponent.value`', () => {
   document.body.innerHTML = selectComponentInnerHtml;
   const selectElement1: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('select1');
   const selectElement2: HTMLSelectElement = getHTMLSelectElementByIdOrThrow('synthesis-mode-select');
-  const selectComponent1 = new uiComponentModule.SelectComponent(selectElement1);
-  const selectComponent2 = new uiComponentModule.SelectComponent(selectElement2);
+  const selectComponent1 = new SelectComponent(selectElement1);
+  const selectComponent2 = new SelectComponent(selectElement2);
 
   const result1: string = selectComponent1.value;
   const result2: string = selectComponent2.value;
@@ -97,45 +118,39 @@ test('`SynthesisModeDivComponent`コンストラクタ', () => {
   const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
   const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
 
-  const synthesisModeDivComponent1 = new uiComponentModule.SynthesisModeDivConponent(divElement1, false);
-  const synthesisModeDivComponent2 = new uiComponentModule.SynthesisModeDivConponent(divElement2, true);
+  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1);
+  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2);
 
   expect(synthesisModeDivComponent1.element).toBe(divElement1);
-  expect(synthesisModeDivComponent1.isCollapsed).toBe(false);
-  expect(synthesisModeDivComponent1.element.classList).not.toContain('collapsed');
   expect(synthesisModeDivComponent2.element).toBe(divElement2);
-  expect(synthesisModeDivComponent2.isCollapsed).toBe(true);
-  expect(synthesisModeDivComponent2.element.classList).toContain('collapsed');
 });
 
 test('`SynthesisModeDivComponent.isCollapsed`: ゲッタ', () => {
   document.body.innerHTML = synthesisModeDivComponentInnerHtml;
   const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
   const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
-  const synthesisModeDivComponent1 = new uiComponentModule.SynthesisModeDivConponent(divElement1, false);
-  const synthesisModeDivComponent2 = new uiComponentModule.SynthesisModeDivConponent(divElement2, true);
+  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1);
+  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2);
 
-  const result1: boolean = synthesisModeDivComponent1.isCollapsed;
-  const result2: boolean = synthesisModeDivComponent2.isCollapsed;
+  synthesisModeDivComponent1.element.style.display = 'block';
+  synthesisModeDivComponent2.element.style.display = 'none';
 
-  expect(result1).toBe(false);
-  expect(result2).toBe(true);
+  expect(synthesisModeDivComponent1.isCollapsed).toBe(false);
+  expect(synthesisModeDivComponent2.isCollapsed).toBe(true);
 });
 
 test('`SynthesisModeDivComponent.isCollapsed`: セッタ', () => {
   document.body.innerHTML = synthesisModeDivComponentInnerHtml;
   const divElement1: HTMLDivElement = getHTMLDivElementByIdOrThrow('carrier-and-modulator-mode');
   const divElement2: HTMLDivElement = getHTMLDivElementByIdOrThrow('feedback-mode');
-  const synthesisModeDivComponent1 = new uiComponentModule.SynthesisModeDivConponent(divElement1, false);
-  const synthesisModeDivComponent2 = new uiComponentModule.SynthesisModeDivConponent(divElement2, true);
+  const synthesisModeDivComponent1 = new SynthesisModeDivConponent(divElement1);
+  const synthesisModeDivComponent2 = new SynthesisModeDivConponent(divElement2);
 
   synthesisModeDivComponent1.isCollapsed = true;
   synthesisModeDivComponent2.isCollapsed = false;
 
-  expect(synthesisModeDivComponent1.isCollapsed).toBe(true);
-  expect(synthesisModeDivComponent1.element.classList).toContain('collapsed');
-  expect(synthesisModeDivComponent2.isCollapsed).toBe(false);
-  expect(synthesisModeDivComponent2.element.classList).not.toContain('collapsed');
+  expect(synthesisModeDivComponent1.element.style.display).toBe('none');
+  expect(synthesisModeDivComponent2.element.style.display).toBe('block');
 });
 
 // -------- `RangeInputComponent` --------
@@ -167,12 +182,12 @@ test('`RangeInputComponent`コンストラクタ', () => {
   const modulatorRatioInputElement: HTMLInputElement = getHTMLInputElementByIdOrThrow('modulator-ratio-input');
   const modulatorRatioValueLabelElement: HTMLLabelElement = getHTMLLabelElementByIdOrThrow('modulator-ratio-value-label');
 
-  const modulatorVolumeInputComponent = new uiComponentModule.RangeInputComponent(
+  const modulatorVolumeInputComponent = new RangeInputComponent(
     modulatorVolumeInputElement,
     modulatorVolumeValueLabelElement,
     100
   );
-  const modulatorRatioInputComponent = new uiComponentModule.RangeInputComponent(
+  const modulatorRatioInputComponent = new RangeInputComponent(
     modulatorRatioInputElement,
     modulatorRatioValueLabelElement,
     1
@@ -190,12 +205,12 @@ test('`RangeInputComponent`コンストラクタ', () => {
 
 test('`RangeInputComponent.value`', () => {
   document.body.innerHTML = rangeInputCompnentInnerHtml;
-  const modulatorVolumeInputComponent = new uiComponentModule.RangeInputComponent(
+  const modulatorVolumeInputComponent = new RangeInputComponent(
     getHTMLInputElementByIdOrThrow('modulator-volume-input'),
     getHTMLLabelElementByIdOrThrow('modulator-volume-value-label'),
     100
   );
-  const modulatorRatioInputComponent = new uiComponentModule.RangeInputComponent(
+  const modulatorRatioInputComponent = new RangeInputComponent(
     getHTMLInputElementByIdOrThrow('modulator-ratio-input'),
     getHTMLLabelElementByIdOrThrow('modulator-ratio-value-label'),
     1
@@ -216,7 +231,7 @@ const graphComponentInnerHtml =
   '<canvas id="graph1" width="100" height="100"></canvas>' +
   '<canvas id="graph2" width="200" height="200"></canvas>';
 
-class GraphComponentInpl extends uiComponentModule.GraphComponent {
+class GraphComponentInpl extends GraphComponent {
 
   constructor(element: HTMLCanvasElement) {
     super(element);
@@ -300,15 +315,15 @@ const phaseGraphComponentInnerHtml =
 test('`PhaseGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = phaseGraphComponentInnerHtml;
   const modulatorPhaseGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-phase-graph');
-  const modulator = new fmSynthModule.Operator(1, 1, 1, new fmSynthModule.Signal(0), null);
+  const modulator = new Operator(1, 1, 1, new Signal(0), null);
   const carrierPhaseGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-phase-graph');
-  const carrier = new fmSynthModule.Operator(0.5, 2, 0.3, new fmSynthModule.Signal(0), modulator.output);
+  const carrier = new Operator(0.5, 2, 0.3, new Signal(0), modulator.output);
 
-  const modulatorPhaseGraphComponent = new uiComponentModule.PhaseGraphComponent(
+  const modulatorPhaseGraphComponent = new PhaseGraphComponent(
     modulatorPhaseGraphElement,
     modulator
   );
-  const carrierPhaseGraphComponent = new uiComponentModule.PhaseGraphComponent(
+  const carrierPhaseGraphComponent = new PhaseGraphComponent(
     carrierPhaseGraphElement,
     carrier
   );
@@ -344,16 +359,16 @@ const outputGraphComponentInnerHtml =
 test('`OutputGraphComponent`コンストラクタ', () => {
   document.body.innerHTML = outputGraphComponentInnerHtml;
   const modulatorOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-output-graph');
-  const modulator = new fmSynthModule.Operator(1, 2, 0.3, new fmSynthModule.Signal(0), null);
+  const modulator = new Operator(1, 2, 0.3, new Signal(0), null);
   const carrierOutputGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-output-graph');
-  const carrier = new fmSynthModule.Operator(0.25, 1, 0.5, new fmSynthModule.Signal(0), modulator.output);
+  const carrier = new Operator(0.25, 1, 0.5, new Signal(0), modulator.output);
 
-  const modulatorOutputGraphComponent = new uiComponentModule.OutputGraphComponent(
+  const modulatorOutputGraphComponent = new OutputGraphComponent(
     modulatorOutputGraphElement,
     modulator,
     true
   );
-  const carrierOutputGraphComponent = new uiComponentModule.OutputGraphComponent(
+  const carrierOutputGraphComponent = new OutputGraphComponent(
     carrierOutputGraphElement,
     carrier,
     false
@@ -388,11 +403,11 @@ test('`WaveformGraphComponent`コンストラクタ', () => {
   const modulatorWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-waveform-graph');
   const carrierWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-waveform-graph');
 
-  const modulatorWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+  const modulatorWaveformGraphComponent = new WaveformGraphComponent(
     modulatorWaveformGraphElement,
     120
   );
-  const carrierWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+  const carrierWaveformGraphComponent = new WaveformGraphComponent(
     carrierWaveformGraphElement,
     240
   );
@@ -410,11 +425,11 @@ test('`WaveformGraphElement.addValue`', () => {
   const modulatorWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('modulator-waveform-graph');
   const carrierWaveformGraphElement: HTMLCanvasElement = getHTMLCanvasElementByIdOrThrow('carrier-waveform-graph');
 
-  const modulatorWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+  const modulatorWaveformGraphComponent = new WaveformGraphComponent(
     modulatorWaveformGraphElement,
     120
   );
-  const carrierWaveformGraphComponent = new uiComponentModule.WaveformGraphComponent(
+  const carrierWaveformGraphComponent = new WaveformGraphComponent(
     carrierWaveformGraphElement,
     240
   );
@@ -455,8 +470,8 @@ test('`ButtonComponent`コンストラクタ', () => {
   const buttonElement1: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('button1');
   const buttonElement2: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('button2');
 
-  const buttonComponent1 = new uiComponentModule.ButtonComponent(buttonElement1);
-  const buttonComponent2 = new uiComponentModule.ButtonComponent(buttonElement2);
+  const buttonComponent1 = new ButtonComponent(buttonElement1);
+  const buttonComponent2 = new ButtonComponent(buttonElement2);
 
   expect(buttonComponent1.element).toBe(buttonElement1);
   expect(buttonComponent2.element).toBe(buttonElement2);
@@ -464,54 +479,52 @@ test('`ButtonComponent`コンストラクタ', () => {
 
 // 実装未定: `ButtonComponent.addClickEventListener`
 
-// -------- `AudioButtonComponent` --------
+// -------- `CollapsibleButtonComponent` --------
 
-const audioButtonComponentInnerHtml =
+const collapsibleButtonComponentInnerHtml =
   '<button id="start-audio-button" class="green-button">音声を再生する</button>' +
   '<button id="stop-audio-button" class="red-button">音声を停止する</button>';
 
-test('`AudioButtonComponent`コンストラクタ', () => {
-  document.body.innerHTML = audioButtonComponentInnerHtml;
+test('`CollapsibleButtonComponent`コンストラクタ', () => {
+  document.body.innerHTML = collapsibleButtonComponentInnerHtml;
   const startAudioButtonElement: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('start-audio-button');
   const stopAudioButtonElement: HTMLButtonElement = getHTMLButtonElementByIdOrThrow('stop-audio-button');
 
-  const startAudioButtonComponent = new uiComponentModule.AudioButtonComponent(startAudioButtonElement);
-  const stopAudioButtonComponent = new uiComponentModule.AudioButtonComponent(stopAudioButtonElement);
+  const startAudioButtonComponent = new CollapsibleButtonComponent(startAudioButtonElement);
+  const stopAudioButtonComponent = new CollapsibleButtonComponent(stopAudioButtonElement);
 
   expect(startAudioButtonComponent.element).toBe(startAudioButtonElement);
   expect(stopAudioButtonComponent.element).toBe(stopAudioButtonElement);
 });
 
-test('`AudioButtonComponent.hide()`', () => {
-  const startAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
+test('`CollapsibleButtonComponent.isCollapsed`: ゲッタ', () => {
+  document.body.innerHTML = collapsibleButtonComponentInnerHtml;
+  const startAudioButtonComponent = new CollapsibleButtonComponent(
     getHTMLButtonElementByIdOrThrow('start-audio-button')
   );
-  const stopAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
+  const stopAudioButtonComponent = new CollapsibleButtonComponent(
     getHTMLButtonElementByIdOrThrow('stop-audio-button')
   );
+
   startAudioButtonComponent.element.style.display = 'block';
-  stopAudioButtonComponent.element.style.display = 'block';
-
-  startAudioButtonComponent.hide();
-  stopAudioButtonComponent.hide();
-
-  expect(startAudioButtonComponent.element.style.display).toBe('none');
-  expect(stopAudioButtonComponent.element.style.display).toBe('none');
-});
-
-test('`AudioButtonComponent.show()`', () => {
-  const startAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
-    getHTMLButtonElementByIdOrThrow('start-audio-button')
-  );
-  const stopAudioButtonComponent = new uiComponentModule.AudioButtonComponent(
-    getHTMLButtonElementByIdOrThrow('stop-audio-button')
-  );
-  startAudioButtonComponent.element.style.display = 'none';
   stopAudioButtonComponent.element.style.display = 'none';
 
-  startAudioButtonComponent.show();
-  stopAudioButtonComponent.show();
+  expect(startAudioButtonComponent.isCollapsed).toBe(false);
+  expect(stopAudioButtonComponent.isCollapsed).toBe(true);
+});
+
+test('`CollapsibleButtonComponent.isCollapsed`: セッタ', () => {
+  document.body.innerHTML = collapsibleButtonComponentInnerHtml;
+  const startAudioButtonComponent = new CollapsibleButtonComponent(
+    getHTMLButtonElementByIdOrThrow('start-audio-button')
+  );
+  const stopAudioButtonComponent = new CollapsibleButtonComponent(
+    getHTMLButtonElementByIdOrThrow('stop-audio-button')
+  );
+
+  startAudioButtonComponent.isCollapsed = false;
+  stopAudioButtonComponent.isCollapsed = true;
 
   expect(startAudioButtonComponent.element.style.display).toBe('block');
-  expect(stopAudioButtonComponent.element.style.display).toBe('block');
+  expect(stopAudioButtonComponent.element.style.display).toBe('none');
 });
