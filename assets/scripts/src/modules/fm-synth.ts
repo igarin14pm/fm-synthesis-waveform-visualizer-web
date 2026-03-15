@@ -204,6 +204,8 @@ export class Phase extends FmSynthModule implements Inputting, Processing, Outpu
   ) {
     super();
     this.input = masterPhaseSignal;
+    this.valueWithoutMod = this.input.value * this.operatorRatio % 1;
+    this._output.value = this.process();
   }
 
   /**
@@ -298,6 +300,7 @@ export class Operator extends FmSynthModule implements Processing, Outputting, S
   ) {
     super();
     this.phase = new Phase(masterPhaseSignal, ratio, feedback, modulatorSignal, this._output);
+    this._output.value = this.process();
   }
 
   /**
@@ -364,6 +367,7 @@ export class FmSynth implements Processing, Outputting, Syncable {
     this.masterPhase = new MasterPhase(samplingRate, waveFrequency);
     this.modulator = new Operator(0, 1, 0, this.masterPhase.output, null);
     this.carrier = new Operator(1, 1, 0, this.masterPhase.output, this.modulator.output);
+    this._output.value = this.process();
   }
 
   /**
